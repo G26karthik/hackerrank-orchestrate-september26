@@ -285,6 +285,7 @@ def extract_image_observation(
     client: OpenAIClient | None = None,
     cache: ContentAddressedCache,
     reasoning_effort: str = config.DEFAULT_REASONING_EFFORT,
+    force: bool = False,
 ) -> tuple[ImageObservation, bool, CallResult | None]:
     """Extract (or fetch from cache) the structured observation for one
     image. Returns `(observation, cache_hit, call_result)` -- `call_result`
@@ -297,7 +298,9 @@ def extract_image_observation(
     # Locate image file across media_root, DATASET_DIR, and candidate paths
     candidates = []
     if media_root:
-        candidates.append(Path(media_root) / f"{image.image_id}.png")
+        mr = Path(media_root)
+        candidates.append(mr / f"{image.image_id}.png")
+        candidates.append(mr / "media" / "images" / f"{image.image_id}.png")
     if "DATASET_DIR" in os.environ:
         candidates.append(Path(os.environ["DATASET_DIR"]) / "media" / "images" / f"{image.image_id}.png")
     candidates.extend([
@@ -314,24 +317,25 @@ def extract_image_observation(
 
     model_name = client.model if client is not None else config.RUNTIME_MODEL
     cached = None
-    if source_sha256 is not None:
-        key = CacheKey(
-            source_id=image.image_id,
-            source_sha256=source_sha256,
-            model=model_name,
-            prompt_version=PROMPT_VERSION,
-            schema_version=IMAGE_SCHEMA_VERSION,
-            decoding_config=f"effort={reasoning_effort}",
-            tool_contract_version="v1",
-        )
-        cached = cache.get(key)
+    if not force:
+        if source_sha256 is not None:
+            key = CacheKey(
+                source_id=image.image_id,
+                source_sha256=source_sha256,
+                model=model_name,
+                prompt_version=PROMPT_VERSION,
+                schema_version=IMAGE_SCHEMA_VERSION,
+                decoding_config=f"effort={reasoning_effort}",
+                tool_contract_version="v1",
+            )
+            cached = cache.get(key)
+        else:
+            # Only when image file is not present on disk, allow fallback to snapshot cache by source_id
+            cached = cache.get_by_source_id(image.image_id)
 
-    if cached is None:
-        cached = cache.get_by_source_id(image.image_id)
-
-    if cached is not None:
+    if not force and cached is not None:
         obs = _parse_image_observation(
-            image.image_id, source_sha256 or "snapshot", cached["parsed"],
+            image.image_id, cached.get("source_sha256") or source_sha256 or "snapshot", cached["parsed"],
             model=cached.get("model", model_name),
             reasoning_effort=cached.get("reasoning_effort", reasoning_effort),
             provider_response_id=cached.get("provider_response_id"),
@@ -339,7 +343,32 @@ def extract_image_observation(
         return obs, True, None
 
     if client is None:
-        raise RuntimeError(f"No cache entry for {image.image_id} and no OpenAIClient provided for live call")
+        # Cache miss on modified or unseen source bytes, and no client provided for live call:
+        # Return a visible unresolved state rather than relabeling stale snapshots.
+        obs = ImageObservation(
+            image_id=image.image_id,
+            source_sha256=source_sha256 or "unresolved",
+            document_type="unresolved",
+            legible=False,
+            amount_candidates=(),
+            currency=None,
+            net_pay=None,
+            gross_pay=None,
+            tax=None,
+            total=None,
+            paid_amount=None,
+            balance_due=None,
+            cash_tendered=None,
+            change=None,
+            due_date_candidates=(),
+            payment_status=None,
+            source_regions=(),
+            notes=f"Unresolved: cache miss for {image.image_id} (sha={source_sha256}) and no OpenAIClient provided for live call",
+            model="none",
+            reasoning_effort=reasoning_effort,
+            provider_response_id=None,
+        )
+        return obs, False, None
     if path is None or not path.exists():
         raise FileNotFoundError(f"Cannot perform live call: image file for {image.image_id} not found on disk")
 
@@ -463,6 +492,8 @@ def get_all_resolved_image_amounts(
     dataset: Dataset,
     cache: ContentAddressedCache | None = None,
     client: OpenAIClient | None = None,
+    media_root: str | Path | None = None,
+    force: bool = False,
 ) -> dict[str, Decimal]:
     """Extract and resolve amounts for all images linked to events in dataset.
     Uses ContentAddressedCache with automatic snapshot fallback, and OpenAIClient
@@ -480,7 +511,13 @@ def get_all_resolved_image_amounts(
         if evt is None:
             continue
         try:
-            obs, hit, res = extract_image_observation(image=img, client=client, cache=cache)
+            obs, hit, res = extract_image_observation(
+                image=img,
+                media_root=media_root or "dataset/media/images",
+                client=client,
+                cache=cache,
+                force=force,
+            )
             sel = select_amount_role(obs, evt)
             if sel.selected_amount is not None:
                 resolved_amounts[evt.event_id] = sel.selected_amount

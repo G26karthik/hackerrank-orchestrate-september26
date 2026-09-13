@@ -50,8 +50,12 @@ from decimal import ROUND_HALF_UP, Decimal
 from enum import StrEnum
 from typing import Any, Callable, Mapping, Sequence
 
-import openai
-from openai import OpenAI
+try:
+    import openai
+    from openai import OpenAI
+except ImportError:
+    openai = None
+    OpenAI = None
 
 from . import config
 
@@ -85,7 +89,9 @@ class ClassifiedError(Exception):
 
 
 def classify_exception(exc: Exception) -> ClassifiedError:
-    if isinstance(exc, openai.AuthenticationError):
+    if openai is None:
+        ec = ErrorClass.UNKNOWN
+    elif isinstance(exc, openai.AuthenticationError):
         ec = ErrorClass.AUTH
     elif isinstance(exc, openai.PermissionDeniedError):
         ec = ErrorClass.PERMISSION
@@ -192,6 +198,8 @@ class OpenAIClient:
         random_fn: Callable[[], float] = random.random,
     ) -> None:
         if client is None:
+            if OpenAI is None:
+                raise RuntimeError("openai package is not installed. Install requirements.txt to use OpenAIClient.")
             api_key = config.get_openai_api_key()
             if api_key is None:
                 raise BlockedNoApiKey()
@@ -231,7 +239,8 @@ class OpenAIClient:
         tools: Sequence[Mapping[str, Any]] | None = None,
         max_output_tokens: int = 1024,
     ) -> CallResult:
-        """One Responses API call, with transient retry. Raises
+        """One model call, with transient retry. Supports both Responses API and
+        Chat Completions API for openai==1.58.1 compatibility. Raises
         `ClassifiedError` for any fatal error class; never swallows an
         exception into a fabricated successful-looking result."""
         kwargs: dict[str, Any] = {"model": self.model, "input": input, "max_output_tokens": max_output_tokens}
@@ -246,7 +255,165 @@ class OpenAIClient:
         while True:
             t0 = time.monotonic()
             try:
-                raw = self._client.responses.with_raw_response.create(**kwargs)
+                if hasattr(self._client, "responses"):
+                    raw = self._client.responses.with_raw_response.create(**kwargs)
+                    latency_ms = (time.monotonic() - t0) * 1000.0
+                    response = raw.parse()
+                    provider_request_id = raw.headers.get("x-request-id")
+
+                    usage = response.usage
+                    input_tokens = usage.input_tokens if usage else 0
+                    output_tokens = usage.output_tokens if usage else 0
+                    reasoning_tokens = (
+                        usage.output_tokens_details.reasoning_tokens
+                        if usage and usage.output_tokens_details
+                        else 0
+                    )
+                    cached_tokens = (
+                        usage.input_tokens_details.cached_tokens if usage and usage.input_tokens_details else 0
+                    )
+
+                    return CallResult(
+                        output_text=response.output_text or "",
+                        output_items=tuple(response.output),
+                        status=response.status,
+                        incomplete_reason=(
+                            response.incomplete_details.reason if response.incomplete_details else None
+                        ),
+                        response_id=response.id,
+                        provider_request_id=provider_request_id,
+                        latency_ms=latency_ms,
+                        input_tokens=input_tokens,
+                        output_tokens=output_tokens,
+                        reasoning_tokens=reasoning_tokens,
+                        cached_tokens=cached_tokens,
+                        retries=attempt,
+                    )
+                else:
+                    # For SDK versions without client.responses attribute (e.g. openai==1.58.1),
+                    # first attempt raw /responses endpoint which supports full reasoning & tools schemas.
+                    use_post_responses = hasattr(self._client, "post")
+                    resp_dict = None
+                    if use_post_responses:
+                        try:
+                            resp_dict = self._client.post("/responses", cast_to=object, body=kwargs)
+                        except Exception as post_exc:
+                            # If /responses endpoint fails or is unavailable, fall back to chat.completions
+                            resp_dict = None
+
+                    if resp_dict is not None:
+                        latency_ms = (time.monotonic() - t0) * 1000.0
+                        out_text = ""
+                        for item in resp_dict.get("output", []):
+                            if isinstance(item, dict) and item.get("type") == "message":
+                                for c in item.get("content", []):
+                                    if isinstance(c, dict) and c.get("type") == "output_text":
+                                        out_text += c.get("text", "")
+                        usage = resp_dict.get("usage") or {}
+                        input_tokens = usage.get("input_tokens", 0)
+                        output_tokens = usage.get("output_tokens", 0)
+                        in_details = usage.get("input_tokens_details") or {}
+                        cached_tokens = in_details.get("cached_tokens", 0)
+                        out_details = usage.get("output_tokens_details") or {}
+                        reasoning_tokens = out_details.get("reasoning_tokens", 0)
+                        status = resp_dict.get("status", "completed")
+                        inc_details = resp_dict.get("incomplete_details") or {}
+                        inc_reason = inc_details.get("reason") if inc_details else None
+
+                        return CallResult(
+                            output_text=out_text or "",
+                            output_items=tuple(resp_dict.get("output", ())),
+                            status=status,
+                            incomplete_reason=inc_reason,
+                            response_id=resp_dict.get("id"),
+                            provider_request_id=None,
+                            latency_ms=latency_ms,
+                            input_tokens=input_tokens,
+                            output_tokens=output_tokens,
+                            reasoning_tokens=reasoning_tokens,
+                            cached_tokens=cached_tokens,
+                            retries=attempt,
+                        )
+
+                    # Chat completions API fallback for SDK/server without responses endpoint
+                    chat_kwargs: dict[str, Any] = {"model": self.model, "max_completion_tokens": max_output_tokens}
+                    if isinstance(input, str):
+                        chat_messages = [{"role": "user", "content": input}]
+                    elif isinstance(input, list):
+                        chat_messages = input
+                    else:
+                        chat_messages = [{"role": "user", "content": str(input)}]
+                    chat_kwargs["messages"] = chat_messages
+                    if text and "format" in text and text["format"].get("type") == "json_schema":
+                        fmt = text["format"]
+                        chat_kwargs["response_format"] = {
+                            "type": "json_schema",
+                            "json_schema": {
+                                "name": fmt.get("name", "response"),
+                                "schema": fmt.get("schema", {}),
+                                "strict": fmt.get("strict", True),
+                            },
+                        }
+                    if tools:
+                        formatted_tools = []
+                        for t in tools:
+                            if "function" in t:
+                                formatted_tools.append(t)
+                            else:
+                                fn_obj = {
+                                    "name": t.get("name"),
+                                    "description": t.get("description", ""),
+                                    "parameters": t.get("parameters", {}),
+                                }
+                                if "strict" in t:
+                                    fn_obj["strict"] = t["strict"]
+                                formatted_tools.append({"type": "function", "function": fn_obj})
+                        chat_kwargs["tools"] = formatted_tools
+
+                    raw = self._client.chat.completions.with_raw_response.create(**chat_kwargs)
+                    latency_ms = (time.monotonic() - t0) * 1000.0
+                    response = raw.parse()
+                    provider_request_id = raw.headers.get("x-request-id")
+                    choice = response.choices[0] if response.choices else None
+                    out_text = choice.message.content if choice and choice.message else ""
+                    out_items: list[Any] = []
+                    if choice and choice.message:
+                        if getattr(choice.message, "tool_calls", None):
+                            for tc in choice.message.tool_calls:
+                                out_items.append({
+                                    "type": "function_call",
+                                    "call_id": tc.id,
+                                    "name": tc.function.name,
+                                    "arguments": tc.function.arguments,
+                                })
+                        else:
+                            out_items.append(choice.message)
+
+                    usage = response.usage
+                    input_tokens = usage.prompt_tokens if usage else 0
+                    output_tokens = usage.completion_tokens if usage else 0
+                    prompt_details = getattr(usage, "prompt_tokens_details", None)
+                    cached_tokens = getattr(prompt_details, "cached_tokens", 0) if prompt_details else 0
+                    comp_details = getattr(usage, "completion_tokens_details", None)
+                    reasoning_tokens = getattr(comp_details, "reasoning_tokens", 0) if comp_details else 0
+                    finish_reason = choice.finish_reason if choice else "stop"
+                    status = "incomplete" if finish_reason == "length" else "completed"
+                    inc_reason = "max_output_tokens" if finish_reason == "length" else None
+
+                    return CallResult(
+                        output_text=out_text or "",
+                        output_items=tuple(out_items),
+                        status=status,
+                        incomplete_reason=inc_reason,
+                        response_id=response.id,
+                        provider_request_id=provider_request_id,
+                        latency_ms=latency_ms,
+                        input_tokens=input_tokens,
+                        output_tokens=output_tokens,
+                        reasoning_tokens=reasoning_tokens,
+                        cached_tokens=cached_tokens,
+                        retries=attempt,
+                    )
             except Exception as exc:  # noqa: BLE001 -- reclassified immediately below
                 classified = classify_exception(exc)
                 if classified.error_class is ErrorClass.TRANSIENT and attempt < self._retry.max_retries:
@@ -254,35 +421,3 @@ class OpenAIClient:
                     attempt += 1
                     continue
                 raise classified from exc
-            latency_ms = (time.monotonic() - t0) * 1000.0
-            response = raw.parse()
-            provider_request_id = raw.headers.get("x-request-id")
-
-            usage = response.usage
-            input_tokens = usage.input_tokens if usage else 0
-            output_tokens = usage.output_tokens if usage else 0
-            reasoning_tokens = (
-                usage.output_tokens_details.reasoning_tokens
-                if usage and usage.output_tokens_details
-                else 0
-            )
-            cached_tokens = (
-                usage.input_tokens_details.cached_tokens if usage and usage.input_tokens_details else 0
-            )
-
-            return CallResult(
-                output_text=response.output_text or "",
-                output_items=tuple(response.output),
-                status=response.status,
-                incomplete_reason=(
-                    response.incomplete_details.reason if response.incomplete_details else None
-                ),
-                response_id=response.id,
-                provider_request_id=provider_request_id,
-                latency_ms=latency_ms,
-                input_tokens=input_tokens,
-                output_tokens=output_tokens,
-                reasoning_tokens=reasoning_tokens,
-                cached_tokens=cached_tokens,
-                retries=attempt,
-            )

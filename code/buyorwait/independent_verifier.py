@@ -215,7 +215,17 @@ def verify_decision(
             target_total = requested_amount
 
         # 3. Method-specific schedule constraints
-        if recommended_method == "partial_payment":
+        if recommended_method == "full_payment":
+            if len(plan_entries) != 1:
+                failures.append(f"full_payment must have exactly 1 entry, got {len(plan_entries)}")
+            elif plan_entries[0].entry_date != anchor_date:
+                failures.append(f"full_payment must be scheduled today ({anchor_date}), got {plan_entries[0].entry_date}")
+
+        elif recommended_method == "partial_payment":
+            if not allows_partial_payment:
+                failures.append("partial_payment recommended but request specifies allows_partial_payment=False")
+            if "partial_payment" not in user_accepted_methods:
+                failures.append(f"partial_payment not in user accepted methods {user_accepted_methods}")
             if len(plan_entries) != 2:
                 failures.append(f"partial_payment must have exactly 2 entries, got {len(plan_entries)}")
             else:
@@ -243,10 +253,16 @@ def verify_decision(
                     failures.append(
                         f"installment option {opt.payment_option_id} payments {opt.number_of_payments} > max_installment_months {max_installment_months}"
                     )
+                freq = opt.payment_frequency_days or 30
                 for idx, entry in enumerate(plan_entries):
                     if abs(entry.amount - opt.payment_amount) > _SUM_TOLERANCE:
                         failures.append(
                             f"installment entry {idx} amount {entry.amount} != option payment_amount {opt.payment_amount}"
+                        )
+                    expected_date = opt.first_payment_date + timedelta(days=freq * idx)
+                    if entry.entry_date != expected_date:
+                        failures.append(
+                            f"installment entry {idx} date {entry.entry_date} != expected date {expected_date}"
                         )
                 if plan_entries and plan_entries[-1].entry_date > deadline:
                     failures.append(
@@ -284,6 +300,28 @@ def verify_decision(
                 failures.append(
                     f"recommended 'not_recommended' but full payment is safe on {earliest_date_for_full_payment} on or before deadline {deadline}"
                 )
+
+        # Check if an eligible partial payment plan without spending changes was safe
+        if allows_partial_payment and "partial_payment" in user_accepted_methods:
+            if Decimal("0") < expected_capacity < requested_amount:
+                second_date = earliest_date_for_full_payment
+                if second_date is not None and second_date <= deadline and second_date > anchor_date:
+                    partial_schedule = (
+                        ScheduledPayment(payment_date=anchor_date, amount=expected_capacity),
+                        ScheduledPayment(payment_date=second_date, amount=requested_amount - expected_capacity),
+                    )
+                    sim_part = reference_simulate(
+                        opening_balance=opening_balance,
+                        minimum_balance_to_keep=minimum_balance_to_keep,
+                        anchor_date=anchor_date,
+                        flows=baseline_flows,
+                        schedule=partial_schedule,
+                    )
+                    if sim_part.is_safe:
+                        failures.append(
+                            f"recommended 'not_recommended' but partial payment of {expected_capacity} today "
+                            f"and {requested_amount - expected_capacity} on {second_date} is safe on or before deadline {deadline}"
+                        )
 
         # Check if an installment option without spending changes was safe and eligible
         if "installments" in user_accepted_methods and payment_options:

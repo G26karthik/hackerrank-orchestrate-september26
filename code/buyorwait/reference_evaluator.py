@@ -277,6 +277,9 @@ def reference_evaluate_candidates(
     # 3. Installments
     if "installments" in user_accepted_methods:
         for opt in options:
+            opt_method = opt.payment_method.value if hasattr(opt.payment_method, "value") else str(opt.payment_method)
+            if opt_method != "installments" or opt.number_of_payments <= 1:
+                continue
             if max_installment_months is not None and opt.number_of_payments > max_installment_months:
                 candidates.append(
                     ReferenceCandidate(

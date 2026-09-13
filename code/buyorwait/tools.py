@@ -328,7 +328,7 @@ SIMULATE_CANDIDATE_SCHEMA = {
             "custom_plan": {"type": ["string", "null"], "description": "Optional custom payment plan in 'YYYY-MM-DD:amount|...' format."},
             "spending_changes": {"type": ["string", "null"], "description": "Optional spending changes in 'stop:event_id|reduce_to:event_id:amount' format."}
         },
-        "required": ["request_id"],
+        "required": ["request_id", "payment_option_id", "custom_plan", "spending_changes"],
         "additionalProperties": False,
     },
     "strict": True,

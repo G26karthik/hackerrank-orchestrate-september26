@@ -286,6 +286,24 @@ def _score_spending_changes(
     )
 
 
+_FABRICATED_TERMS = (
+    "gift",
+    "lottery",
+    "jackpot",
+    "million",
+    "billion",
+    "windfall",
+    "free money",
+    "grant",
+    "inherited",
+    "inheritance",
+    "bonus credit",
+    "stimulus",
+    "guaranteed",
+    "extra salary",
+)
+
+
 def _is_grounded(
     explanation: str,
     *,
@@ -297,11 +315,17 @@ def _is_grounded(
     docstring. True when the text contains at least one of the row's own
     decisive figures: the capacity amount, the minimum balance, or a plan
     amount, with thousands separators stripped from the text before matching
-    (the samples write "25,256" in prose but "25256" in the field itself)."""
+    (the samples write "25,256" in prose but "25256" in the field itself),
+    and contains no fabricated claims or ungrounded promises."""
+    lower = explanation.lower()
+    for term in _FABRICATED_TERMS:
+        if term in lower:
+            return False
     text = explanation.replace(",", "")
     candidates = [format_capacity_amount(amount_safe_to_pay), format_capacity_amount(minimum_balance_to_keep)]
     candidates += [format_schedule_amount(e.amount) for e in plan_entries]
     return any(c and c in text for c in candidates)
+
 
 
 def _score_explanation(

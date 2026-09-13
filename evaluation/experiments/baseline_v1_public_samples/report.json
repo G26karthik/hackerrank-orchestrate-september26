@@ -175,7 +175,9 @@
   "decision_explanation": {
     "n": 25,
     "empty_count": 0,
-    "grounded_count": 25,
-    "ungrounded_request_ids": []
+    "grounded_count": 24,
+    "ungrounded_request_ids": [
+      "request_15"
+    ]
   }
 }

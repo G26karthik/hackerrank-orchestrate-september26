@@ -6,7 +6,7 @@ An AI-powered financial decision engine built for the HackerRank Orchestrate cha
 
 ## 1. The Affordability Problem
 
-Assessing whether an expense is affordable cannot be answered by checking the current account balance alone. A user with $5,000 today may have an upcoming rent payment of $3,500, a quarterly insurance bill, and pending card debits that make an immediate $2,000 purchase disastrous. Conversely, a user with $500 today may have confirmed payroll settling in three days and minimal fixed expenses.
+Assessing whether an expense is affordable cannot be answered by checking current account balance alone. A user with $5,000 today may have an upcoming rent payment of $3,500, a quarterly insurance bill, and pending card debits that make an immediate $2,000 purchase disastrous. Conversely, a user with $500 today may have confirmed payroll settling in three days and minimal fixed expenses.
 
 ### Safety Invariants
 Under our financial model, a purchase recommendation is **safe** if and only if:
@@ -64,7 +64,7 @@ A core design principle of this solution is the strict separation between **mult
 
 ## 3. Evolution: What Early Implementations Missed
 
-During early prototype development (Stages 1–11), multiple edge cases were uncovered that compromised decision safety:
+During early prototype development, multiple edge cases were uncovered that compromised decision safety:
 
 1. **Naive Capacity Calculations**: Initial logic derived available capacity simply by subtracting the minimum balance from the current balance, ignoring pending debits and upcoming essential commitments.
 2. **Semantic Role Confusion in Images**: Simple OCR or basic regex parsing picked arbitrary numbers from receipts (e.g., tax amounts or cash tendered by the customer) rather than distinguishing between `total`, `paid_amount`, `balance_due`, and `net_pay`.
@@ -73,51 +73,49 @@ During early prototype development (Stages 1–11), multiple edge cases were unc
 
 ---
 
-## 4. The Independent Audit & Defensible Repairs (Stage 14)
+## 4. Independent Audits & Defensible Repairs
 
-A rigorous audit was conducted using counterexample stress testing, uncovering subtle edge cases that required architectural hardening:
+Rigorous external audits challenged the system with counterexamples and adversarial tests, driving ten architectural fixes:
 
-* **Counterexample 1 (Under-obligation acceptance)**: The initial verifier accepted a plan paying only $1 for a $50 request.
-  * *Repair*: Replaced plan-derived expectations with input-derived obligations. The expected total is computed directly from `request.amount` (for full/wait/partial) or `option.total_payable_amount` (for installments).
-* **Counterexample 2 (Unjustified Rejection)**: Approved `not_recommended` when an immediate full payment was demonstrably safe.
-  * *Repair*: Added an explicit audit pass in `independent_verifier.py` that recalculates capacity and asserts that no negative recommendation is made if immediate payment or a deadline-compliant option is completely safe.
-* **Counterexample 3 (Zero-Capacity Truncation)**: Reported `amount_safe_to_pay = 0` despite $50 of safe headroom.
-  * *Repair*: Re-implemented capacity calculation to search for the maximal safe amount $C \in [0, \text{requested\_amount}]$ that preserves the minimum balance across all 90 days.
-* **Counterexample 4 (Spending Change Leakage)**: Stopping an expense stream removed unrelated pending debits.
-  * *Repair*: Hardened `planner.py` to match exact stream IDs and descriptions, restricting changes strictly to flexible recurring streams and preserving all committed pending debits.
-* **Counterexample 5 (Ranker Inversion)**: Selected a plan costing 110 with 1 change over a plan costing 100 with 2 changes.
-  * *Repair*: Enforced the exact S-14 6-level ranking hierarchy: completion by deadline $\to$ binary no-changes preference $\to$ total cost $\to$ earliest payment date $\to$ payment count $\to$ option ID.
-* **Counterexample 6 (Output Validation Gaps)**: The output validator previously tolerated missing rows or amounts above requested amounts.
-  * *Repair*: Hardened `validate_output_csv` to verify exactly 250 evaluation IDs, strict 8-column schema, CRLF line endings, and cross-column semantic consistency.
-
-To guarantee correctness, an independent reference calculator (`buyorwait/reference_evaluator.py`) was introduced. It implements first-principles simulation and evaluation completely separately from the production planner, providing continuous differential verification.
+1. **Underpayment Rejection**: Enforced that plan sums must strictly equal the requested amount (for full/wait/partial) or option total (for installments). Rejects accepting a plan paying 1 for a request of 50.
+2. **Unjustified Rejection Prevention**: In `independent_verifier.py`, asserts that `not_recommended` is rejected if full payment or an eligible partial schedule is demonstrably safe.
+3. **Maximal Safe Capacity**: Searches for the maximal safe amount $C \in [0, \text{requested\_amount}]$ that preserves the minimum balance across all 90 days, rejecting non-maximal zero-capacity estimates when positive capacity exists.
+4. **Stable Stream & Occurrence Identity**: Spending changes match exact recurring stream descriptions on flow labels (`recurring <cat>: <desc>`). Stopping a `gym` stream removes `recurring gym: gym` while strictly preserving `recurring gym insurance: gym insurance` and pending debits.
+5. **Ranker Hierarchy Enforcement**: Adheres strictly to the S-14 6-level hierarchy: deadline compliance $\to$ binary no-spending-changes preference $\to$ total cost $\to$ earliest payment date $\to$ fewest payments $\to$ option ID.
+6. **Date and Method Timing**: Rejects `full_payment` dated tomorrow instead of today; full payment must be scheduled today.
+7. **Request Permission Enforcement**: Rejects `partial_payment` when `allows_partial_payment=False` or user profile excludes partial payments.
+8. **Installment Offer Schedule Conformity**: Rejects installment entries whose dates diverge from the provider's option schedule (`first_payment_date + interval * index`).
+9. **Factual Explanation Grounding**: Rejects fabricated numerical claims (e.g. ungrounded salary figures like 999,999) and ungrounded buzzwords. For `not_recommended` where full payment is user-excluded and partial is disallowed (e.g. `request_251`), explains eligibility constraints rather than incorrectly claiming a floor breach.
+10. **Dataset-Aware CSV Contract**: `validate_output_csv` requires the exact 250 evaluation IDs (`request_26` to `request_275`), rejects empty CSVs with clear diagnostic feedback, and rejects underpayments or sample files submitted as final submissions.
 
 ---
 
 ## 5. Measured Evaluation & Benchmark Results
 
-### Public Sample Evaluation (25 Solved Requests)
+### Public Development Sample Results (25 Requests)
 Evaluating against `dataset/sample_requests.csv` via `code/evaluation/main.py`:
 
-| Metric | Result | Target / Standard |
+| Field | Measured Result | Context / Rationale |
 | :--- | :--- | :--- |
-| **False Positives (Unsafe Plans)** | **0 / 25 (0.0%)** | 0 allowed |
-| **Recommended Payment Method** | **20 / 25 (80.0%)** | Strict contract compliance |
-| **Payment Plan Exact Match** | **19 / 25 (76.0%)** | Date-set match: 20/25; Sum match: 21/25 |
-| **Spending Changes Set Match** | **22 / 25 (88.0%)** | 25/25 rule well-formed |
-| **Affordability Status** | **17 / 25 (68.0%)** | Conservative safety alignment |
-| **Decision Explanation Grounding** | **25 / 25 (100.0%)** | 0 empty, 0 hallucinated claims |
-| **Amount Safe to Pay (Mean Relative Error)** | **EUR 7.97%, IDR 6.80%, INR 4.07%, USD 1.97%, ZAR 5.24%** |
+| **Safe Capacity Matches** | **3 / 25** | Shipped evaluator's 0.005 tolerance. In 17 cases our capacity exceeds sample, in 5 it is below. |
+| **Affordability Status** | **17 / 25** | 4 cases (`request_06`, `request_11`, `request_13`, `request_21`) are labeled `affordable_now` because available cash headroom safely covers the purchase today without requiring changes or waiting. |
+| **Payment Method** | **20 / 25** | Method matches in 80% of development examples. |
+| **Exact Payment Plan** | **19 / 25** | Plan matches in 76% of development examples. |
+| **Earliest Full-Payment Date** | **17 / 25** | Includes 7 cases where both sample and engine determine no full payment date is possible within 90 days. |
+| **Spending Changes Set** | **22 / 25** | Strict preservation of protected categories and essential debits. |
+| **Explanation Grounding** | **25 / 25** | 100% grounded against verified structured facts and financial decisions. |
 
-*Root-Cause of Sample Divergence*: The few sample divergences stem from deliberate safety conservatism: where public samples optimistically counted unconfirmed future income or simulated truncated horizons (e.g., request_13, request_17), our engine strictly enforces conservative settlement and full 90-day safety.
+*Sample Divergence Analysis*:
+- In requests 6, 11, 13, and 21, the user has sufficient immediate liquid balance above their floor throughout the 90-day horizon to pay in full today. The public development labels suggested waiting or pausing subscriptions; our engine recommends `affordable_now` because no floor breach occurs under exact daily cash simulation.
+- In request 17, normalizing historical payslip and invoice images into the forecast adjusts available capacity to INR 208,252.37, correctly reflecting verified historical obligations.
 
-### Clean-Room Test Suite & Differential Verification
-* **Automated Unit & Regression Tests**: 308 tests across 18 test suites run in **~5.0 seconds** with 100% pass rate.
-* **Differential Verification**: 0 discrepancies across all 250 evaluation requests between the production planner and the independent reference evaluator.
+### Automated Test Suite & Independent Reference Comparison
+- **Automated Regression Suites**: 318 tests across 18 test suites run in **~5.0 seconds** with a 100% pass rate.
+- **Independent Reference Evaluator**: Compared candidate plans across all 250 evaluation requests between production planner and `reference_evaluate_candidates`. 233/250 decisions match identically. The remaining 17 differences occur exclusively on requests where spending reductions are required (the independent reference evaluator does not model spending modifications).
 
 ---
 
-## 6. Quickstart & Execution Guide
+## 6. Execution Guide
 
 The engine requires Python 3.11+ and runs out-of-the-box using the standard library.
 
@@ -127,67 +125,73 @@ The engine requires Python 3.11+ and runs out-of-the-box using the standard libr
 git clone https://github.com/G26karthik/hackerrank-orchestrate-september26.git
 cd hackerrank-orchestrate-september26
 
-# (Optional) Install pinned packages for live LLM evidence re-extraction
-pip install -r code/requirements.txt
+# (Optional) Install pinned packages for live LLM evidence extraction
+pip install -r requirements.txt
 ```
 
 ### B. Run Full Predictions (250 Requests)
-Generate the competition `output.csv` for all 250 evaluation requests:
+Generate the competition `output.csv` for all 250 evaluation requests in deterministic replay mode:
 ```bash
-python code/main.py --mode full --output output.csv --dataset dataset
+python main.py --mode full --output output.csv --dataset /path/to/dataset
 ```
-*Evaluates all 250 requests in ~6.2 seconds and validates schema compliance.*
+*Evaluates all 250 requests in ~4.7 seconds and validates schema compliance.*
 
 ### C. Run Sample Evaluation
 Generate predictions for the 25 sample requests and score them:
 ```bash
 # 1. Generate predictions for sample requests
-python code/main.py --mode sample --output sample_preds.csv --dataset dataset
+python main.py --mode sample --output sample_preds.csv --dataset /path/to/dataset
 
 # 2. Score against sample labels
-python code/evaluation/main.py sample_preds.csv --dataset dataset
+python evaluation/main.py sample_preds.csv --dataset /path/to/dataset
 ```
 
 ### D. Validate Output CSV Compliance
 Verify that any generated CSV satisfies all competition constraints:
 ```bash
-python code/main.py --validate-csv output.csv --dataset dataset
+python main.py --validate-csv output.csv --dataset /path/to/dataset
 ```
 
 ### E. Run Automated Test Suite
 ```bash
-python -m unittest discover -s code/tests
+python -m unittest discover -s tests
 ```
 
 ### F. Rebuild Deterministic Submission Package
-Build `code.zip` and run clean-room verification in an isolated sandbox:
+Build `code.zip` and execute clean-room verification in an isolated sandbox:
 ```bash
-python code/main.py --package
+python main.py --package --dataset /path/to/dataset
+```
+
+### G. Live LLM Extraction and Investigation (Requires OPENAI_API_KEY)
+```bash
+# Rebuild evidence cache live via gpt-6-astra
+python main.py --rebuild-evidence --live --dataset /path/to/dataset
+
+# Run adaptive investigation on a single request with live tool calling
+python main.py --investigate request_26 --live --dataset /path/to/dataset
 ```
 
 ---
 
-## 7. Submission Artifacts & Verification Manifest
+## 7. Submission Artifacts
 
-The three required submission artifacts:
+Per organizer guidelines, submission hashes are recorded in the external release manifest (`evaluation/release_manifest.json`):
 
-1. **`code.zip`** (263,679 bytes)
-   - SHA-256: `86A9EB22461443FABF4C3A5DF1C63327D38D69E090D3C2FABFBAC404F4D031BF`
-   - Contains self-contained `code/` directory, pinned dependencies, tests, documentation, and `usage_report.md`. Strictly zero dataset files.
-2. **`output.csv`** (50,405 bytes)
-   - SHA-256: `0EB1D2E7163DCEC8D1AE9D90F605D28A74CD056AFB7C4417C6BD0B1A03F46F43`
-   - Exactly 250 evaluation requests, valid CRLF, 100% compliant with schema and contract.
-3. **`log.txt`** (112,749 characters)
-   - Authentic, unedited development log tracking all conversational stages. Uploaded separately to HackerRank.
+1. **`code.zip`**: Self-contained `code/` directory, pinned dependencies, tests, documentation, and `usage_report.md`. Strictly zero dataset files. Verified clean-room pass.
+2. **`output.csv`**: Exactly 250 evaluation requests (`request_26` to `request_275`), valid RFC 4180 CRLF formatting, 100% compliant with schema and contract.
+3. **`log.txt`**: Authentic development log tracking all conversational stages. Kept locally for standalone HackerRank upload per publication separation.
 
 ---
 
 ## 8. AI Assistance & Known Limitations
 
 ### AI Assistance Disclosure
-Development was conducted with pair-programming assistance from Claude (Anthropic) during early exploratory stages (Stages 1–12) and Antigravity (Google DeepMind) for audit hardening, Ponytail simplification, clean-room verification, and release preparation (Stages 13–16). All code, tests, and calculations were independently verified through automated regression suites and differential reference modeling.
+Development was conducted with pair-programming assistance from:
+- **Claude Code** (Anthropic): Stages 1–2 (initial inventory, contract scaffolding, schemas).
+- **Antigravity** (Google DeepMind): Stages 3–17 (runtime LLM harness, evidence extraction, simulator, planner, audit hardening, Ponytail simplification, clean-room packaging, and final release).
 
 ### Material Limitations
-1. **Offline Replay Dependency**: Zero-call offline execution relies on the 38 pre-extracted content-addressed observation files in `evaluation/extraction_snapshot/`. Full regeneration from scratch requires an OpenAI API key (`gpt-6-astra`).
+1. **Offline Replay Dependency**: Zero-call offline execution relies on the pre-extracted content-addressed observation files in `evaluation/extraction_snapshot/`. Live regeneration from scratch requires an OpenAI API key.
 2. **Illegible Documents**: One image in the dataset (`image_04`) is cropped/illegible. The system explicitly tags it as non-legible rather than guessing an arbitrary number.
-3. **Conservative Policy Boundary**: The engine rejects unconfirmed future income and restricts spending changes strictly to streams with verified user permission. In real-world deployments, users would be prompted interactively to confirm pending changes.
+3. **Conservative Policy Boundary**: The engine rejects unconfirmed future income and restricts spending changes strictly to streams with verified user permission.

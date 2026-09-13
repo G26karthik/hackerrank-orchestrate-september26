@@ -80,7 +80,8 @@ REPO_ROOT = _find_repo_root()
 class TestAuditRegressions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.dataset = build_dataset(_resolve_dataset_dir())
+        cls.dataset_dir = _resolve_dataset_dir()
+        cls.dataset = build_dataset(cls.dataset_dir)
 
     def test_fixed_interval_recurrence_phase_anchoring(self):
         """Fixed-interval stream (e.g. 14-day biweekly) must advance from last_observed_date,
@@ -297,8 +298,8 @@ class TestAuditRegressions(unittest.TestCase):
         cache = ContentAddressedCache(
             root=REPO_ROOT / ".empty_test_cache",
             fallback_roots=(
-                code_root / "code" / "evaluation" / "extraction_snapshot",
                 code_root / "evaluation" / "extraction_snapshot",
+                code_root / "evaluation" / "extraction_snapshot" / "observations",
                 REPO_ROOT / "evaluation" / "extraction_snapshot",
             ),
         )
@@ -440,6 +441,208 @@ class TestAuditRegressions(unittest.TestCase):
             ok, errs = validate_output_csv(p_dup)
             self.assertFalse(ok)
             self.assertTrue(any("duplicate request_ids" in e for e in errs))
+
+    def test_verifier_rejects_future_dated_full_payment(self):
+        """full_payment must be scheduled on anchor_date, never in the future."""
+        a = date(2026, 1, 1)
+        res = verify_decision(
+            request_id="audit_future_full",
+            opening_balance=Decimal("100"),
+            minimum_balance_to_keep=Decimal("10"),
+            anchor_date=a,
+            deadline=a + timedelta(days=60),
+            requested_amount=Decimal("50"),
+            user_accepted_methods={"full_payment"},
+            recommended_method="full_payment",
+            plan_entries=(PlanEntry(a + timedelta(days=1), Decimal("50")),),
+            spending_changes=(),
+            amount_safe_to_pay=Decimal("50"),
+            earliest_date_for_full_payment=a,
+            baseline_flows=(),
+        )
+        self.assertFalse(res.is_valid)
+        self.assertTrue(any("full_payment must be scheduled today" in f for f in res.failure_notes))
+
+    def test_verifier_rejects_partial_when_request_disallows(self):
+        """partial_payment must be rejected when allows_partial_payment=False."""
+        a = date(2026, 1, 1)
+        res = verify_decision(
+            request_id="audit_disallowed_partial",
+            opening_balance=Decimal("100"),
+            minimum_balance_to_keep=Decimal("70"),
+            anchor_date=a,
+            deadline=a + timedelta(days=60),
+            requested_amount=Decimal("50"),
+            user_accepted_methods={"partial_payment"},
+            recommended_method="partial_payment",
+            plan_entries=(PlanEntry(a, Decimal("30")), PlanEntry(a + timedelta(days=2), Decimal("20"))),
+            spending_changes=(),
+            amount_safe_to_pay=Decimal("30"),
+            earliest_date_for_full_payment=a + timedelta(days=2),
+            baseline_flows=(),
+            allows_partial_payment=False,
+        )
+        self.assertFalse(res.is_valid)
+        self.assertTrue(any("allows_partial_payment=False" in f for f in res.failure_notes))
+
+    def test_verifier_rejects_negative_when_eligible_partial_is_safe(self):
+        """not_recommended must be rejected when a permitted partial plan is safe."""
+        a = date(2026, 1, 1)
+        res = verify_decision(
+            request_id="audit_spurious_neg_partial",
+            opening_balance=Decimal("100"),
+            minimum_balance_to_keep=Decimal("70"),
+            anchor_date=a,
+            deadline=a + timedelta(days=60),
+            requested_amount=Decimal("50"),
+            user_accepted_methods={"partial_payment"},
+            recommended_method="not_recommended",
+            plan_entries=(),
+            spending_changes=(),
+            amount_safe_to_pay=Decimal("30"),
+            earliest_date_for_full_payment=a + timedelta(days=2),
+            baseline_flows=(CashFlow(a + timedelta(days=2), Decimal("20"), FlowKind.CONFIRMED_INCOME, "confirmed income"),),
+            allows_partial_payment=True,
+        )
+        self.assertFalse(res.is_valid)
+        self.assertTrue(any("partial payment of 30 today" in f for f in res.failure_notes))
+
+    def test_verifier_rejects_wrong_installment_dates(self):
+        """Installment entries must match the option schedule dates exactly."""
+        a = date(2026, 1, 1)
+        import dataclasses
+        opt = next(o for o in self.dataset.options_by_id.values() if o.payment_method.value == "installments")
+        opt = dataclasses.replace(
+            opt,
+            payment_option_id="opt_audit",
+            request_id="audit_req",
+            payment_amount=Decimal("20"),
+            number_of_payments=3,
+            first_payment_date=a + timedelta(days=2),
+            payment_frequency_days=14,
+            financing_fee=Decimal("10"),
+            total_payable_amount=Decimal("60"),
+        )
+        res = verify_decision(
+            request_id="audit_wrong_inst_dates",
+            opening_balance=Decimal("100"),
+            minimum_balance_to_keep=Decimal("10"),
+            anchor_date=a,
+            deadline=a + timedelta(days=60),
+            requested_amount=Decimal("50"),
+            user_accepted_methods={"installments"},
+            recommended_method="installments",
+            plan_entries=(
+                PlanEntry(a, Decimal("20")),
+                PlanEntry(a + timedelta(days=1), Decimal("20")),
+                PlanEntry(a + timedelta(days=2), Decimal("20")),
+            ),
+            spending_changes=(),
+            amount_safe_to_pay=Decimal("50"),
+            earliest_date_for_full_payment=a,
+            baseline_flows=(),
+            payment_options=(opt,),
+            payment_option_id="opt_audit",
+        )
+        self.assertFalse(res.is_valid)
+        self.assertTrue(any("!= expected date" in f for f in res.failure_notes))
+
+    def test_spending_change_identity_preserves_distinct_stream_with_overlapping_name(self):
+        """Stopping 'gym' must remove 'recurring gym: gym' and preserve 'recurring gym insurance: gym insurance'."""
+        a = date(2026, 1, 1)
+        stream = FlexibleStreamCandidate(
+            category=ExpenseCategory.GYM,
+            description="gym",
+            canonical_event_id="evt_gym",
+            typical_amount=Decimal("20"),
+            minimum_allowed_amount=None,
+            is_stoppable=True,
+            is_reducible=False,
+        )
+        flows = (
+            CashFlow(a + timedelta(days=1), Decimal("-20"), FlowKind.SETTLED_RECURRING_PROJECTION, "recurring gym: gym"),
+            CashFlow(a + timedelta(days=1), Decimal("-100"), FlowKind.SETTLED_RECURRING_PROJECTION, "recurring gym insurance: gym insurance"),
+            CashFlow(a, Decimal("-100"), FlowKind.RESERVED_PENDING_DEBIT, "reserved gym insurance"),
+        )
+        modified = apply_spending_changes_to_flows(flows, (StopChange("evt_gym"),), (stream,))
+        labels = [f.label for f in modified]
+        self.assertNotIn("recurring gym: gym", labels)
+        self.assertIn("recurring gym insurance: gym insurance", labels)
+        self.assertIn("reserved gym insurance", labels)
+
+    def test_image_cache_miss_does_not_return_stale_snapshot(self):
+        """When on-disk image bytes differ from cache key, cache must not return stale observation."""
+        import tempfile, shutil, hashlib
+        from buyorwait import evidence as ev
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            shutil.copyfile(self.dataset_dir / "media/images/image_11.png", tmp / "image_10.png")
+            cache = ContentAddressedCache(tmp / "cache")
+            image = next(x for x in self.dataset.images if x.image_id == "image_10")
+            obs, hit, res = ev.extract_image_observation(image=image, media_root=str(tmp), client=None, cache=cache)
+            self.assertFalse(hit)
+            self.assertFalse(obs.legible)
+            evt = self.dataset.events_by_id[image.related_event_id]
+            sel = ev.select_amount_role(obs, evt)
+            self.assertIsNone(sel.selected_amount)
+
+    def test_validate_output_csv_rejects_underpayment(self):
+        """validate_output_csv must reject a row where payment plan sum does not equal requested amount."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "underpay.csv"
+            p.write_text(
+                "request_id,amount_safe_to_pay,affordability_status,recommended_payment_method,payment_plan,earliest_date_for_full_payment,spending_changes_needed,decision_explanation\r\n"
+                "request_26,1.00,affordable_now,full_payment,2026-09-01:1.00,2026-09-01,none,Pay 1\r\n",
+                encoding="utf-8",
+            )
+            ok, errs = validate_output_csv(p, dataset=self.dataset)
+            self.assertFalse(ok)
+            self.assertTrue(any("does not equal requested_amount" in e for e in errs))
+
+    def test_validate_output_csv_rejects_sample_as_submission(self):
+        """validate_output_csv must reject a 25-row sample file when validating as submission."""
+        sample_path = _find_repo_root() / "evaluation/baseline/sample_predictions.csv"
+        if not sample_path.exists():
+            sample_path = _find_repo_root() / "evaluation/experiments/baseline_v1_public_samples/predictions.csv"
+        if sample_path.exists():
+            ok, errs = validate_output_csv(sample_path, dataset=self.dataset)
+            self.assertFalse(ok)
+            self.assertTrue(any("sample file" in e for e in errs))
+
+    def test_explanation_grounding_rejects_fabricated_figures_and_claims(self):
+        """validate_explanation and _is_grounded must reject fabricated promises and ungrounded figures."""
+        from evaluation.metrics import _is_grounded
+        self.assertFalse(
+            _is_grounded(
+                "The bank guaranteed a million-dollar gift. Minimum 10.00.",
+                amount_safe_to_pay=Decimal("50"),
+                minimum_balance_to_keep=Decimal("10"),
+                plan_entries=(),
+            )
+        )
+        req = self.dataset.all_requests_by_id["request_01"]
+        from main import run_pipeline_for_request
+        _, cand, _ = run_pipeline_for_request(self.dataset, req, ())
+        ok, reason = validate_explanation(
+            self.dataset,
+            "request_01",
+            cand,
+            "Pay ZAR 25,256 today with employer confirmation of an extra ZAR 999,999 salary payment. Leaves ZAR 12,000 available.",
+        )
+        self.assertFalse(ok)
+        self.assertTrue("ungrounded figure" in reason or "fabricated claim" in reason)
+
+    def test_request_251_explanation_cites_eligibility_constraints(self):
+        """request_251 explanation must explain user exclusions and installment limits, not falsely claim balance breach."""
+        from buyorwait.explain import explain
+        from main import run_pipeline_for_request
+        req = self.dataset.all_requests_by_id["request_251"]
+        _, cand, _ = run_pipeline_for_request(self.dataset, req, ())
+        expl = explain(self.dataset, "request_251", cand)
+        self.assertIn("Full payment is excluded by the user", expl)
+        self.assertIn("partial payment is not permitted", expl)
+        self.assertIn("exceed the limit of 11 months", expl)
 
 
 if __name__ == "__main__":

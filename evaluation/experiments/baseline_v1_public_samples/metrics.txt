@@ -11,4 +11,4 @@ recommended_payment_method: exact matches 20/25 (80.0%)
 payment_plan: exact 19/25 (76.0%); parse failures 0; date-set matches 20; sum matches 21
 earliest_date_for_full_payment: exact 17/25 (68.0%), of which both-empty 7
 spending_changes_needed: exact set match 22/25 (88.0%); parse failures 0; rule-well-formed 25/25
-decision_explanation: grounded 25/25 (100.0%); empty 0
+decision_explanation: grounded 24/25 (96.0%); empty 0

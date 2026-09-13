@@ -151,7 +151,29 @@ def explain(dataset: Dataset, request_id: str, candidate: Candidate) -> str:
     # 6. not_recommended (distinguish preference, deadline, and capacity reasons)
     # -------------------------------------------------------------------------
     deadline_str = format_explanation_date(request.desired_completion_date)
-    opts = dataset.options_by_request.get(request_id, ())
+    opts = [
+        opt for opt in dataset.options_by_request.get(request_id, ())
+        if (opt.payment_method.value if hasattr(opt.payment_method, "value") else str(opt.payment_method)) == "installments"
+        and opt.number_of_payments > 1
+    ]
+    user_allows_full = PaymentPreference.FULL_PAYMENT in profile.payment_methods_user_will_consider
+    user_allows_partial = PaymentPreference.PARTIAL_PAYMENT in profile.payment_methods_user_will_consider and request.allows_partial_payment
+
+    if not user_allows_full and not user_allows_partial:
+        amt_str = format_explanation_amount(request.requested_amount)
+        if opts and profile.max_installment_months is not None and all(opt.number_of_payments > profile.max_installment_months for opt in opts):
+            return (
+                f"Do not make this {currency} {amt_str} payment by {deadline_str}. "
+                f"Full payment is excluded by the user, partial payment is not permitted, "
+                f"and available installment options exceed the limit of {profile.max_installment_months} months."
+            )
+        elif not opts or PaymentPreference.INSTALLMENTS not in profile.payment_methods_user_will_consider:
+            return (
+                f"Do not make this {currency} {amt_str} payment by {deadline_str}. "
+                f"Full payment is excluded by the user, partial payment is not permitted, "
+                f"and no eligible installment options are available."
+            )
+
     if PaymentPreference.INSTALLMENTS not in profile.payment_methods_user_will_consider or profile.max_installment_months is None:
         return (
             f"Do not make this payment by {deadline_str}. "
@@ -182,6 +204,9 @@ _FABRICATED_TERMS = (
     "inheritance",
     "bonus credit",
     "stimulus",
+    "guaranteed",
+    "extra salary",
+    "employer confirmation",
 )
 
 
@@ -207,16 +232,64 @@ def validate_explanation(
         if term in lower_text:
             return False, f"explanation contains fabricated claim: '{term}'"
 
+    # 2. Reject ungrounded financial figures
+    import re
+    grounded_numbers = {
+        request.requested_amount,
+        profile.minimum_balance_to_keep,
+        profile.current_available_balance,
+    }
+    if profile.max_installment_months is not None:
+        grounded_numbers.add(Decimal(profile.max_installment_months))
+    if candidate.payment_count:
+        grounded_numbers.add(Decimal(candidate.payment_count))
+    for pe in candidate.payment_plan:
+        grounded_numbers.add(pe.amount)
+    for ch in candidate.spending_changes:
+        if isinstance(ch, ReduceChange):
+            grounded_numbers.add(ch.new_amount)
+    for opt in dataset.options_by_request.get(request_id, ()):
+        if opt.payment_amount is not None:
+            grounded_numbers.add(opt.payment_amount)
+        if opt.total_payable_amount is not None:
+            grounded_numbers.add(opt.total_payable_amount)
+        if opt.number_of_payments:
+            grounded_numbers.add(Decimal(opt.number_of_payments))
+
+    allowed_ints = {
+        90,
+        request.request_date.day,
+        request.request_date.year,
+        request.desired_completion_date.day,
+        request.desired_completion_date.year,
+    }
+    for pe in candidate.payment_plan:
+        allowed_ints.add(pe.entry_date.day)
+        allowed_ints.add(pe.entry_date.year)
+
+    raw_nums = re.findall(r"\b\d+(?:,\d{3})*(?:\.\d+)?\b", explanation_text)
+    for raw in raw_nums:
+        clean = raw.replace(",", "")
+        try:
+            val = Decimal(clean)
+            if int(val) in allowed_ints and val == int(val):
+                continue
+            if not any(abs(val - g) <= Decimal("0.01") for g in grounded_numbers):
+                return False, f"explanation contains ungrounded figure: {raw}"
+        except Exception:
+            pass
+
     currency = profile.home_currency.value
     min_bal_str = format_explanation_amount(profile.minimum_balance_to_keep)
 
-    # 2. Currency validation
+    # 3. Currency validation
     if currency not in explanation_text:
         return False, f"currency {currency} missing from explanation"
 
-    # 3. Minimum balance grounding
-    if min_bal_str not in explanation_text:
-        return False, f"minimum balance {min_bal_str} not mentioned in explanation"
+    # 4. Minimum balance grounding (for methods where minimum balance is referenced)
+    if candidate.method != RecommendedPaymentMethod.NOT_RECOMMENDED or "minimum protected" in explanation_text:
+        if min_bal_str not in explanation_text and "minimum" in explanation_text:
+            return False, f"minimum balance {min_bal_str} not mentioned in explanation"
 
     # 4. Method-specific grounding
     if candidate.method == RecommendedPaymentMethod.FULL_PAYMENT:

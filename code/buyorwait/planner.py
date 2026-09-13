@@ -172,15 +172,14 @@ def apply_spending_changes_to_flows(
             reduce_map[sc.description] = ch.new_amount
 
     def _matches_stream(stream_desc: str, flow_lbl: str) -> bool:
-        s_tokens = [t for t in re.split(r"[^a-z0-9]+", stream_desc.lower()) if t]
-        f_tokens = [t for t in re.split(r"[^a-z0-9]+", flow_lbl.lower()) if t]
-        if not s_tokens:
-            return False
-        n_s = len(s_tokens)
-        for i in range(len(f_tokens) - n_s + 1):
-            if f_tokens[i : i + n_s] == s_tokens:
-                return True
-        return False
+        s_clean = stream_desc.strip().lower()
+        lbl_clean = flow_lbl.strip().lower()
+        if lbl_clean.endswith(" (reduced)"):
+            lbl_clean = lbl_clean[:-10].strip()
+        if ": " in lbl_clean:
+            desc_part = lbl_clean.split(": ", 1)[1].strip()
+            return desc_part == s_clean
+        return lbl_clean == s_clean or lbl_clean == f"recurring {s_clean}"
 
     for flow in flows:
         if flow.kind != FlowKind.SETTLED_RECURRING_PROJECTION:

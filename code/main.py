@@ -104,6 +104,7 @@ def run_pipeline_for_request(
     *,
     image_amounts: dict[str, Decimal] | None = None,
     investigate: bool = False,
+    client: Any = None,
 ) -> tuple[OutputRow, Candidate, Any]:
     """Execute complete decision pipeline for one request."""
     user_id = req.user_id
@@ -116,6 +117,7 @@ def run_pipeline_for_request(
         investigation_state = run_adaptive_investigation(
             dataset=dataset,
             request_id=req.request_id,
+            client=client,
             limits=InvestigationLimits(max_steps=5, max_tool_calls=10),
         )
         if investigation_state and investigation_state.facts:
@@ -214,7 +216,7 @@ def run_pipeline_for_request(
     return row, selected, investigation_state
 
 
-def validate_output_csv(path: Path | str, dataset: Dataset | None = None) -> tuple[bool, list[str]]:
+def validate_output_csv(path: Path | str, dataset: Dataset | None = None, allow_sample: bool = False) -> tuple[bool, list[str]]:
     """Validate a candidate output CSV against the exact challenge specification."""
     path = Path(path)
     errors: list[str] = []
@@ -228,7 +230,7 @@ def validate_output_csv(path: Path | str, dataset: Dataset | None = None) -> tup
     text = raw_bytes.decode("utf-8-sig")
     lines = text.splitlines()
     if len(lines) < 2:
-        return False, ["file is empty or missing data rows"]
+        return False, ["file is empty or missing data rows (0 data rows)"]
 
     header_cols = lines[0].split(",")
     if tuple(header_cols) != REQUIRED_COLUMNS:
@@ -281,15 +283,44 @@ def validate_output_csv(path: Path | str, dataset: Dataset | None = None) -> tup
                 errors.append(f"line {idx} ({req_id}): payment_plan is not chronological")
             if m == "not_recommended" and plan_raw != "none":
                 errors.append(f"line {idx} ({req_id}): method is not_recommended but plan is '{plan_raw}'")
-            if m == "partial_payment":
+
+            if req_obj is not None and entries:
+                plan_sum = sum(e.amount for e in entries)
+                if m in ("full_payment", "wait", "partial_payment"):
+                    if abs(plan_sum - req_obj.requested_amount) > Decimal("0.01"):
+                        errors.append(
+                            f"line {idx} ({req_id}): {m} plan sum {plan_sum} does not equal requested_amount {req_obj.requested_amount}"
+                        )
+                elif m == "installments":
+                    opts = dataset.options_by_request.get(req_id, ()) if dataset else ()
+                    valid_totals = [o.total_payable_amount for o in opts if o.total_payable_amount is not None]
+                    if valid_totals and not any(abs(plan_sum - vt) <= Decimal("0.01") for vt in valid_totals):
+                        errors.append(
+                            f"line {idx} ({req_id}): installments plan sum {plan_sum} does not match any available option total"
+                        )
+
+            if m == "full_payment":
+                if len(entries) != 1:
+                    errors.append(f"line {idx} ({req_id}): full_payment must have exactly 1 entry, got {len(entries)}")
+                elif req_obj is not None and entries[0].entry_date != req_obj.request_date:
+                    errors.append(f"line {idx} ({req_id}): full_payment entry date {entries[0].entry_date} != request date {req_obj.request_date}")
+            elif m == "wait":
+                if len(entries) != 1:
+                    errors.append(f"line {idx} ({req_id}): wait must have exactly 1 entry, got {len(entries)}")
+                elif req_obj is not None:
+                    if entries[0].entry_date <= req_obj.request_date:
+                        errors.append(f"line {idx} ({req_id}): wait entry date {entries[0].entry_date} must be after request date {req_obj.request_date}")
+                    if entries[0].entry_date > req_obj.desired_completion_date:
+                        errors.append(f"line {idx} ({req_id}): wait entry date {entries[0].entry_date} exceeds deadline {req_obj.desired_completion_date}")
+            elif m == "partial_payment":
                 if len(entries) != 2:
                     errors.append(f"line {idx} ({req_id}): partial_payment must have exactly 2 entries, got {len(entries)}")
                 elif req_obj is not None:
-                    plan_sum = sum(e.amount for e in entries)
-                    if abs(plan_sum - req_obj.requested_amount) > Decimal("0.01"):
-                        errors.append(
-                            f"line {idx} ({req_id}): partial_payment plan sum {plan_sum} does not equal requested_amount {req_obj.requested_amount}"
-                        )
+                    if entries[0].entry_date != req_obj.request_date:
+                        errors.append(f"line {idx} ({req_id}): partial_payment first entry date {entries[0].entry_date} != request date {req_obj.request_date}")
+                    if entries[1].entry_date > req_obj.desired_completion_date:
+                        errors.append(f"line {idx} ({req_id}): partial_payment second entry date {entries[1].entry_date} exceeds deadline {req_obj.desired_completion_date}")
+
         except CsvFormatError as exc:
             errors.append(f"line {idx} ({req_id}): invalid payment_plan: {exc}")
 
@@ -326,19 +357,28 @@ def validate_output_csv(path: Path | str, dataset: Dataset | None = None) -> tup
 
     if dataset:
         expected_ids = [r.request_id for r in dataset.requests]
-        if len(observed_ids) != len(expected_ids):
+        if allow_sample:
             sample_ids = [r.request_id for r in dataset.sample_requests]
-            if len(observed_ids) == len(sample_ids) and observed_ids == sample_ids:
-                pass  # Valid sample evaluation output
+            if observed_ids == sample_ids:
+                pass
+            elif observed_ids == expected_ids:
+                pass
             else:
-                errors.append(f"expected {len(expected_ids)} rows, got {len(observed_ids)}")
-        elif observed_ids != expected_ids:
-            errors.append("request_id ordering does not match requests.csv exactly")
+                errors.append(f"expected {len(expected_ids)} evaluation rows or {len(sample_ids)} sample rows, got {len(observed_ids)}")
+        else:
+            if len(observed_ids) != len(expected_ids):
+                sample_ids = [r.request_id for r in dataset.sample_requests]
+                if observed_ids == sample_ids:
+                    errors.append(f"sample file ({len(sample_ids)} rows) provided for submission validation; expected {len(expected_ids)} evaluation rows")
+                else:
+                    errors.append(f"expected {len(expected_ids)} rows, got {len(observed_ids)}")
+            elif observed_ids != expected_ids:
+                errors.append("request_id ordering does not match requests.csv exactly")
 
     return (len(errors) == 0), errors
 
 
-def package_clean_submission(output_zip: Path | str) -> None:
+def package_clean_submission(output_zip: Path | str, dataset_dir: Path | str | None = None) -> None:
     """Create and self-verify a clean, deterministic code.zip package."""
     output_zip = Path(output_zip).resolve()
     print(f"Packaging submission code into {output_zip}...")
@@ -385,7 +425,9 @@ def package_clean_submission(output_zip: Path | str) -> None:
 
     # Clean verification in temporary directory
     print("Verifying package in isolated clean-room temporary environment (full live & replay execution)...")
-    dataset_dir = REPO_ROOT / "dataset"
+    resolved_ds = Path(dataset_dir).resolve() if dataset_dir else (REPO_ROOT / "dataset").resolve()
+    if not resolved_ds.exists():
+        raise FileNotFoundError(f"Package verification required dataset directory, not found at: {resolved_ds}")
     with tempfile.TemporaryDirectory(prefix="clean_room_") as tmpdir:
         tmp_path = Path(tmpdir)
         with zipfile.ZipFile(output_zip, "r") as zf:
@@ -397,7 +439,7 @@ def package_clean_submission(output_zip: Path | str) -> None:
         assert main_py.exists(), "Extracted zip missing code/main.py"
 
         import subprocess
-        clean_env = {**os.environ, "PYTHONPATH": str(extracted_code), "DATASET_DIR": str(dataset_dir)}
+        clean_env = {**os.environ, "PYTHONPATH": str(extracted_code), "DATASET_DIR": str(resolved_ds)}
 
         # 1. Test suite execution in isolation
         print("  [1/4] Running isolated unit test suite...")
@@ -411,50 +453,49 @@ def package_clean_submission(output_zip: Path | str) -> None:
         assert res_test.returncode == 0, f"Isolated test suite failed:\n{res_test.stderr}\n{res_test.stdout}"
 
         # 2. Sample mode prediction and evaluation
-        if dataset_dir.exists():
-            print("  [2/4] Running isolated sample mode and evaluation...")
-            sample_csv = tmp_path / "sample_preds.csv"
-            res_sample = subprocess.run(
-                [sys.executable, str(main_py), "--mode", "sample", "--output", str(sample_csv), "--dataset", str(dataset_dir)],
-                capture_output=True,
-                text=True,
-                cwd=str(tmp_path),
-                env=clean_env,
-            )
-            assert res_sample.returncode == 0, f"Sample prediction failed:\n{res_sample.stderr}"
+        print("  [2/4] Running isolated sample mode and evaluation...")
+        sample_csv = tmp_path / "sample_preds.csv"
+        res_sample = subprocess.run(
+            [sys.executable, str(main_py), "--mode", "sample", "--output", str(sample_csv), "--dataset", str(resolved_ds)],
+            capture_output=True,
+            text=True,
+            cwd=str(tmp_path),
+            env=clean_env,
+        )
+        assert res_sample.returncode == 0, f"Sample prediction failed:\n{res_sample.stderr}"
 
-            eval_main = extracted_code / "evaluation" / "main.py"
-            res_eval = subprocess.run(
-                [sys.executable, str(eval_main), str(sample_csv), "--dataset", str(dataset_dir)],
-                capture_output=True,
-                text=True,
-                cwd=str(tmp_path),
-                env=clean_env,
-            )
-            assert res_eval.returncode == 0, f"Sample evaluation failed:\n{res_eval.stderr}"
+        eval_main = extracted_code / "evaluation" / "main.py"
+        res_eval = subprocess.run(
+            [sys.executable, str(eval_main), str(sample_csv), "--dataset", str(resolved_ds)],
+            capture_output=True,
+            text=True,
+            cwd=str(tmp_path),
+            env=clean_env,
+        )
+        assert res_eval.returncode == 0, f"Sample evaluation failed:\n{res_eval.stderr}"
 
-            # 3. Full 250 evaluation requests run
-            print("  [3/4] Running full 250 evaluation requests in isolation...")
-            full_csv = tmp_path / "output.csv"
-            res_full = subprocess.run(
-                [sys.executable, str(main_py), "--mode", "full", "--output", str(full_csv), "--dataset", str(dataset_dir)],
-                capture_output=True,
-                text=True,
-                cwd=str(tmp_path),
-                env=clean_env,
-            )
-            assert res_full.returncode == 0, f"Full evaluation failed:\n{res_full.stderr}"
+        # 3. Full 250 evaluation requests run
+        print("  [3/4] Running full 250 evaluation requests in isolation...")
+        full_csv = tmp_path / "output.csv"
+        res_full = subprocess.run(
+            [sys.executable, str(main_py), "--mode", "full", "--output", str(full_csv), "--dataset", str(resolved_ds)],
+            capture_output=True,
+            text=True,
+            cwd=str(tmp_path),
+            env=clean_env,
+        )
+        assert res_full.returncode == 0, f"Full evaluation failed:\n{res_full.stderr}"
 
-            # 4. CSV schema and contract validation
-            print("  [4/4] Validating generated output.csv in isolation...")
-            res_val = subprocess.run(
-                [sys.executable, str(main_py), "--validate-csv", str(full_csv), "--dataset", str(dataset_dir)],
-                capture_output=True,
-                text=True,
-                cwd=str(tmp_path),
-                env=clean_env,
-            )
-            assert res_val.returncode == 0, f"Output validation failed:\n{res_val.stderr}"
+        # 4. CSV schema and contract validation
+        print("  [4/4] Validating generated output.csv in isolation...")
+        res_val = subprocess.run(
+            [sys.executable, str(main_py), "--validate-csv", str(full_csv), "--dataset", str(resolved_ds)],
+            capture_output=True,
+            text=True,
+            cwd=str(tmp_path),
+            env=clean_env,
+        )
+        assert res_val.returncode == 0, f"Output validation failed:\n{res_val.stderr}"
 
     print("Package clean-room verification PASSED 100% cleanly.")
 
@@ -468,6 +509,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--validate-csv", help="validate a CSV file against the competition schema and exit")
     parser.add_argument("--rebuild-evidence", action="store_true", help="re-extract evidence facts and verify caches")
     parser.add_argument("--investigate", help="run adaptive investigation for a single request_id and exit")
+    parser.add_argument("--live", action="store_true", help="enable live OpenAI model client for evidence extraction and adaptive investigation")
+    parser.add_argument("--replay", action="store_true", default=True, help="run in deterministic replay mode using cached observations (default)")
     parser.add_argument("--notes", help="notes for experiment registration in register.jsonl")
     parser.add_argument("--package", action="store_true", help="build clean verified code.zip and exit")
 
@@ -476,7 +519,7 @@ def main(argv: list[str] | None = None) -> int:
     # 1. Packaging mode
     if args.package:
         zip_target = Path(args.output) if args.output else REPO_ROOT / "code.zip"
-        package_clean_submission(zip_target)
+        package_clean_submission(zip_target, dataset_dir=Path(args.dataset))
         return 0
 
     # 2. CSV validation mode
@@ -498,6 +541,17 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  - {e}", file=sys.stderr)
             return 1
 
+    # Initialize live client if requested
+    client = None
+    if args.live:
+        try:
+            from buyorwait.openai_client import OpenAIClient
+            client = OpenAIClient()
+            print(f"Live mode enabled: initialized OpenAIClient (model={client.model}).")
+        except Exception as exc:
+            print(f"Error initializing live OpenAIClient: {exc}", file=sys.stderr)
+            return 1
+
     # Load dataset
     print(f"Loading dataset from {args.dataset}...")
     try:
@@ -511,25 +565,34 @@ def main(argv: list[str] | None = None) -> int:
     for msg in dataset.messages:
         all_facts.extend(extract_facts_from_message_text(msg))
 
-    image_amounts = get_all_resolved_image_amounts(dataset)
+    media_dir = Path(args.dataset) / "media" / "images"
+    image_amounts = get_all_resolved_image_amounts(
+        dataset,
+        client=client,
+        media_root=media_dir,
+        force=bool(args.rebuild_evidence and args.live),
+    )
 
     # 3. Evidence rebuild mode
     if args.rebuild_evidence:
         print(f"Extracted {len(all_facts)} structured evidence facts from {len(dataset.messages)} messages.")
         print(f"Verified {len(dataset.images)} image entries ({len(image_amounts)} resolved amounts).")
-        print("Evidence facts rebuild complete.")
+        if args.live:
+            print("Live evidence extraction and cache update complete.")
+        else:
+            print("Deterministic replay cache verification complete.")
         return 0
 
     # 4. Single request investigation mode
     if args.investigate:
         req_id = args.investigate
-        print(f"Running adaptive investigation on {req_id}...")
+        print(f"Running adaptive investigation on {req_id} (mode={'live' if client else 'replay'})...")
         req = dataset.all_requests_by_id.get(req_id)
         if req is None:
             print(f"Error: unknown request_id '{req_id}'", file=sys.stderr)
             return 1
         row, candidate, inv_state = run_pipeline_for_request(
-            dataset, req, all_facts, image_amounts=image_amounts, investigate=True
+            dataset, req, all_facts, image_amounts=image_amounts, investigate=True, client=client
         )
         print("\n--- Investigation Summary ---")
         if inv_state:
