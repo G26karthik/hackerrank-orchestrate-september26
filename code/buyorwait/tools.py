@@ -348,28 +348,37 @@ SIMULATE_CANDIDATE_SCHEMA = {
 _RESOLUTION_REQUIRED_FIELDS = ("source_type", "source_id", "field_name", "value", "confidence", "justification")
 
 
-def submit_fact_resolution(dataset: Dataset, *, resolution: Mapping[str, Any]) -> dict:
-    """Structural validation only (the investigation loop is what actually
-    records an accepted resolution into the typed ledger -- see
-    investigation.py). Rejects a submission missing a required field or
-    naming an unknown source, rather than accepting anything the model
-    proposes at face value: 'a high model confidence value is not proof'
-    applies here directly -- this function checks SHAPE and ownership, never
-    the truth of the claim."""
+def submit_fact_resolution(dataset: Dataset, *, resolution: Mapping[str, Any], user_id: str | None = None) -> dict:
+    """Checks SHAPE and source ownership against the dataset and user.
+    Rejects submissions missing required fields, referencing unknown sources,
+    or referencing sources belonging to a different user.
+    """
     missing = [f for f in _RESOLUTION_REQUIRED_FIELDS if f not in resolution]
     if missing:
         raise ToolError(f"resolution missing required field(s): {missing}")
     source_type = resolution["source_type"]
     source_id = resolution["source_id"]
-    if source_type == "event" and source_id not in dataset.events_by_id:
-        raise ToolError(f"resolution references unknown event_id: {source_id!r}")
-    if source_type == "message" and source_id not in dataset.messages_by_id:
-        raise ToolError(f"resolution references unknown message_id: {source_id!r}")
-    if source_type == "image" and source_id not in dataset.images_by_id:
-        raise ToolError(f"resolution references unknown image_id: {source_id!r}")
-    if source_type not in ("event", "message", "image"):
+
+    source_owner: str | None = None
+    if source_type == "event":
+        if source_id not in dataset.events_by_id:
+            raise ToolError(f"resolution references unknown event_id: {source_id!r}")
+        source_owner = dataset.events_by_id[source_id].user_id
+    elif source_type == "message":
+        if source_id not in dataset.messages_by_id:
+            raise ToolError(f"resolution references unknown message_id: {source_id!r}")
+        source_owner = dataset.messages_by_id[source_id].user_id
+    elif source_type == "image":
+        if source_id not in dataset.images_by_id:
+            raise ToolError(f"resolution references unknown image_id: {source_id!r}")
+        source_owner = dataset.images_by_id[source_id].user_id
+    else:
         raise ToolError(f"resolution source_type must be one of event/message/image, got {source_type!r}")
-    return {"accepted": True, "resolution": dict(resolution)}
+
+    if user_id is not None and source_owner != user_id:
+        raise ToolError(f"source {source_id} belongs to user {source_owner}, not target user {user_id}")
+
+    return {"accepted": True, "resolution": dict(resolution), "source_owner": source_owner}
 
 
 SUBMIT_FACT_RESOLUTION_SCHEMA = {

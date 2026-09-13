@@ -50,6 +50,15 @@ class RecurrenceScheduleType(StrEnum):
 
 
 @dataclass(frozen=True, slots=True)
+class StreamAmendment:
+    amendment_type: str  # "amount", "day_of_month"
+    effective_from: date
+    effective_until: date | None = None
+    new_amount: Decimal | None = None
+    new_day_of_month: int | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class RecurringStream:
     user_id: str
     category: ExpenseCategory
@@ -64,6 +73,7 @@ class RecurringStream:
     supporting_event_ids: tuple[str, ...]
     provenance_notes: str = ""
     last_observed_date: date | None = None
+    amendments: tuple[StreamAmendment, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -162,6 +172,7 @@ def detect_recurring_streams(
     salary_ended = False
     salary_amount_amendment: Decimal | None = None
     salary_date_amendment: int | None = None
+    salary_future_amendments: list[StreamAmendment] = []
     rent_increase_pct: Decimal | None = None
 
     all_events = dataset.events_by_user.get(user_id, ())
@@ -187,22 +198,22 @@ def detect_recurring_streams(
     for f in evidence_facts:
         if f.user_id != user_id:
             continue
+        # As-of policy: reject observations dated after as_of_date (not yet known at request time)
+        if f.observed_time:
+            obs_dt_str = f.observed_time.split("T")[0]
+            try:
+                if date.fromisoformat(obs_dt_str) > as_of_date:
+                    continue
+            except ValueError:
+                pass
+
         if f.fact_kind == FactKind.INCOME_ENDED:
             salary_ended = True
         elif f.fact_kind == FactKind.INCOME_AMOUNT_CHANGE and f.amount is not None:
-            # Only apply the amendment to the stream's typical_amount when the effective date
-            # is already visible at as_of_date. A future-effective amendment (e.g. "salary
-            # changes from Feb 15") must not alter the January projection; project_occurrences
-            # applies it to its proper future occurrences via provenance_notes.
-            effective_from = f.temporal_scope.effective_from if f.temporal_scope else None
-            if effective_from is not None and effective_from > as_of_date:
-                # Future-effective amendment: record but don't change current typical_amount.
-                # Leave salary_amount_amendment None so current projections use historical median.
-                continue
             # If foreign currency, convert at latest rate on or before as_of_date
             if f.currency and f.currency != home_currency:
                 try:
-                    salary_amount_amendment = convert_with_fallback(
+                    converted_amt = convert_with_fallback(
                         f.amount,
                         from_currency=f.currency,
                         to_currency=home_currency,
@@ -210,14 +221,38 @@ def detect_recurring_streams(
                         fx_rates=dataset.fx_rates,
                     )
                 except LookupError:
-                    salary_amount_amendment = f.amount
+                    converted_amt = f.amount
             else:
-                salary_amount_amendment = f.amount
-        elif f.fact_kind == FactKind.INCOME_DATE_CHANGE and f.temporal_scope.effective_from:
-            # Apply date changes only when effective at as_of_date
+                converted_amt = f.amount
+
+            effective_from = f.temporal_scope.effective_from if f.temporal_scope else None
+            effective_until = f.temporal_scope.effective_until if f.temporal_scope else None
+            if effective_from is None or effective_from <= as_of_date:
+                salary_amount_amendment = converted_amt
+            else:
+                salary_future_amendments.append(
+                    StreamAmendment(
+                        amendment_type="amount",
+                        effective_from=effective_from,
+                        effective_until=effective_until,
+                        new_amount=converted_amt,
+                    )
+                )
+        elif f.fact_kind == FactKind.INCOME_DATE_CHANGE and f.temporal_scope and f.temporal_scope.effective_from:
             effective_from = f.temporal_scope.effective_from
+            effective_until = f.temporal_scope.effective_until
+            new_dom = effective_from.day
             if effective_from <= as_of_date:
-                salary_date_amendment = effective_from.day
+                salary_date_amendment = new_dom
+            else:
+                salary_future_amendments.append(
+                    StreamAmendment(
+                        amendment_type="day_of_month",
+                        effective_from=effective_from,
+                        effective_until=effective_until,
+                        new_day_of_month=new_dom,
+                    )
+                )
         elif f.fact_kind == FactKind.RENT_PERCENTAGE_INCREASE and f.amount is not None:
             rent_increase_pct = f.amount
 
@@ -368,6 +403,10 @@ def detect_recurring_streams(
                 median_amt = (median_amt * multiplier).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
                 notes += f"; rent increased by {rent_increase_pct}% to {median_amt}"
 
+        stream_amendments: tuple[StreamAmendment, ...] = ()
+        if cat == ExpenseCategory.SALARY and direction == Direction.CREDIT and salary_future_amendments:
+            stream_amendments = tuple(salary_future_amendments)
+
         streams.append(
             RecurringStream(
                 user_id=user_id,
@@ -383,6 +422,7 @@ def detect_recurring_streams(
                 supporting_event_ids=tuple(e.event_id for e in evts_sorted),
                 provenance_notes=notes,
                 last_observed_date=last_obs,
+                amendments=stream_amendments,
             )
         )
 
@@ -440,6 +480,7 @@ def detect_recurring_streams(
                     supporting_event_ids=(se.event_id,),
                     provenance_notes=notes,
                     last_observed_date=se_dt,
+                    amendments=tuple(salary_future_amendments),
                 )
             )
 
@@ -506,10 +547,24 @@ def project_occurrences(
 
             while (cur_year, cur_month) <= (end_year, end_month):
                 days_in_month = calendar.monthrange(cur_year, cur_month)[1]
-                target_day = min(stream.day_of_month, days_in_month)
+                dom = stream.day_of_month
+                for amd in stream.amendments:
+                    if amd.amendment_type == "day_of_month" and amd.new_day_of_month is not None:
+                        if (cur_year, cur_month) >= (amd.effective_from.year, amd.effective_from.month):
+                            if amd.effective_until is None or (cur_year, cur_month) <= (amd.effective_until.year, amd.effective_until.month):
+                                dom = amd.new_day_of_month
+
+                target_day = min(dom, days_in_month)
                 occ_date = date(cur_year, cur_month, target_day)
 
                 if start <= occ_date <= end:
+                    occ_amount = stream.typical_amount
+                    for amd in stream.amendments:
+                        if amd.amendment_type == "amount" and amd.new_amount is not None:
+                            if occ_date >= amd.effective_from:
+                                if amd.effective_until is None or occ_date <= amd.effective_until:
+                                    occ_amount = amd.new_amount
+
                     matched_exp = None
                     for exp in explicit_future_events:
                         if _matches_explicit_event(exp, stream, occ_date, tolerance_days=3, reconciled_ids=reconciled_explicit_ids, all_streams=streams):
@@ -519,7 +574,7 @@ def project_occurrences(
                     if matched_exp is not None:
                         reconciled_explicit_ids.add(matched_exp.event_id)
                         exp_dt = matched_exp.settlement_date or matched_exp.event_date
-                        exp_amt = matched_exp.amount or stream.typical_amount
+                        exp_amt = matched_exp.amount if matched_exp.amount is not None else occ_amount
                         if home_currency and matched_exp.currency != home_currency and dataset:
                             try:
                                 exp_amt = convert_with_fallback(
@@ -546,7 +601,7 @@ def project_occurrences(
                             ScheduledOccurrence(
                                 stream=stream,
                                 occurrence_date=occ_date,
-                                amount=stream.typical_amount,
+                                amount=occ_amount,
                                 is_explicit_event=False,
                                 reconciled_event_id=None,
                             )
@@ -573,6 +628,13 @@ def project_occurrences(
                     cur_date -= timedelta(days=step)
 
             while cur_date <= end:
+                occ_amount = stream.typical_amount
+                for amd in stream.amendments:
+                    if amd.amendment_type == "amount" and amd.new_amount is not None:
+                        if cur_date >= amd.effective_from:
+                            if amd.effective_until is None or cur_date <= amd.effective_until:
+                                occ_amount = amd.new_amount
+
                 matched_exp = None
                 for exp in explicit_future_events:
                     if _matches_explicit_event(exp, stream, cur_date, tolerance_days=2, reconciled_ids=reconciled_explicit_ids, all_streams=streams):
@@ -582,7 +644,7 @@ def project_occurrences(
                 if matched_exp is not None:
                     reconciled_explicit_ids.add(matched_exp.event_id)
                     exp_dt = matched_exp.settlement_date or matched_exp.event_date
-                    exp_amt = matched_exp.amount or stream.typical_amount
+                    exp_amt = matched_exp.amount if matched_exp.amount is not None else occ_amount
                     if home_currency and matched_exp.currency != home_currency and dataset:
                         try:
                             exp_amt = convert_with_fallback(
@@ -609,7 +671,7 @@ def project_occurrences(
                         ScheduledOccurrence(
                             stream=stream,
                             occurrence_date=cur_date,
-                            amount=stream.typical_amount,
+                            amount=occ_amount,
                             is_explicit_event=False,
                             reconciled_event_id=None,
                         )

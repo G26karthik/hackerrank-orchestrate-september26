@@ -217,6 +217,9 @@ _FABRICATED_NARRATIVE_PATTERNS = (
     r"(?i)\b(?:salary|paycheck|deposit|payment|transfer|credit)\s+(?:of|for)\s+\w+\s+[\d,]+\s+will\s+(?:arrive|come|be\s+(?:deposited|credited|received))",
     r"(?i)\bwill\s+(?:arrive|come|be\s+deposited)\s+tomorrow\b",
     r"(?i)\bexpect(?:ing|ed)?\s+(?:a\s+)?(?:salary|paycheck|deposit)\s+(?:of|for)\s+\w+\s+[\d,]+",
+    r"(?i)\b(?:payroll|employer|bank|company|salary|paycheck)\s+will\s+(?:credit|deposit|pay|transfer|send|release)\b",
+    r"(?i)\bwill\s+(?:credit|deposit|pay|transfer|send|arrive|come|be\s+(?:credited|deposited|paid|transferred|received))\b.*?\btomorrow\b",
+    r"(?i)\b(?:salary|paycheck|deposit|payment|transfer|credit)\s+(?:of|for)?\s*(?:[A-Z]{3}\s*)?[\d,.]+\s+will\b",
 )
 
 

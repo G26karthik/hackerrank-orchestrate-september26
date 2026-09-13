@@ -38,7 +38,7 @@ from .evidence import (
 )
 from .metering import UsageLedger, UsageRecord
 from .openai_client import CallResult, ClassifiedError, OpenAIClient, estimate_cost_usd
-from .schemas import Dataset
+from .schemas import Dataset, Direction, ExpenseCategory
 from .tools import (
     ALL_TOOL_SCHEMAS,
     PURE_TOOL_HANDLERS,
@@ -98,6 +98,7 @@ def build_tool_handlers(
     client: OpenAIClient | None = None,
     cache: ContentAddressedCache | None = None,
     media_root: str = "dataset/media/images",
+    user_id: str | None = None,
 ) -> dict[str, Callable[..., dict[str, Any]]]:
     """Binds the seven tool handlers against `dataset`. `inspect_image` is
     bound with `client` + `cache` so that image requests validate ownership
@@ -105,7 +106,10 @@ def build_tool_handlers(
     extractions."""
     handlers: dict[str, Callable[..., dict[str, Any]]] = {}
     for name, fn in PURE_TOOL_HANDLERS.items():
-        handlers[name] = functools.partial(fn, dataset)
+        if name == "submit_fact_resolution" and user_id is not None:
+            handlers[name] = functools.partial(fn, dataset, user_id=user_id)
+        else:
+            handlers[name] = functools.partial(fn, dataset)
 
     def _bound_inspect_image(image_id: str) -> dict[str, Any]:
         info = resolve_image_for_inspection(dataset, image_id=image_id)
@@ -135,6 +139,7 @@ def build_tool_handlers(
                 "path": info["path"],
                 "user_id": info["user_id"],
                 "related_event_id": info["related_event_id"],
+                "cache_hit": False,
                 "note": "offline/metadata-only: no writable cache available",
             }
 
@@ -154,40 +159,17 @@ def build_tool_handlers(
                 "selection": _jsonable(selection) if selection else None,
                 "cache_hit": cache_hit,
             }
-        except (StopIteration, RuntimeError) as _client_err:
-            # Client has no more scripted responses (test stub exhausted) or
-            # transient failure. Try a source-id-only cache lookup as last resort.
-            try:
-                cached = effective_cache.get_by_source_id(image_id)
-                if cached is not None:
-                    from .evidence import _parse_image_observation, select_amount_role as _sar  # noqa: PLC0415
-                    obs = _parse_image_observation(
-                        image_id,
-                        cached.get("source_sha256", "unknown"),
-                        cached["parsed"],
-                        model=cached.get("model", "cached"),
-                        reasoning_effort=cached.get("reasoning_effort", "medium"),
-                        provider_response_id=cached.get("provider_response_id"),
-                    )
-                    event = dataset.events_by_id.get(image.related_event_id)
-                    selection = _sar(obs, event) if event else None
-                    return {
-                        "image_id": image_id,
-                        "user_id": info["user_id"],
-                        "observation": _jsonable(obs),
-                        "selection": _jsonable(selection) if selection else None,
-                        "cache_hit": True,
-                    }
-            except Exception:
-                pass
+        except Exception as _client_err:
+            # Extraction failure (transport, runtime error, or exhausted client).
+            # Do NOT resurrect stale observations from old bytes.
             return {
                 "image_id": image_id,
                 "path": info["path"],
                 "user_id": info["user_id"],
                 "related_event_id": info["related_event_id"],
-                "note": f"cached_observation_unavailable: client error {type(_client_err).__name__}",
+                "cache_hit": False,
+                "note": f"extraction_failed: {type(_client_err).__name__}: {_client_err}",
             }
-
 
     handlers["inspect_image"] = _bound_inspect_image
     return handlers
@@ -230,7 +212,7 @@ def run_adaptive_investigation(
     handlers = (
         dict(tool_handlers)
         if tool_handlers is not None
-        else build_tool_handlers(dataset, client=client, cache=cache, media_root=media_root)
+        else build_tool_handlers(dataset, client=client, cache=cache, media_root=media_root, user_id=req.user_id)
     )
 
     # 1. Deterministic / Offline inspection path
@@ -337,9 +319,9 @@ def _run_model_driven_investigation(
                 tools=ALL_TOOL_SCHEMAS,
                 max_output_tokens=1000,
             )
-        except ClassifiedError as exc:
+        except (ClassifiedError, StopIteration, Exception) as exc:
             state.unresolved = True
-            state.unresolved_reason = f"model call failed: {exc.message}"
+            state.unresolved_reason = f"model call failed: {type(exc).__name__}: {exc}"
             break
 
         if ledger is not None:
@@ -437,43 +419,113 @@ def _run_model_driven_investigation(
             })
             state.evidence_inspected.append(f"{fn_name}:{json.dumps(args)}")
 
+            if fn_name == "submit_fact_resolution":
+                raw_res = args.get("resolution", {}) if isinstance(args, dict) else {}
+                src_type = raw_res.get("source_type")
+                src_id = raw_res.get("source_id")
+                src_owner = None
+                if src_type == "event" and src_id in dataset.events_by_id:
+                    src_owner = dataset.events_by_id[src_id].user_id
+                elif src_type == "message" and src_id in dataset.messages_by_id:
+                    src_owner = dataset.messages_by_id[src_id].user_id
+                elif src_type == "image" and src_id in dataset.images_by_id:
+                    src_owner = dataset.images_by_id[src_id].user_id
+
+                if src_owner is not None and src_owner != req.user_id:
+                    tool_result_content = {
+                        "accepted": False,
+                        "error": f"source {src_id} belongs to user {src_owner}, not target user {req.user_id}",
+                    }
+
             if fn_name == "submit_fact_resolution" and tool_result_content.get("accepted"):
                 raw_resolution = tool_result_content.get("resolution", {})
-                # Convert the structurally-accepted resolution dict into a typed EvidenceFact
-                # so that resolver/planner code that reads state.facts can call .user_id etc.
-                # We import lazily to avoid circular imports.
-                from .evidence import (
-                    EvidenceFact, FactKind, TemporalScope,
-                )  # noqa: PLC0415
-                from datetime import timezone
+                from .evidence import EvidenceFact, FactKind, TemporalScope
                 from decimal import Decimal as _D
-                import datetime as _dt
-                source_id = raw_resolution.get("source_id", "")
-                # Derive user_id from source ownership
-                _user_id = state.user_id
+
+                src_type = raw_resolution.get("source_type", "event")
+                src_id = raw_resolution.get("source_id", "")
+                field_name = raw_resolution.get("field_name", "")
+                val = raw_resolution.get("value")
+                justification = raw_resolution.get("justification", "")
+
+                admitted_amt = None
+                if val is not None:
+                    try:
+                        admitted_amt = _D(str(val))
+                    except Exception:
+                        admitted_amt = None
+
+                admitted_curr = None
+                admitted_obs_time = ""
+                admitted_eff_time = None
+                admitted_eff_from = None
+                rel_event_id = None
+                fact_kind = FactKind.RECEIPT_CONFIRMS_AMOUNT
+
+                if src_type == "event":
+                    evt = dataset.events_by_id.get(src_id)
+                    if evt:
+                        rel_event_id = evt.event_id
+                        admitted_curr = evt.currency
+                        evt_dt = evt.settlement_date or evt.event_date
+                        admitted_obs_time = f"{evt_dt.isoformat()}T00:00:00+00:00"
+                        admitted_eff_time = evt_dt.isoformat()
+                        admitted_eff_from = evt_dt
+                        if admitted_amt is None and evt.amount is not None:
+                            admitted_amt = evt.amount
+                        if evt.category == ExpenseCategory.SALARY:
+                            fact_kind = FactKind.INCOME_AMOUNT_CHANGE
+                        elif evt.direction == Direction.CREDIT:
+                            fact_kind = FactKind.INCOME_CONFIRMED_ONE_OFF
+                        else:
+                            fact_kind = FactKind.RECEIPT_CONFIRMS_AMOUNT
+                elif src_type == "message":
+                    msg = dataset.messages_by_id.get(src_id)
+                    if msg:
+                        rel_event_id = msg.related_event_id
+                        admitted_obs_time = msg.sent_at.isoformat()
+                        admitted_eff_from = msg.sent_at.date()
+                        admitted_eff_time = msg.sent_at.date().isoformat()
+                        prof = dataset.profiles_by_user.get(msg.user_id)
+                        admitted_curr = prof.home_currency if prof else None
+                        fact_kind = FactKind.RECEIPT_CONFIRMS_AMOUNT
+                elif src_type == "image":
+                    img = dataset.images_by_id.get(src_id)
+                    if img:
+                        rel_event_id = img.related_event_id
+                        evt = dataset.events_by_id.get(img.related_event_id) if img.related_event_id else None
+                        if evt:
+                            admitted_curr = evt.currency
+                            evt_dt = evt.settlement_date or evt.event_date
+                            admitted_obs_time = f"{evt_dt.isoformat()}T00:00:00+00:00"
+                            admitted_eff_time = evt_dt.isoformat()
+                            admitted_eff_from = evt_dt
+                        else:
+                            admitted_obs_time = f"{req.request_date.isoformat()}T00:00:00+00:00"
+                            admitted_eff_from = req.request_date
+                            admitted_eff_time = req.request_date.isoformat()
+                        fact_kind = FactKind.IMAGE_AMOUNT
+
                 typed_fact = EvidenceFact(
-                    source_type=raw_resolution.get("source_type", "event"),
-                    source_id=source_id,
-                    user_id=_user_id,
-                    related_event_id=(
-                        source_id if raw_resolution.get("source_type") == "event" else None
-                    ),
+                    source_type=src_type,
+                    source_id=src_id,
+                    user_id=req.user_id,
+                    related_event_id=rel_event_id,
                     related_request_id=state.request_id,
-                    fact_kind=FactKind.INCOME_CONFIRMED_ONE_OFF,  # generic placeholder
-                    amount=None,
-                    currency=None,
-                    temporal_scope=TemporalScope(effective_from=None, effective_until=None),
+                    fact_kind=fact_kind,
+                    amount=admitted_amt,
+                    currency=admitted_curr,
+                    temporal_scope=TemporalScope(effective_from=admitted_eff_from, effective_until=None),
                     ambiguous=False,
                     ambiguity_note="",
-                    raw_excerpt=raw_resolution.get("justification", ""),
-                    observed_time=_dt.datetime.now(_dt.timezone.utc).isoformat(),
-                    effective_time=None,
+                    raw_excerpt=justification,
+                    observed_time=admitted_obs_time,
+                    effective_time=admitted_eff_time,
                 )
                 state.facts.append(typed_fact)
                 state.completed = True
                 state.decision_summary = (
-                    f"Resolved {raw_resolution.get('field_name')} = {raw_resolution.get('value')} "
-                    f"from {raw_resolution.get('source_type')}:{source_id}"
+                    f"Resolved {field_name} = {val} from {src_type}:{src_id}"
                 )
                 break
 
@@ -487,25 +539,21 @@ def _run_model_driven_investigation(
             break
 
         # Feed tool outputs back to model.
-        # Per OpenAI function-calling protocol, the conversation must include:
-        #   1. The model's output items (function_call items)
-        #   2. The corresponding function_call_output items
-        # We append the model's output items first, then the tool outputs.
-        model_output_items = [
-            (item if isinstance(item, dict) else {
-                "type": getattr(item, "type", "function_call"),
-                "call_id": getattr(item, "call_id", ""),
-                "name": getattr(item, "name", ""),
-                "arguments": getattr(item, "arguments", "{}"),
-            })
-            for item in call_res.output_items
-            if getattr(item, "type", None) == "function_call" or (isinstance(item, dict) and item.get("type") == "function_call")
-        ]
-        # Include the model's response ID for continuation linkage if available
-        if call_res.response_id and call_res.response_id != "offline_mock":
-            conversation_input = [
-                {"previous_response_id": call_res.response_id}
-            ] + model_output_items + tool_outputs
-        else:
-            conversation_input.extend(model_output_items)
-            conversation_input.extend(tool_outputs)
+        # Per OpenAI Responses protocol with manual history:
+        # 1. Preserve initial user request (in conversation_input)
+        # 2. Append all model output items (reasoning, function_call, message)
+        # 3. Append corresponding function_call_output items
+        for item in call_res.output_items:
+            if isinstance(item, dict):
+                conversation_input.append(dict(item))
+            else:
+                item_dict: dict[str, Any] = {}
+                for k in ("type", "id", "summary", "call_id", "name", "arguments", "role", "content", "status"):
+                    v = getattr(item, k, None)
+                    if v is not None:
+                        item_dict[k] = v
+                if not item_dict:
+                    item_dict = {"type": getattr(item, "type", "function_call")}
+                conversation_input.append(item_dict)
+
+        conversation_input.extend(tool_outputs)

@@ -939,7 +939,10 @@ class Stage18AuditRepairsTests(unittest.TestCase):
     def test_multi_turn_tool_conversation_preserves_function_call(self):
         """Tool conversation history must include the model's function_call item before function_call_output."""
         import json
-        import httpx
+        try:
+            import httpx
+        except ImportError:
+            self.skipTest("httpx not available in this environment")
         import openai
         from buyorwait.investigation import run_adaptive_investigation
         from buyorwait.openai_client import OpenAIClient
@@ -966,6 +969,216 @@ class Stage18AuditRepairsTests(unittest.TestCase):
         has_fn_out = any(x.get("type") == "function_call_output" for x in second_input)
         self.assertTrue(has_fn_call, "Second turn input must contain the preceding function_call")
         self.assertTrue(has_fn_out, "Second turn input must contain function_call_output")
+
+    def test_admitted_fact_preserves_amount_currency_owner_time(self):
+        """Accepted fact resolution must preserve value, currency, user ownership, and source date."""
+        import json
+        from buyorwait.investigation import run_adaptive_investigation
+        from buyorwait.openai_client import CallResult
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        uid = req.user_id
+        event = self.dataset.events_by_user[uid][0]
+        resolution = {
+            "source_type": "event",
+            "source_id": event.event_id,
+            "field_name": "amount",
+            "value": str(event.amount),
+            "confidence": 1.0,
+            "justification": "Verified against transaction ledger",
+        }
+        tool_call = {
+            "type": "function_call",
+            "call_id": "c_res",
+            "name": "submit_fact_resolution",
+            "arguments": json.dumps({"resolution": resolution}),
+        }
+
+        class MockClient:
+            def create(self, **kwargs):
+                return CallResult(
+                    output_text="",
+                    output_items=(tool_call,),
+                    status="completed",
+                    incomplete_reason=None,
+                    response_id="resp_fact",
+                    provider_request_id=None,
+                    latency_ms=0,
+                    input_tokens=10,
+                    output_tokens=5,
+                    reasoning_tokens=0,
+                    cached_tokens=0,
+                    retries=0,
+                )
+
+        state = run_adaptive_investigation(dataset=self.dataset, request_id=req.request_id, client=MockClient())
+        self.assertTrue(state.completed)
+        self.assertEqual(len(state.facts), 1)
+        admitted = state.facts[0]
+        self.assertEqual(admitted.amount, event.amount)
+        self.assertEqual(admitted.currency, event.currency)
+        self.assertEqual(admitted.user_id, event.user_id)
+        source_dt = (event.settlement_date or event.event_date).isoformat()
+        self.assertTrue(admitted.observed_time.startswith(source_dt))
+
+    def test_cross_user_fact_resolution_rejected(self):
+        """Fact resolution referencing source belonging to different user must be rejected."""
+        import json
+        from buyorwait.investigation import run_adaptive_investigation
+        from buyorwait.openai_client import CallResult
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        uid = req.user_id
+        other_event = next(e for e in self.dataset.events if e.user_id != uid)
+        resolution = {
+            "source_type": "event",
+            "source_id": other_event.event_id,
+            "field_name": "amount",
+            "value": str(other_event.amount),
+            "confidence": 1.0,
+            "justification": "Illegitimate cross user resolution",
+        }
+        tool_call = {
+            "type": "function_call",
+            "call_id": "c_cross",
+            "name": "submit_fact_resolution",
+            "arguments": json.dumps({"resolution": resolution}),
+        }
+
+        class MockClient:
+            def create(self, **kwargs):
+                return CallResult(
+                    output_text="",
+                    output_items=(tool_call,),
+                    status="completed",
+                    incomplete_reason=None,
+                    response_id="resp_cross",
+                    provider_request_id=None,
+                    latency_ms=0,
+                    input_tokens=10,
+                    output_tokens=5,
+                    reasoning_tokens=0,
+                    cached_tokens=0,
+                    retries=0,
+                )
+
+        state = run_adaptive_investigation(dataset=self.dataset, request_id=req.request_id, client=MockClient())
+        self.assertFalse(state.completed)
+        self.assertEqual(len(state.facts), 0)
+
+    def test_responses_api_continuation_preserves_reasoning_no_previous_response_id_in_input(self):
+        """Responses API multi-turn continuation must not place previous_response_id in input list."""
+        import json
+        try:
+            import httpx
+        except ImportError:
+            self.skipTest("httpx not available in this environment")
+        import openai
+        from buyorwait.investigation import run_adaptive_investigation
+        from buyorwait.openai_client import OpenAIClient
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        requests_seen = []
+
+        def handler(request):
+            body = json.loads(request.content)
+            requests_seen.append(body)
+            if len(requests_seen) == 1:
+                out = [
+                    {"type": "reasoning", "id": "rs_audit", "summary": []},
+                    {"type": "function_call", "call_id": "c1", "name": "get_user_context", "arguments": json.dumps({"user_id": req.user_id})},
+                ]
+                return httpx.Response(200, json={"id": "resp_realistic_audit", "status": "completed", "output": out, "usage": {"input_tokens": 10, "output_tokens": 5}})
+            malformed = any("previous_response_id" in x for x in body.get("input", []) if isinstance(x, dict))
+            if malformed:
+                return httpx.Response(400, json={"error": {"message": "previous_response_id inside input", "type": "invalid_request_error"}})
+            return httpx.Response(200, json={"id": "resp_final", "status": "completed", "output": [{"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": "Done"}]}], "usage": {}})
+
+        sdk = openai.OpenAI(api_key="offline-placeholder", http_client=httpx.Client(transport=httpx.MockTransport(handler), trust_env=False))
+        adapter = OpenAIClient(client=sdk)
+        state = run_adaptive_investigation(dataset=self.dataset, request_id=req.request_id, client=adapter)
+        sdk.close()
+
+        self.assertTrue(state.completed)
+        self.assertGreaterEqual(len(requests_seen), 2)
+        second_input = requests_seen[1]["input"]
+        self.assertFalse(any("previous_response_id" in x for x in second_input if isinstance(x, dict)))
+        self.assertTrue(any(x.get("type") == "reasoning" for x in second_input if isinstance(x, dict)))
+
+    def test_future_effective_salary_amendments(self):
+        """Future-effective amendments apply on or after effective_from, preserving earlier baseline."""
+        from dataclasses import replace
+        from buyorwait.evidence import EvidenceFact, FactKind, TemporalScope
+        from buyorwait.forecast import assemble_flows
+        from buyorwait.schemas import ExpenseCategory as C, Direction, EventType, EventStatus
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        uid = req.user_id
+        prof = self.dataset.profiles_by_user[uid]
+        template = self.dataset.events[0]
+        events = []
+        for month in [10, 11, 12]:
+            d = date(2025, month, 15)
+            events.append(replace(template, event_id=f"syn_sal_{month}", user_id=uid, event_date=d, settlement_date=d, category=C.SALARY, description="monthly salary", amount=Decimal("1000"), currency=prof.home_currency, direction=Direction.CREDIT, event_type=EventType.INCOME, status=EventStatus.SETTLED, linked_event_id=None))
+        synth_ds = replace(self.dataset, events=tuple(events), events_by_user={uid: tuple(events)})
+        # Cut effective Feb 15
+        fact = EvidenceFact(
+            source_type="message",
+            source_id="notice_feb",
+            user_id=uid,
+            related_event_id=None,
+            related_request_id=req.request_id,
+            fact_kind=FactKind.INCOME_AMOUNT_CHANGE,
+            amount=Decimal("500"),
+            currency=prof.home_currency,
+            temporal_scope=TemporalScope(date(2026, 2, 15), None),
+            ambiguous=False,
+            ambiguity_note="",
+            raw_excerpt="Salary is reduced to 500 from February 15",
+            observed_time="2025-12-20T12:00:00",
+            effective_time="2026-02-15",
+        )
+        flows = assemble_flows(synth_ds, uid, anchor_date=date(2026, 1, 1), evidence_facts=(fact,), image_amounts={})
+        income_by_date = {f.flow_date: f.amount for f in flows if f.amount > 0 and "salary" in f.label.lower()}
+        self.assertEqual(income_by_date.get(date(2026, 1, 15)), Decimal("1000"))
+        self.assertEqual(income_by_date.get(date(2026, 2, 15)), Decimal("500"))
+        self.assertEqual(income_by_date.get(date(2026, 3, 15)), Decimal("500"))
+
+    def test_inspect_image_tool_no_stale_cache_resurrection(self):
+        """inspect_image tool must not return stale cache observation on client failure."""
+        import tempfile
+        import shutil
+        from buyorwait.investigation import build_tool_handlers
+        from buyorwait.cache import ContentAddressedCache
+
+        class BrokenClient:
+            model = "broken-client"
+            def create(self, **kwargs):
+                raise RuntimeError("simulated extraction error")
+
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            media_dir = d / "images"
+            media_dir.mkdir()
+            # Copy image_11 under image_10 name
+            shutil.copyfile(self.dataset_dir / "media/images/image_11.png", media_dir / "image_10.png")
+            handlers = build_tool_handlers(self.dataset, client=BrokenClient(), cache=ContentAddressedCache(d / "cache"), media_root=str(media_dir))
+            obs = handlers["inspect_image"](image_id="image_10")
+            self.assertFalse(obs.get("cache_hit"))
+            self.assertIn("extraction_failed", obs.get("note", ""))
+
+    def test_explanation_rejects_paraphrased_false_claim(self):
+        """validate_explanation must reject paraphrased false credit claims."""
+        from buyorwait.explain import validate_explanation
+        import main
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        prof = self.dataset.profiles_by_user[req.user_id]
+        row, cand, _ = main.run_pipeline_for_request(self.dataset, req, ())
+        false_claim = row.decision_explanation + f" Payroll will credit {prof.home_currency.value} {prof.minimum_balance_to_keep} tomorrow."
+        ok, reason = validate_explanation(self.dataset, req.request_id, cand, false_claim)
+        self.assertFalse(ok)
+        self.assertIsNotNone(reason)
 
     def test_validate_csv_requires_existing_dataset(self):
         """--validate-csv must fail when dataset directory does not exist or cannot be loaded."""
