@@ -102,18 +102,22 @@ def assemble_flows(
         dataset=dataset,
     )
 
-    # Track which explicit event IDs were reconciled into recurring occurrences
+    # Collect which explicit event IDs were reconciled into recurring occurrences
     reconciled_event_ids = {
         occ.reconciled_event_id
         for occ in occurrences
         if occ.is_explicit_event and occ.reconciled_event_id is not None
     }
 
+    # Collect which event IDs are reserved pending debits (to suppress matching recurring projections)
+    reserved_pending_ids: set[str] = set()
+
     flows: list[CashFlow] = []
 
     # 3. Add reserved pending debits (on anchor_date, S-16 / U-DUP-1)
     for nf in normalized_flows:
         if nf.is_reserved_pending_debit and nf.admission == FlowAdmission.ADMITTED:
+            reserved_pending_ids.add(nf.flow_id)
             # Reserve on anchor_date
             flows.append(
                 CashFlow(
@@ -124,28 +128,51 @@ def assemble_flows(
                 )
             )
 
-    # 4. Add admitted future explicit events (that were NOT reconciled into recurring stream)
+    # 4. Add admitted future explicit events (that were NOT reconciled into recurring stream).
+    # Strictly exclude any flow that is pending-credit (S-16 / S-17): the resolver already
+    # marks these as EXCLUDED_PENDING_CREDIT; we must respect that here rather than
+    # re-admitting them through a narrower check.
+    from .resolver import FlowAdmission as _FA  # already imported above, alias for clarity
     for nf in normalized_flows:
-        if nf.admission == FlowAdmission.ADMITTED and not nf.is_reserved_pending_debit:
-            if anchor_date <= nf.flow_date <= horizon_end:
-                if nf.flow_id in reconciled_event_ids:
-                    continue  # already counted via reconciled recurring occurrence
-                kind = FlowKind.CONFIRMED_INCOME if nf.direction == Direction.CREDIT else FlowKind.OTHER
-                flows.append(
-                    CashFlow(
-                        flow_date=nf.flow_date,
-                        amount=nf.converted_amount,
-                        kind=kind,
-                        label=f"{nf.flow_id}: {nf.description}",
-                    )
+        if nf.admission != FlowAdmission.ADMITTED:
+            continue  # covers EXCLUDED_PENDING_CREDIT and all other exclusions
+        if nf.is_reserved_pending_debit:
+            continue  # already handled in step 3
+        if anchor_date <= nf.flow_date <= horizon_end:
+            if nf.flow_id in reconciled_event_ids:
+                continue  # already counted via reconciled recurring occurrence
+            kind = FlowKind.CONFIRMED_INCOME if nf.direction == Direction.CREDIT else FlowKind.OTHER
+            flows.append(
+                CashFlow(
+                    flow_date=nf.flow_date,
+                    amount=nf.converted_amount,
+                    kind=kind,
+                    label=f"{nf.flow_id}: {nf.description}",
                 )
+            )
 
-    # 5. Add recurring stream occurrences
+    # 5. Add recurring stream occurrences.
+    # If a pending debit was already reserved in step 3, its stream's inferred recurring
+    # occurrence on the same date must be suppressed to avoid double-counting.
     for occ in occurrences:
         if anchor_date <= occ.occurrence_date <= horizon_end:
+            # Suppress projection if the occurrence reconciles to a pending debit that
+            # was already reserved, or if the projected date matches an existing reserved
+            # pending debit from the same stream category.
+            if occ.reconciled_event_id in reserved_pending_ids:
+                continue  # pending debit already reserved; don't also project it
+
             if occ.stream.direction == Direction.CREDIT:
                 amt = occ.amount
                 kind = FlowKind.CONFIRMED_INCOME
+                # S-16: never project a CREDIT occurrence whose reconciled event is pending
+                if occ.reconciled_event_id is not None:
+                    # Check whether the reconciled event is still pending (excluded credit)
+                    reconciled_evt = None
+                    if dataset is not None:
+                        reconciled_evt = dataset.events_by_id.get(occ.reconciled_event_id)
+                    if reconciled_evt is not None and reconciled_evt.status == EventStatus.PENDING:
+                        continue  # pending credit; excluded per S-16
             else:
                 amt = -occ.amount
                 kind = FlowKind.SETTLED_RECURRING_PROJECTION

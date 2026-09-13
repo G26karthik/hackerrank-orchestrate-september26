@@ -1,36 +1,37 @@
 {
-  "release_id": "final_stage17_audit_repaired_release",
-  "timestamp": "2026-09-13T14:05:00+05:30",
+  "release_id": "final_stage18_readiness_repaired_release",
+  "timestamp": "2026-09-13T15:35:00+05:30",
   "git_branch": "main",
   "artifacts": {
     "code_zip": {
       "path": "code.zip",
-      "sha256": "5CA45B33ADB71EBD98FE4328D9C07014E84A430FA0C5D3652EC66E3743E4556B",
-      "bytes": 271977,
-      "description": "Self-contained code archive, pinned dependencies, tests, documentation, usage report, strictly zero dataset files."
+      "sha256": "0461be93e2e163f3647621bdb4787bd2d36c0156538c4ed2b791f77b43ab75df",
+      "bytes": 279300,
+      "description": "Self-contained code archive, pinned dependencies, 328 tests, documentation, usage report, strictly zero dataset files."
     },
     "output_csv": {
       "path": "output.csv",
-      "sha256": "0E29DA906C46BA5BE11EA3483D95D87A571340A8FF261274866E857BBA641388",
-      "bytes": 52409,
+      "sha256": "40ec3142524627a3b0ec4e7561c192d86e0bb9a05f8f634ba85a1c525058d0c9",
+      "bytes": 52281,
       "description": "Final predictions for 250 evaluation requests (request_26 to request_275), RFC 4180 CRLF compliant."
     },
     "log_txt": {
       "path": "log.txt",
-      "sha256": "A20214B80FFC91E5B8AD0AB9F70D9AD3FD33B05B56CC7373301640EBA828AB45",
-      "bytes": 126934,
-      "description": "Authentic, complete development transcript covering Stages 1 through 17."
+      "sha256": "dd66a7a6b4081d37963fb2b61fb1efacf811770615a054ccc0b08b4fc6da14cb",
+      "bytes": 134632,
+      "description": "Authentic, complete development transcript covering Stages 1 through 18."
     }
   },
   "benchmarks": {
-    "unit_tests_passing": "318/318",
+    "unit_tests_passing": "328/328",
+    "probe_v4_checks": "14/14 PASSED",
     "clean_room_verification": "PASSED (4/4 stages)",
-    "public_sample_method_match": "20/25 (80%)",
-    "public_sample_plan_match": "19/25 (76%)",
+    "public_sample_method_match": "19/25 (76%)",
+    "public_sample_plan_match": "18/25 (72%)",
     "public_sample_spending_changes": "22/25 (88%)",
-    "public_sample_status": "17/25 (68%)",
+    "public_sample_status": "16/25 (64%)",
     "public_sample_capacity": "3/25 (12%)",
-    "explanation_grounding": "25/25 (100%)",
+    "explanation_grounding": "24/25 (96%)",
     "reference_evaluator_agreement": "233/250 (93.2%)"
   }
 }

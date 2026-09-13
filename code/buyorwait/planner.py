@@ -159,27 +159,45 @@ def apply_spending_changes_to_flows(
     event_to_stream = {sc.canonical_event_id: sc for sc in stream_candidates}
     modified_flows: list[CashFlow] = []
 
-    stop_descriptions: list[str] = []
-    reduce_map: dict[str, Decimal] = {}
+    stop_candidates: list[FlexibleStreamCandidate] = []
+    reduce_map: dict[FlexibleStreamCandidate, Decimal] = {}
 
     for ch in changes:
         sc = event_to_stream.get(ch.event_id)
         if sc is None:
             continue
         if isinstance(ch, StopChange):
-            stop_descriptions.append(sc.description)
+            stop_candidates.append(sc)
         elif isinstance(ch, ReduceChange):
-            reduce_map[sc.description] = ch.new_amount
+            reduce_map[sc] = ch.new_amount
 
-    def _matches_stream(stream_desc: str, flow_lbl: str) -> bool:
-        s_clean = stream_desc.strip().lower()
+    def _matches_stream(stream_candidate: FlexibleStreamCandidate, flow_lbl: str) -> bool:
+        """Match a flow label to a stream candidate using both category and description.
+
+        Flow label format: 'recurring {category}: {description}' or '{category}: {description}'
+        The stream candidate carries category and description separately.
+        We require BOTH the category prefix AND the description suffix to match,
+        so distinct streams that share a description (e.g. 'monthly membership' for
+        both gym and insurance) are correctly kept separate.
+        """
         lbl_clean = flow_lbl.strip().lower()
         if lbl_clean.endswith(" (reduced)"):
             lbl_clean = lbl_clean[:-10].strip()
-        if ": " in lbl_clean:
-            desc_part = lbl_clean.split(": ", 1)[1].strip()
-            return desc_part == s_clean
-        return lbl_clean == s_clean or lbl_clean == f"recurring {s_clean}"
+
+        s_category = stream_candidate.category.value.lower()
+        s_desc = stream_candidate.description.strip().lower()
+
+        # Build expected label prefix: 'recurring {category}: {description}'
+        expected_full = f"recurring {s_category}: {s_desc}"
+        if lbl_clean == expected_full:
+            return True
+
+        # Also accept bare '{category}: {description}' form
+        expected_bare = f"{s_category}: {s_desc}"
+        if lbl_clean == expected_bare:
+            return True
+
+        return False
 
     for flow in flows:
         if flow.kind != FlowKind.SETTLED_RECURRING_PROJECTION:
@@ -190,8 +208,8 @@ def apply_spending_changes_to_flows(
         matched_reduce = None
 
         flow_lbl = flow.label.lower()
-        for s_desc in stop_descriptions:
-            if _matches_stream(s_desc, flow_lbl):
+        for sc in stop_candidates:
+            if _matches_stream(sc, flow_lbl):
                 matched_stop = True
                 break
 
@@ -199,8 +217,8 @@ def apply_spending_changes_to_flows(
             # Flow is completely stopped
             continue
 
-        for r_desc, min_amt in reduce_map.items():
-            if _matches_stream(r_desc, flow_lbl):
+        for sc, min_amt in reduce_map.items():
+            if _matches_stream(sc, flow_lbl):
                 matched_reduce = min_amt
                 break
 

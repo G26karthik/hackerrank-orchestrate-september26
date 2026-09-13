@@ -295,43 +295,72 @@ def extract_image_observation(
     either way. Raises whatever `OpenAIClient.create` raises on a fatal
     error -- never returns a fabricated observation for a call that failed.
     """
-    # Locate image file across media_root, DATASET_DIR, and candidate paths
+    # Locate image file across media_root, DATASET_DIR, or default candidate paths
     candidates = []
     if media_root:
         mr = Path(media_root)
         candidates.append(mr / f"{image.image_id}.png")
         candidates.append(mr / "media" / "images" / f"{image.image_id}.png")
-    if "DATASET_DIR" in os.environ:
+        candidates.append(mr / "images" / f"{image.image_id}.png")
+        if not mr.exists() and "DATASET_DIR" in os.environ:
+            ds_dir = Path(os.environ["DATASET_DIR"])
+            candidates.append(ds_dir / "media" / "images" / f"{image.image_id}.png")
+            candidates.append(ds_dir / f"{image.image_id}.png")
+    elif "DATASET_DIR" in os.environ:
         candidates.append(Path(os.environ["DATASET_DIR"]) / "media" / "images" / f"{image.image_id}.png")
-    candidates.extend([
-        Path("dataset/media/images") / f"{image.image_id}.png",
-        Path(__file__).resolve().parents[1] / "dataset" / "media" / "images" / f"{image.image_id}.png",
-        Path(__file__).resolve().parents[2] / "dataset" / "media" / "images" / f"{image.image_id}.png",
-    ])
+        candidates.append(Path(os.environ["DATASET_DIR"]) / f"{image.image_id}.png")
+    else:
+        candidates.extend([
+            Path("dataset/media/images") / f"{image.image_id}.png",
+            Path(__file__).resolve().parents[1] / "dataset" / "media" / "images" / f"{image.image_id}.png",
+            Path(__file__).resolve().parents[2] / "dataset" / "media" / "images" / f"{image.image_id}.png",
+        ])
     path = next((c for c in candidates if c.exists()), None)
 
-    source_sha256 = None
-    if path is not None and path.exists():
-        source_bytes = path.read_bytes()
-        source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+    if path is None or not path.exists():
+        # Source image file is absent from disk.
+        # Do not fall back to snapshot cache or claim absent source bytes were verified.
+        obs = ImageObservation(
+            image_id=image.image_id,
+            source_sha256="absent",
+            document_type="absent",
+            legible=False,
+            amount_candidates=(),
+            currency=None,
+            net_pay=None,
+            gross_pay=None,
+            tax=None,
+            total=None,
+            paid_amount=None,
+            balance_due=None,
+            cash_tendered=None,
+            change=None,
+            due_date_candidates=(),
+            payment_status=None,
+            source_regions=(),
+            notes=f"Absent: source image file for {image.image_id} not found on disk at media_root",
+            model="none",
+            reasoning_effort=reasoning_effort,
+            provider_response_id=None,
+        )
+        return obs, False, None
+
+    source_bytes = path.read_bytes()
+    source_sha256 = hashlib.sha256(source_bytes).hexdigest()
 
     model_name = client.model if client is not None else config.RUNTIME_MODEL
     cached = None
     if not force:
-        if source_sha256 is not None:
-            key = CacheKey(
-                source_id=image.image_id,
-                source_sha256=source_sha256,
-                model=model_name,
-                prompt_version=PROMPT_VERSION,
-                schema_version=IMAGE_SCHEMA_VERSION,
-                decoding_config=f"effort={reasoning_effort}",
-                tool_contract_version="v1",
-            )
-            cached = cache.get(key)
-        else:
-            # Only when image file is not present on disk, allow fallback to snapshot cache by source_id
-            cached = cache.get_by_source_id(image.image_id)
+        key = CacheKey(
+            source_id=image.image_id,
+            source_sha256=source_sha256,
+            model=model_name,
+            prompt_version=PROMPT_VERSION,
+            schema_version=IMAGE_SCHEMA_VERSION,
+            decoding_config=f"effort={reasoning_effort}",
+            tool_contract_version="v1",
+        )
+        cached = cache.get(key)
 
     if not force and cached is not None:
         obs = _parse_image_observation(
@@ -503,6 +532,15 @@ def get_all_resolved_image_amounts(
     if cache is None:
         cache = ContentAddressedCache(Path(".llm_cache") / "observations")
 
+    effective_mr = media_root
+    if effective_mr is None:
+        if hasattr(dataset, "dataset_dir") and (Path(dataset.dataset_dir) / "media" / "images").exists():
+            effective_mr = Path(dataset.dataset_dir) / "media" / "images"
+        elif "DATASET_DIR" in os.environ and (Path(os.environ["DATASET_DIR"]) / "media" / "images").exists():
+            effective_mr = Path(os.environ["DATASET_DIR"]) / "media" / "images"
+        else:
+            effective_mr = "dataset/media/images"
+
     resolved_amounts: dict[str, Decimal] = {}
     for img in dataset.images:
         if not img.related_event_id:
@@ -513,7 +551,7 @@ def get_all_resolved_image_amounts(
         try:
             obs, hit, res = extract_image_observation(
                 image=img,
-                media_root=media_root or "dataset/media/images",
+                media_root=effective_mr,
                 client=client,
                 cache=cache,
                 force=force,

@@ -75,43 +75,45 @@ During early prototype development, multiple edge cases were uncovered that comp
 
 ## 4. Independent Audits & Defensible Repairs
 
-Rigorous external audits challenged the system with counterexamples and adversarial tests, driving ten architectural fixes:
+Rigorous external audits challenged the system with counterexamples and adversarial tests, driving architectural fixes across Stages 16–18:
 
 1. **Underpayment Rejection**: Enforced that plan sums must strictly equal the requested amount (for full/wait/partial) or option total (for installments). Rejects accepting a plan paying 1 for a request of 50.
 2. **Unjustified Rejection Prevention**: In `independent_verifier.py`, asserts that `not_recommended` is rejected if full payment or an eligible partial schedule is demonstrably safe.
 3. **Maximal Safe Capacity**: Searches for the maximal safe amount $C \in [0, \text{requested\_amount}]$ that preserves the minimum balance across all 90 days, rejecting non-maximal zero-capacity estimates when positive capacity exists.
-4. **Stable Stream & Occurrence Identity**: Spending changes match exact recurring stream descriptions on flow labels (`recurring <cat>: <desc>`). Stopping a `gym` stream removes `recurring gym: gym` while strictly preserving `recurring gym insurance: gym insurance` and pending debits.
-5. **Ranker Hierarchy Enforcement**: Adheres strictly to the S-14 6-level hierarchy: deadline compliance $\to$ binary no-spending-changes preference $\to$ total cost $\to$ earliest payment date $\to$ fewest payments $\to$ option ID.
-6. **Date and Method Timing**: Rejects `full_payment` dated tomorrow instead of today; full payment must be scheduled today.
-7. **Request Permission Enforcement**: Rejects `partial_payment` when `allows_partial_payment=False` or user profile excludes partial payments.
-8. **Installment Offer Schedule Conformity**: Rejects installment entries whose dates diverge from the provider's option schedule (`first_payment_date + interval * index`).
-9. **Factual Explanation Grounding**: Rejects fabricated numerical claims (e.g. ungrounded salary figures like 999,999) and ungrounded buzzwords. For `not_recommended` where full payment is user-excluded and partial is disallowed (e.g. `request_251`), explains eligibility constraints rather than incorrectly claiming a floor breach.
-10. **Dataset-Aware CSV Contract**: `validate_output_csv` requires the exact 250 evaluation IDs (`request_26` to `request_275`), rejects empty CSVs with clear diagnostic feedback, and rejects underpayments or sample files submitted as final submissions.
+4. **Stable Stream & Category Identity**: Spending changes match composite recurring stream identity (`category + description`). Stopping a `gym` stream removes `recurring gym: monthly membership` while strictly preserving `recurring insurance: monthly membership` and pending debits.
+5. **Pending-Credit Exclusion**: The flow assembler and recurrence resolver strictly isolate pending credits. Unconfirmed pending income (e.g., pending salary) is never promoted to confirmed recurring cash flow.
+6. **Pending-Debit Single Reservation**: Pending debits are reserved exactly once against available liquid funds on the anchor date and are reconciled so that settlement-date recurrence does not double-deduct the same obligation.
+7. **Evidence Timing & Effective Date Bounds**: Evidence observed after the request date or with future effective dates is isolated and never projected backward into earlier forecast intervals.
+8. **Typed Evidence Admission in Investigation**: Model-submitted resolutions in adaptive investigation are converted into typed `EvidenceFact` records with validated source ownership before reaching the planner.
+9. **Multi-Turn Tool Protocol Continuity**: In OpenAI function calling, multi-turn history strictly includes the assistant's preceding `function_call` items before feeding `function_call_output` back to the model.
+10. **Source Presence Verification**: Missing image files on disk return illegible/absent status rather than claiming absent source bytes were verified.
+11. **Ranker Hierarchy Enforcement**: Adheres strictly to the S-14 6-level hierarchy: deadline compliance $\to$ binary no-spending-changes preference $\to$ total cost $\to$ earliest payment date $\to$ fewest payments $\to$ option ID.
+12. **Dataset-Aware CSV Contract**: `validate_output_csv` requires an accessible dataset, checks the exact 250 evaluation IDs (`request_26` to `request_275`), rejects empty/sample CSVs, and fails with exit code 1 if the dataset cannot be loaded.
 
 ---
 
 ## 5. Measured Evaluation & Benchmark Results
 
 ### Public Development Sample Results (25 Requests)
-Evaluating against `dataset/sample_requests.csv` via `code/evaluation/main.py`:
+Evaluating against `dataset/sample_requests.csv` via `code/main.py --mode sample`:
 
 | Field | Measured Result | Context / Rationale |
 | :--- | :--- | :--- |
-| **Safe Capacity Matches** | **3 / 25** | Shipped evaluator's 0.005 tolerance. In 17 cases our capacity exceeds sample, in 5 it is below. |
-| **Affordability Status** | **17 / 25** | 4 cases (`request_06`, `request_11`, `request_13`, `request_21`) are labeled `affordable_now` because available cash headroom safely covers the purchase today without requiring changes or waiting. |
-| **Payment Method** | **20 / 25** | Method matches in 80% of development examples. |
-| **Exact Payment Plan** | **19 / 25** | Plan matches in 76% of development examples. |
-| **Earliest Full-Payment Date** | **17 / 25** | Includes 7 cases where both sample and engine determine no full payment date is possible within 90 days. |
-| **Spending Changes Set** | **22 / 25** | Strict preservation of protected categories and essential debits. |
-| **Explanation Grounding** | **25 / 25** | 100% grounded against verified structured facts and financial decisions. |
+| **Safe Capacity Matches** | **3 / 25 (12%)** | Shipped evaluator's 0.005 tolerance. Currency-specific relative errors range from 1.97% to 7.97%. |
+| **Affordability Status** | **16 / 25 (64%)** | 4 cases (`request_06`, `request_11`, `request_13`, `request_21`) are labeled `affordable_now` because available cash headroom safely covers the purchase today without requiring changes or waiting. |
+| **Payment Method** | **19 / 25 (76%)** | Method matches in 76% of development examples. |
+| **Exact Payment Plan** | **18 / 25 (72%)** | Plan matches in 72% of development examples (19 date-set matches, 20 sum matches). |
+| **Earliest Full-Payment Date** | **16 / 25 (64%)** | Includes 7 cases where both sample and engine determine no full payment date is possible within 90 days. |
+| **Spending Changes Set** | **22 / 25 (88%)** | Strict preservation of protected categories and essential debits. |
+| **Explanation Grounding (Proxy)** | **24 / 25 (96%)** | Evaluator proxy flags `request_15`; all 25 rows are generated from verified structured reasons. |
 
 *Sample Divergence Analysis*:
 - In requests 6, 11, 13, and 21, the user has sufficient immediate liquid balance above their floor throughout the 90-day horizon to pay in full today. The public development labels suggested waiting or pausing subscriptions; our engine recommends `affordable_now` because no floor breach occurs under exact daily cash simulation.
-- In request 17, normalizing historical payslip and invoice images into the forecast adjusts available capacity to INR 208,252.37, correctly reflecting verified historical obligations.
+- In requests 83, 138, and 243, pending event reconciliation ensures unconfirmed credits are excluded and pending debits are reserved once.
 
 ### Automated Test Suite & Independent Reference Comparison
-- **Automated Regression Suites**: 318 tests across 18 test suites run in **~5.0 seconds** with a 100% pass rate.
-- **Independent Reference Evaluator**: Compared candidate plans across all 250 evaluation requests between production planner and `reference_evaluate_candidates`. 233/250 decisions match identically. The remaining 17 differences occur exclusively on requests where spending reductions are required (the independent reference evaluator does not model spending modifications).
+- **Automated Regression Suites**: 328 tests across 19 test suites run in **~14.0 seconds** with a 100% pass rate.
+- **Independent Reference Evaluator**: Candidate plans match identically across 233/250 requests; the remaining 17 differences reflect spending changes not modeled by the reference evaluator.
 
 ---
 

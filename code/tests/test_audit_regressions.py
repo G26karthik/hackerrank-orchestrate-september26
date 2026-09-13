@@ -645,5 +645,343 @@ class TestAuditRegressions(unittest.TestCase):
         self.assertIn("exceed the limit of 11 months", expl)
 
 
+class Stage18AuditRepairsTests(unittest.TestCase):
+    """Permanent regression tests locking down the Stage 18 readiness review fixes."""
+
+    @classmethod
+    def setUpClass(cls):
+        from buyorwait.io_load import build_dataset
+        cls.dataset_dir = _resolve_dataset_dir()
+        cls.dataset = build_dataset(cls.dataset_dir)
+
+    def test_pending_credit_excluded_from_income_flows(self):
+        """Pending credit must never be admitted into confirmed income flows through recurrence."""
+        from buyorwait.schemas import ExpenseCategory as C, Direction, EventStatus, EventType
+        from buyorwait.forecast import assemble_flows
+        from dataclasses import replace
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        prof = self.dataset.profiles_by_user[req.user_id]
+        base_event = self.dataset.events[0]
+        uid = req.user_id
+        events = []
+        for month in [10, 11, 12]:
+            d = date(2025, month, 15)
+            events.append(replace(
+                base_event,
+                event_id=f"audit_sal_{month}",
+                user_id=uid,
+                event_date=d,
+                settlement_date=d,
+                category=C.SALARY,
+                description="monthly salary",
+                amount=Decimal("1000"),
+                currency=prof.home_currency,
+                direction=Direction.CREDIT,
+                event_type=EventType.INCOME,
+                status=EventStatus.SETTLED,
+                linked_event_id=None,
+            ))
+        pending_income = replace(
+            events[0],
+            event_id="audit_pending_salary",
+            event_date=date(2026, 1, 15),
+            settlement_date=date(2026, 1, 15),
+            status=EventStatus.PENDING,
+            amount=Decimal("5000"),
+        )
+        all_evts = events + [pending_income]
+        synth_ds = replace(
+            self.dataset,
+            events=tuple(all_evts),
+            events_by_id={e.event_id: e for e in all_evts},
+            events_by_user={uid: tuple(all_evts)},
+            messages=(), messages_by_id={}, messages_by_user={}, messages_by_event={}, messages_by_request={},
+            images=(), images_by_id={}, images_by_event={}, images_by_request={},
+        )
+        flows = assemble_flows(synth_ds, uid, anchor_date=date(2026, 1, 1), image_amounts={})
+        jan_income = [f for f in flows if f.flow_date.month == 1 and f.amount > 0]
+        self.assertFalse(any(f.amount == Decimal("5000") for f in jan_income))
+        self.assertTrue(all(f.amount == Decimal("1000") for f in jan_income))
+
+    def test_pending_debit_deducted_once_as_reserve(self):
+        """Pending debit obligation must be reserved once on anchor date, not deducted again at settlement."""
+        from buyorwait.schemas import ExpenseCategory as C, Direction, EventStatus, EventType
+        from buyorwait.forecast import assemble_flows
+        from dataclasses import replace
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        prof = self.dataset.profiles_by_user[req.user_id]
+        base_event = self.dataset.events[0]
+        uid = req.user_id
+        events = []
+        for month in [10, 11, 12]:
+            d = date(2025, month, 10)
+            events.append(replace(
+                base_event,
+                event_id=f"audit_rent_{month}",
+                user_id=uid,
+                event_date=d,
+                settlement_date=d,
+                category=C.RENT,
+                description="monthly rent",
+                amount=Decimal("20"),
+                currency=prof.home_currency,
+                direction=Direction.DEBIT,
+                event_type=EventType.EXPENSE,
+                status=EventStatus.SETTLED,
+                linked_event_id=None,
+            ))
+        pending_rent = replace(
+            events[0],
+            event_id="audit_pending_rent",
+            event_date=date(2026, 1, 10),
+            settlement_date=date(2026, 1, 10),
+            status=EventStatus.PENDING,
+            amount=Decimal("20"),
+        )
+        all_evts = events + [pending_rent]
+        synth_ds = replace(
+            self.dataset,
+            events=tuple(all_evts),
+            events_by_id={e.event_id: e for e in all_evts},
+            events_by_user={uid: tuple(all_evts)},
+            messages=(), messages_by_id={}, messages_by_user={}, messages_by_event={}, messages_by_request={},
+            images=(), images_by_id={}, images_by_event={}, images_by_request={},
+        )
+        flows = assemble_flows(synth_ds, uid, anchor_date=date(2026, 1, 1), image_amounts={})
+        jan_debits = [f for f in flows if f.flow_date.month == 1 and f.amount == Decimal("-20")]
+        self.assertEqual(len(jan_debits), 1, f"Expected exactly 1 debit of 20 in January, found {len(jan_debits)}")
+
+    def test_future_evidence_timing_does_not_alter_earlier_forecast(self):
+        """Future message observed after anchor date with future effective date must not change earlier flows."""
+        from buyorwait.schemas import ExpenseCategory as C, Direction, EventStatus, EventType
+        from buyorwait.forecast import assemble_flows
+        import buyorwait.evidence as ev
+        from dataclasses import replace
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        prof = self.dataset.profiles_by_user[req.user_id]
+        base_event = self.dataset.events[0]
+        uid = req.user_id
+        events = []
+        for month in [10, 11, 12]:
+            d = date(2025, month, 15)
+            events.append(replace(
+                base_event,
+                event_id=f"audit_sal_{month}",
+                user_id=uid,
+                event_date=d,
+                settlement_date=d,
+                category=C.SALARY,
+                description="monthly salary",
+                amount=Decimal("1000"),
+                currency=prof.home_currency,
+                direction=Direction.CREDIT,
+                event_type=EventType.INCOME,
+                status=EventStatus.SETTLED,
+                linked_event_id=None,
+            ))
+        synth_ds = replace(
+            self.dataset,
+            events=tuple(events),
+            events_by_id={e.event_id: e for e in events},
+            events_by_user={uid: tuple(events)},
+            messages=(), messages_by_id={}, messages_by_user={}, messages_by_event={}, messages_by_request={},
+            images=(), images_by_id={}, images_by_event={}, images_by_request={},
+        )
+        fact = ev.EvidenceFact(
+            source_type="message",
+            source_id="synthetic_future_salary",
+            user_id=uid,
+            related_event_id=None,
+            related_request_id=None,
+            fact_kind=ev.FactKind.INCOME_AMOUNT_CHANGE,
+            amount=Decimal("9999"),
+            currency=prof.home_currency,
+            temporal_scope=ev.TemporalScope(effective_from=date(2026, 2, 15), effective_until=None),
+            ambiguous=False,
+            ambiguity_note="",
+            raw_excerpt="Salary changes to 9999 from February 15",
+            observed_time="2026-01-30T12:00:00",
+            effective_time="2026-02-15",
+        )
+        flows = assemble_flows(synth_ds, uid, anchor_date=date(2026, 1, 1), evidence_facts=(fact,), image_amounts={})
+        jan_income = [f for f in flows if f.flow_date.month == 1 and f.amount > 0]
+        self.assertFalse(any(f.amount == Decimal("9999") for f in jan_income))
+        self.assertTrue(all(f.amount == Decimal("1000") for f in jan_income))
+
+    def test_stream_identity_preserves_distinct_streams(self):
+        """Stopping one stream candidate must not remove another stream with identical description."""
+        from buyorwait.schemas import ExpenseCategory as C
+        from buyorwait.planner import FlexibleStreamCandidate, apply_spending_changes_to_flows
+        from buyorwait.csv_format import StopChange
+        from buyorwait.simulator import CashFlow, FlowKind
+
+        a = date(2026, 1, 1)
+        stream = FlexibleStreamCandidate(
+            category=C.GYM,
+            description="monthly membership",
+            canonical_event_id="gym_audit",
+            typical_amount=Decimal("20"),
+            minimum_allowed_amount=None,
+            is_stoppable=True,
+            is_reducible=False,
+        )
+        flows = (
+            CashFlow(a, Decimal("-20"), FlowKind.SETTLED_RECURRING_PROJECTION, "recurring gym: monthly membership"),
+            CashFlow(a, Decimal("-100"), FlowKind.SETTLED_RECURRING_PROJECTION, "recurring insurance: monthly membership"),
+        )
+        after = apply_spending_changes_to_flows(flows, (StopChange("gym_audit"),), (stream,))
+        self.assertEqual(len(after), 1)
+        self.assertEqual(after[0].label, "recurring insurance: monthly membership")
+        self.assertEqual(after[0].amount, Decimal("-100"))
+
+    def test_custom_plan_sums_to_requested_amount(self):
+        """simulate_candidate must derive obligation from request amount, rejecting underpayments."""
+        from buyorwait.tools import simulate_candidate
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        res = simulate_candidate(self.dataset, request_id=req.request_id, custom_plan=f"{req.request_date}:1")
+        self.assertFalse(res["sums_to_requested_amount"])
+
+    def test_absent_image_source_not_verified(self):
+        """extract_image_observation with missing image file on disk must return legible=False and absent status."""
+        import tempfile
+        import buyorwait.evidence as ev
+        from buyorwait.cache import ContentAddressedCache
+
+        image = self.dataset.images[0]
+        with tempfile.TemporaryDirectory() as td:
+            cache = ContentAddressedCache(Path(td) / "cache")
+            obs, hit, _ = ev.extract_image_observation(image=image, media_root=td, cache=cache)
+            self.assertFalse(hit)
+            self.assertFalse(obs.legible)
+            self.assertEqual(obs.source_sha256, "absent")
+
+    def test_empty_model_response_marked_incomplete(self):
+        """Adaptive investigation must mark empty model output as incomplete."""
+        from buyorwait.investigation import run_adaptive_investigation
+        from buyorwait.openai_client import CallResult
+
+        class ScriptedClient:
+            model = "offline-test-double"
+            def __init__(self, items):
+                self.items = iter(items)
+            def create(self, **kw):
+                return next(self.items)
+
+        fake_res = CallResult(
+            output_text="",
+            output_items=(),
+            status="completed",
+            incomplete_reason=None,
+            response_id="offline_mock",
+            provider_request_id=None,
+            latency_ms=0,
+            input_tokens=0,
+            output_tokens=0,
+            reasoning_tokens=0,
+            cached_tokens=0,
+            retries=0,
+        )
+        req = self.dataset.all_requests_by_id["request_01"]
+        st = run_adaptive_investigation(dataset=self.dataset, request_id=req.request_id, client=ScriptedClient([fake_res]))
+        self.assertFalse(st.completed)
+
+    def test_accepted_fact_resolution_converts_to_typed_evidence(self):
+        """submit_fact_resolution must convert dict resolutions to typed facts without crashing."""
+        import json
+        import main
+        from buyorwait.openai_client import CallResult
+
+        class ScriptedClient:
+            model = "offline-test-double"
+            def __init__(self, items):
+                self.items = iter(items)
+            def create(self, **kw):
+                return next(self.items)
+
+        def tool(name, args, cid="test_call"):
+            return dict(type="function_call", call_id=cid, name=name, arguments=json.dumps(args))
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        event = self.dataset.events_by_user[req.user_id][0]
+        fake_res = CallResult(
+            output_text="",
+            output_items=(tool("submit_fact_resolution", {
+                "resolution": {
+                    "source_type": "event",
+                    "source_id": event.event_id,
+                    "field_name": "amount",
+                    "value": str(event.amount),
+                    "confidence": 1,
+                    "justification": "Read existing event amount",
+                }
+            }),),
+            status="completed",
+            incomplete_reason=None,
+            response_id="offline_mock",
+            provider_request_id=None,
+            latency_ms=0,
+            input_tokens=0,
+            output_tokens=0,
+            reasoning_tokens=0,
+            cached_tokens=0,
+            retries=0,
+        )
+        # Must not raise AttributeError: 'dict' object has no attribute 'user_id'
+        row, cand, st = main.run_pipeline_for_request(
+            self.dataset, req, (), investigate=True, client=ScriptedClient([fake_res])
+        )
+        self.assertIsNotNone(row)
+
+    def test_multi_turn_tool_conversation_preserves_function_call(self):
+        """Tool conversation history must include the model's function_call item before function_call_output."""
+        import json
+        import httpx
+        import openai
+        from buyorwait.investigation import run_adaptive_investigation
+        from buyorwait.openai_client import OpenAIClient
+
+        req = self.dataset.all_requests_by_id["request_01"]
+        requests_seen = []
+        def handler(request):
+            body = json.loads(request.content)
+            requests_seen.append(body)
+            if len(requests_seen) == 1:
+                out = [dict(type="function_call", call_id="c1", name="get_user_context", arguments=json.dumps({"user_id": req.user_id}))]
+            else:
+                out = [dict(type="message", role="assistant", content=[dict(type="output_text", text="Concluded")])]
+            return httpx.Response(200, json={"id": "resp_offline", "status": "completed", "output": out, "usage": {"input_tokens": 10, "output_tokens": 5}})
+
+        sdk = openai.OpenAI(api_key="offline-placeholder", http_client=httpx.Client(transport=httpx.MockTransport(handler), trust_env=False))
+        adapter = OpenAIClient(client=sdk)
+        run_adaptive_investigation(dataset=self.dataset, request_id=req.request_id, client=adapter)
+        sdk.close()
+
+        self.assertGreaterEqual(len(requests_seen), 2)
+        second_input = requests_seen[1]["input"]
+        has_fn_call = any(x.get("type") == "function_call" for x in second_input)
+        has_fn_out = any(x.get("type") == "function_call_output" for x in second_input)
+        self.assertTrue(has_fn_call, "Second turn input must contain the preceding function_call")
+        self.assertTrue(has_fn_out, "Second turn input must contain function_call_output")
+
+    def test_validate_csv_requires_existing_dataset(self):
+        """--validate-csv must fail when dataset directory does not exist or cannot be loaded."""
+        import subprocess
+        import tempfile
+        code_dir = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as td:
+            nonexistent = Path(td) / "no_dataset"
+            res = subprocess.run(
+                [sys.executable, str(code_dir / "main.py"), "--validate-csv", str(code_dir.parent / "output.csv"), "--dataset", str(nonexistent)],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(res.returncode, 0)
+            self.assertIn("FAILED", res.stderr + res.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

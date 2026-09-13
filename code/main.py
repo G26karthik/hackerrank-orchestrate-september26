@@ -114,14 +114,30 @@ def run_pipeline_for_request(
 
     investigation_state = None
     if investigate:
+        # Build a cache for the investigation's image tool so inspect_image can serve
+        # real bytes rather than returning metadata-only.
+        from buyorwait.cache import ContentAddressedCache  # noqa: PLC0415
+        _cache_path = Path(".llm_cache") / "observations"
+        if not _cache_path.exists() and hasattr(dataset, "dataset_dir"):
+            _alt = Path(dataset.dataset_dir).parent / ".llm_cache" / "observations"
+            if _alt.exists():
+                _cache_path = _alt
+        _inv_cache = ContentAddressedCache(_cache_path)
+        _media_root = str(Path(dataset.dataset_dir) / "media" / "images") if hasattr(dataset, "dataset_dir") else "dataset/media/images"
         investigation_state = run_adaptive_investigation(
             dataset=dataset,
             request_id=req.request_id,
             client=client,
+            cache=_inv_cache,
+            media_root=_media_root,
             limits=InvestigationLimits(max_steps=5, max_tool_calls=10),
         )
         if investigation_state and investigation_state.facts:
-            user_facts = tuple(user_facts) + tuple(investigation_state.facts)
+            # facts are now typed EvidenceFacts; filter to this user
+            user_facts = tuple(user_facts) + tuple(
+                f for f in investigation_state.facts
+                if hasattr(f, "user_id") and f.user_id == user_id
+            )
 
     # 1. Baseline flows and headroom
     base_flows = assemble_flows(
@@ -199,8 +215,23 @@ def run_pipeline_for_request(
     expl = explain(dataset, req.request_id, selected)
     is_valid_expl, expl_reason = validate_explanation(dataset, req.request_id, selected, expl)
     if not is_valid_expl:
-        # Fallback or warning (retains fact grounding)
-        print(f"Warning: explanation fact validation note on {req.request_id}: {expl_reason}", file=sys.stderr)
+        # Explanation validation failed: the generated explanation is not factually grounded.
+        # Log the validation failure and replace with a safe, minimal fallback explanation.
+        # We do NOT export the fabricated text under any circumstances.
+        print(
+            f"Warning: explanation validation failed for {req.request_id}: {expl_reason}",
+            file=sys.stderr,
+        )
+        # Build a minimal grounded fallback that will itself pass validation
+        prof = dataset.profiles_by_user[req.user_id]
+        currency = prof.home_currency.value
+        min_bal_int = int(prof.minimum_balance_to_keep)
+        min_bal_fmt = f"{min_bal_int:,}" if prof.minimum_balance_to_keep == prof.minimum_balance_to_keep.to_integral() else f"{prof.minimum_balance_to_keep:,.2f}"
+        expl = (
+            f"Decision: {selected.method.value}. "
+            f"Keep at least {currency} {min_bal_fmt} available. "
+            f"See payment_plan for full schedule."
+        )
 
     row = OutputRow(
         request_id=req.request_id,
@@ -527,10 +558,17 @@ def main(argv: list[str] | None = None) -> int:
         csv_path = Path(args.validate_csv)
         print(f"Validating CSV: {csv_path}")
         ds = None
+        dataset_path = args.dataset
         try:
-            ds = build_dataset(args.dataset)
-        except Exception:
-            pass
+            ds = build_dataset(dataset_path)
+        except Exception as exc:
+            # A missing or invalid dataset makes full contract validation impossible.
+            # Report failure rather than silently skipping dataset-level checks.
+            print(
+                f"CSV validation FAILED: dataset could not be loaded from '{dataset_path}': {exc}",
+                file=sys.stderr,
+            )
+            return 1
         ok, errs = validate_output_csv(csv_path, dataset=ds)
         if ok:
             print("CSV is 100% compliant with schema and contract.")
@@ -577,7 +615,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.rebuild_evidence:
         print(f"Extracted {len(all_facts)} structured evidence facts from {len(dataset.messages)} messages.")
         print(f"Verified {len(dataset.images)} image entries ({len(image_amounts)} resolved amounts).")
+        unresolved_count = len(dataset.images) - len(image_amounts)
         if args.live:
+            if unresolved_count > 0:
+                print(
+                    f"Live evidence extraction INCOMPLETE: {unresolved_count} of {len(dataset.images)} images "
+                    "could not be resolved (authentication failures or other errors).",
+                    file=sys.stderr,
+                )
+                return 1
             print("Live evidence extraction and cache update complete.")
         else:
             print("Deterministic replay cache verification complete.")

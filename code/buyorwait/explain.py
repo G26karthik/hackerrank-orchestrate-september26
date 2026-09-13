@@ -209,6 +209,16 @@ _FABRICATED_TERMS = (
     "employer confirmation",
 )
 
+# Narrative patterns that indicate invented financial claims about future events.
+# These patterns detect sentences like "A salary deposit of ZAR 18,000 will arrive tomorrow"
+# that reuse a grounded number in a fabricated narrative context.
+_FABRICATED_NARRATIVE_PATTERNS = (
+    # Claims about deposits/payments arriving in the future with specific amounts
+    r"(?i)\b(?:salary|paycheck|deposit|payment|transfer|credit)\s+(?:of|for)\s+\w+\s+[\d,]+\s+will\s+(?:arrive|come|be\s+(?:deposited|credited|received))",
+    r"(?i)\bwill\s+(?:arrive|come|be\s+deposited)\s+tomorrow\b",
+    r"(?i)\bexpect(?:ing|ed)?\s+(?:a\s+)?(?:salary|paycheck|deposit)\s+(?:of|for)\s+\w+\s+[\d,]+",
+)
+
 
 def validate_explanation(
     dataset: Dataset,
@@ -226,11 +236,22 @@ def validate_explanation(
     if profile is None:
         return False, f"unknown user_id: {request.user_id}"
 
-    # 1. Reject fabricated / hallucinated claims
+    # 1. Reject fabricated / hallucinated claims (term list)
     lower_text = explanation_text.lower()
     for term in _FABRICATED_TERMS:
         if term in lower_text:
             return False, f"explanation contains fabricated claim: '{term}'"
+
+    # 1b. Reject fabricated narrative patterns regardless of whether the figures used are
+    # grounded. A sentence like 'A salary deposit of ZAR 18,000 will arrive tomorrow'
+    # invents a future event even when 18,000 happens to equal a legitimate grounded number
+    # (e.g. minimum_balance_to_keep). Pattern matching catches such claim-shape fabrication.
+    import re as _re
+    for pattern in _FABRICATED_NARRATIVE_PATTERNS:
+        if _re.search(pattern, explanation_text):
+            return False, (
+                f"explanation contains fabricated future-event narrative matching pattern: {pattern!r}"
+            )
 
     # 2. Reject ungrounded financial figures
     import re

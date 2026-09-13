@@ -9,7 +9,7 @@
         "0",
         "-737",
         "-10165.88",
-        "227.05"
+        "1780.25"
       ],
       "IDR": [
         "1268004.2",
@@ -29,7 +29,7 @@
         "6.05"
       ],
       "INR": [
-        "-3445.58",
+        "5812.37",
         "-12700",
         "0",
         "-35597.21",
@@ -46,7 +46,7 @@
         "0",
         "-0.04758522727272727272727272727",
         "-0.1560045423853661530906635566",
-        "0.005972485269360269360269360269"
+        "0.04682896675084175084175084175"
       ],
       "IDR": [
         "0.02755452648963449085140597158",
@@ -66,7 +66,7 @@
         "0.008270676691729323308270676692"
       ],
       "INR": [
-        "-0.01745481256332320162107396150",
+        "0.02944463019250253292806484296",
         "-0.04761904761904761904761904762",
         "0",
         "-0.1296329570284049526584122360",
@@ -82,47 +82,52 @@
   "affordability_status": {
     "field_name": "affordability_status",
     "n": 25,
-    "exact_matches": 17,
+    "exact_matches": 16,
     "confusion": {
       "affordable_now->affordable_now": 3,
-      "affordable_with_plan->affordable_with_plan": 3,
+      "affordable_with_plan->affordable_later": 3,
       "affordable_later->affordable_later": 4,
       "not_affordable->not_affordable": 7,
       "affordable_with_plan->affordable_now": 3,
-      "affordable_with_plan->affordable_later": 2,
       "affordable_later->not_affordable": 1,
       "affordable_with_plan->not_affordable": 1,
-      "affordable_later->affordable_now": 1
+      "affordable_later->affordable_now": 1,
+      "affordable_with_plan->affordable_with_plan": 2
     }
   },
   "recommended_payment_method": {
     "field_name": "recommended_payment_method",
     "n": 25,
-    "exact_matches": 20,
+    "exact_matches": 19,
     "confusion": {
       "full_payment->full_payment": 6,
-      "installments->installments": 2,
+      "installments->not_recommended": 4,
       "wait->wait": 4,
       "not_recommended->not_recommended": 7,
-      "installments->not_recommended": 3,
       "wait->not_recommended": 1,
       "wait->full_payment": 1,
-      "partial_payment->partial_payment": 1
+      "partial_payment->partial_payment": 1,
+      "installments->installments": 1
     }
   },
   "payment_plan": {
     "field_name": "payment_plan",
     "n": 25,
     "parse_failures": [],
-    "exact_matches": 19,
-    "date_set_matches": 20,
-    "sum_matches": 21
+    "exact_matches": 18,
+    "date_set_matches": 19,
+    "sum_matches": 20
   },
   "earliest_date_for_full_payment": {
     "n": 25,
-    "exact_matches": 17,
+    "exact_matches": 16,
     "both_empty": 7,
     "mismatches": [
+      [
+        "request_02",
+        "2025-09-15",
+        "2025-10-15"
+      ],
       [
         "request_06",
         "2026-01-15",
@@ -131,7 +136,7 @@
       [
         "request_07",
         "2024-10-23",
-        "2024-11-23"
+        "2024-11-15"
       ],
       [
         "request_08",

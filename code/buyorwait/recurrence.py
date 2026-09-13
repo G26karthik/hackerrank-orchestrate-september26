@@ -190,6 +190,15 @@ def detect_recurring_streams(
         if f.fact_kind == FactKind.INCOME_ENDED:
             salary_ended = True
         elif f.fact_kind == FactKind.INCOME_AMOUNT_CHANGE and f.amount is not None:
+            # Only apply the amendment to the stream's typical_amount when the effective date
+            # is already visible at as_of_date. A future-effective amendment (e.g. "salary
+            # changes from Feb 15") must not alter the January projection; project_occurrences
+            # applies it to its proper future occurrences via provenance_notes.
+            effective_from = f.temporal_scope.effective_from if f.temporal_scope else None
+            if effective_from is not None and effective_from > as_of_date:
+                # Future-effective amendment: record but don't change current typical_amount.
+                # Leave salary_amount_amendment None so current projections use historical median.
+                continue
             # If foreign currency, convert at latest rate on or before as_of_date
             if f.currency and f.currency != home_currency:
                 try:
@@ -205,7 +214,10 @@ def detect_recurring_streams(
             else:
                 salary_amount_amendment = f.amount
         elif f.fact_kind == FactKind.INCOME_DATE_CHANGE and f.temporal_scope.effective_from:
-            salary_date_amendment = f.temporal_scope.effective_from.day
+            # Apply date changes only when effective at as_of_date
+            effective_from = f.temporal_scope.effective_from
+            if effective_from <= as_of_date:
+                salary_date_amendment = effective_from.day
         elif f.fact_kind == FactKind.RENT_PERCENTAGE_INCREASE and f.amount is not None:
             rent_increase_pct = f.amount
 

@@ -246,7 +246,11 @@ def simulate_candidate(
     anchor_date = req.request_date
     deadline = req.desired_completion_date
 
-    # 1. Resolve payment plan schedule and expected total
+    # 1. Resolve payment plan schedule and expected total.
+    # expected_total is ALWAYS derived from the request's actual obligation (or the
+    # selected offer's total), never from the proposed plan sum. A custom plan of
+    # 'YYYY-MM-DD:1' proposes to pay 1; the request amount is 25,256. These must
+    # be compared rather than equated, so sums_to_requested_amount catches underpayment.
     plan_entries: tuple[PlanEntry, ...]
     expected_total: Decimal
     if payment_option_id:
@@ -264,11 +268,14 @@ def simulate_candidate(
         expected_total = opt.total_payable_amount
     elif custom_plan:
         plan_entries = parse_payment_plan(custom_plan)
-        expected_total = sum((p.amount for p in plan_entries), Decimal(0))
+        # expected_total is the requested obligation, NOT the plan sum.
+        # The replay will compare plan_sum to expected_total and set sums_to_requested_amount.
+        expected_total = req.requested_amount
     else:
         # Default hypothesis: full payment today
         plan_entries = (PlanEntry(entry_date=anchor_date, amount=req.requested_amount),)
         expected_total = req.requested_amount
+
 
     # 2. Resolve forward cash flows (with or without spending changes)
     base_flows = assemble_flows(dataset, user_id, anchor_date=anchor_date)
