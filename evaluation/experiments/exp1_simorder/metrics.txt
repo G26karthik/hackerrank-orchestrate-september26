@@ -1,0 +1,14 @@
+Evaluation report -- 25 rows scored
+
+amount_safe_to_pay: exact matches 3/25 (12.0%)
+  EUR: n=8 mean|error|=89.1725 mean|relative error|=7.9661%
+  IDR: n=5 mean|error|=1012627.602 mean|relative error|=6.7983%
+  INR: n=7 mean|error|=40116.10 mean|relative error|=15.9744%
+  USD: n=1 mean|error|=31.05 mean|relative error|=1.9722%
+  ZAR: n=4 mean|error|=6285.9825 mean|relative error|=27.8598%
+affordability_status: exact matches 16/25 (64.0%)
+recommended_payment_method: exact matches 20/25 (80.0%)
+payment_plan: exact 19/25 (76.0%); parse failures 0; date-set matches 20; sum matches 21
+earliest_date_for_full_payment: exact 15/25 (60.0%), of which both-empty 5
+spending_changes_needed: exact set match 22/25 (88.0%); parse failures 0; rule-well-formed 25/25
+decision_explanation: grounded 25/25 (100.0%); empty 0

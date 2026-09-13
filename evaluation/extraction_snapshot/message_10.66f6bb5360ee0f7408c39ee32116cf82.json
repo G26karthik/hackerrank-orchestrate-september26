@@ -1,0 +1,29 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": 2717,
+        "currency": "EUR",
+        "effective_from": "2025-08-15",
+        "effective_until": null,
+        "fact_kind": "income_amount_change",
+        "raw_excerpt": "Regular salary of EUR 2717 resumes on 2025-08-15."
+      },
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": "2025-08",
+        "effective_until": null,
+        "fact_kind": "new_unquantified_recurring_expense",
+        "raw_excerpt": "A new recurring childcare payment begins in the same month."
+      }
+    ]
+  },
+  "provider_response_id": "resp_086ba5cb7ae7f89c006aa56c50f03487d189d5115d93502bf9",
+  "reasoning_effort": "high"
+}

@@ -1,0 +1,77 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 3543.54,
+        "label": "Previous balance",
+        "region": "top-left account summary"
+      },
+      {
+        "amount": 3543.54,
+        "label": "Payments",
+        "region": "top-left account summary"
+      },
+      {
+        "amount": 704.05,
+        "label": "This month's charges",
+        "region": "top-left account summary"
+      },
+      {
+        "amount": 704.05,
+        "label": "Amount due till 06-Feb-2026",
+        "region": "middle-left account summary"
+      },
+      {
+        "amount": 822.05,
+        "label": "Amount due after 06-Feb-2026",
+        "region": "lower-left account summary"
+      },
+      {
+        "amount": 580.65,
+        "label": "Rentals",
+        "region": "top-right monthly charges"
+      },
+      {
+        "amount": 16.0,
+        "label": "Usage charges",
+        "region": "top-right monthly charges"
+      },
+      {
+        "amount": 107.4,
+        "label": "Taxes",
+        "region": "top-right monthly charges"
+      },
+      {
+        "amount": 704.05,
+        "label": "Total (\u20b9)",
+        "region": "bottom-right monthly charges total, also written in words below"
+      }
+    ],
+    "balance_due": 704.05,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "telecommunications bill",
+    "due_date_candidates": [
+      "2026-02-06"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "The recorded payment of \u20b93,543.54 corresponds to the previous balance, not this month's charges. The amount due is \u20b9704.05 till 2026-02-06 and \u20b9822.05 after that same date.",
+    "paid_amount": 3543.54,
+    "payment_status": "Current charges unpaid; payment recorded against previous balance.",
+    "source_regions": [
+      "top-left previous balance and payments rows",
+      "middle-left amount due till date",
+      "lower-left amount due after date",
+      "top-right taxes row",
+      "bottom-right monthly charges total"
+    ],
+    "tax": 107.4,
+    "total": 704.05
+  },
+  "provider_response_id": "resp_01c4f6891ebf7241006aa56a4249bc87d1add45a632af9b956",
+  "reasoning_effort": "high"
+}

@@ -1,0 +1,66 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 28.5,
+        "label": "Ride Distance: 12.3 miles",
+        "region": "middle-right fare row"
+      },
+      {
+        "amount": 5,
+        "label": "Airport Surcharge",
+        "region": "middle-right surcharge row"
+      },
+      {
+        "amount": 33.5,
+        "label": "Subtotal",
+        "region": "lower-right subtotal row"
+      },
+      {
+        "amount": 0,
+        "label": "Tax",
+        "region": "lower-right tax row"
+      },
+      {
+        "amount": 33.5,
+        "label": "Total",
+        "region": "lower-right bold total row"
+      },
+      {
+        "amount": 40,
+        "label": "Cash Paid",
+        "region": "bottom-right cash payment row"
+      },
+      {
+        "amount": 6.5,
+        "label": "Change",
+        "region": "bottom-right change row"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": 40,
+    "change": 6.5,
+    "currency": "$",
+    "document_type": "taxi receipt",
+    "due_date_candidates": [
+      "2025-01-10"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "Cash Paid is recorded as cash tendered because change is separately shown. No separate net paid amount or balance due is printed. The transaction timestamp reads 01/10/2025 21:45; the listed date uses MM/DD/YYYY interpretation. No explicit due date is shown.",
+    "paid_amount": null,
+    "payment_status": "paid",
+    "source_regions": [
+      "upper-middle transaction timestamp",
+      "middle fare and surcharge rows",
+      "lower subtotal, tax, and total rows",
+      "bottom cash payment and change rows"
+    ],
+    "tax": 0,
+    "total": 33.5
+  },
+  "provider_response_id": "resp_0d026b885691bf82006aa56bc30ab887d191568541ec2fe264",
+  "reasoning_effort": "high"
+}

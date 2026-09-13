@@ -1,0 +1,10 @@
+# Stage 2 (typed input layer, evaluation contracts, reference simulator) uses
+# ONLY the Python 3.11+ standard library -- no install is required to run
+# code/main.py, code/evaluation/main.py, or the test suite under tests/.
+#
+# These two are pinned for the LLM harness stage (buyorwait/llm_harness.py,
+# still an interface stub) and were already present in this environment, not
+# newly added. `pip install -r requirements.txt` is a no-op if both are
+# already installed; harmless if run before that stage exists.
+openai==1.58.1
+tiktoken==0.12.0

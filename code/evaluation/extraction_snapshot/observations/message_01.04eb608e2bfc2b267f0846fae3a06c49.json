@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": 42750000,
+        "currency": "IDR",
+        "effective_from": "2025-08-15",
+        "effective_until": null,
+        "fact_kind": "income_amount_change",
+        "raw_excerpt": "Gaji bulanan Anda naik menjadi IDR 42750000. Perubahan ini berlaku mulai 2025-08-15."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0f20d6aa60735c4f006aa56c32ee6487d1b398f8f411478acb",
+  "reasoning_effort": "high"
+}

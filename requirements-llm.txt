@@ -1,0 +1,19 @@
+# Stage 3 (LLM harness + evidence extraction) needs a newer openai SDK than
+# this machine's global site-packages carries (1.58.1, which predates the
+# Responses API entirely -- verified, see evaluation/llm_capability_pilot.md
+# section 1). Install these into an ISOLATED virtualenv, not globally:
+#
+#   python -m venv .venv
+#   .venv/Scripts/pip install -r requirements-llm.txt      # Windows
+#   .venv/bin/pip install -r requirements-llm.txt          # macOS/Linux
+#
+# Upgrading the global openai package in place breaks other tools already
+# installed on this development machine (crewai, instructor, litellm all pin
+# incompatible ranges) -- this was tried, observed, and reverted during
+# Stage 3 development; see evaluation/state.md's Stage 3 reversal log.
+#
+# The deterministic core (Stage 2: loader, simulator, evaluator, writer)
+# needs NONE of this and keeps working with zero third-party dependencies --
+# see the root requirements.txt.
+openai==3.13.0
+tiktoken==0.14.0

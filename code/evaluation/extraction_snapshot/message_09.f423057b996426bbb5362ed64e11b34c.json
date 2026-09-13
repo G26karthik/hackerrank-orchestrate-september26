@@ -1,0 +1,29 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_ended",
+        "raw_excerpt": "The current seasonal contract has ended."
+      },
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_not_yet_confirmed",
+        "raw_excerpt": "No off-season income or renewal has been confirmed."
+      }
+    ]
+  },
+  "provider_response_id": "resp_01f26035fbc104ab006aa56c4ad66c87d19af4e5852656c932",
+  "reasoning_effort": "high"
+}

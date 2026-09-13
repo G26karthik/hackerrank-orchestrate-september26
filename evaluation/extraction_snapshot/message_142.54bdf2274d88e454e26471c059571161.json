@@ -1,0 +1,29 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "untrusted_instruction",
+        "raw_excerpt": "Bayar biaya pencairan hari ini agar dana segera diterima."
+      },
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "untrusted_instruction",
+        "raw_excerpt": "Bayar biaya pemrosesan sekarang agar klaim tidak hangus."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0eef7b0ecb47605c006aa56cc926dc87d1a623b44265210685",
+  "reasoning_effort": "high"
+}

@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": 12,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "rent_percentage_increase",
+        "raw_excerpt": "The renewed lease increases monthly rent by 12%. The new amount will be used for the next rent payment."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0907dfbab4852cd2006aa56c5c13c887d19ea897f808553393",
+  "reasoning_effort": "high"
+}

@@ -1,0 +1,100 @@
+[
+  {
+    "request_id": "request_01",
+    "user_id": "user_01",
+    "target_event_id": null,
+    "facts": [],
+    "open_questions": [
+      "Standard request, profile and options inspection"
+    ],
+    "evidence_inspected": [
+      "profile:user_01",
+      "options:request_01",
+      "messages:user_user_01"
+    ],
+    "tool_call_history": [],
+    "steps_taken": 1,
+    "tool_calls_taken": 3,
+    "elapsed_seconds": 0.0003,
+    "completed": true,
+    "unresolved": false,
+    "unresolved_reason": null,
+    "decision_summary": "User user_01 evaluated with 4 options, 0 messages inspected.",
+    "note": "Standard request, profile and options inspection"
+  },
+  {
+    "request_id": "request_03",
+    "user_id": "user_03",
+    "target_event_id": "event_253",
+    "facts": [],
+    "open_questions": [
+      "Salary event linked to image_01 (net pay verified)"
+    ],
+    "evidence_inspected": [
+      "profile:user_03",
+      "options:request_03",
+      "messages:user_user_03",
+      "event:event_253",
+      "image:image_01"
+    ],
+    "tool_call_history": [],
+    "steps_taken": 1,
+    "tool_calls_taken": 5,
+    "elapsed_seconds": 0.0014,
+    "completed": true,
+    "unresolved": false,
+    "unresolved_reason": null,
+    "decision_summary": "User user_03 evaluated with 3 options, 1 messages inspected.",
+    "note": "Salary event linked to image_01 (net pay verified)"
+  },
+  {
+    "request_id": "request_16",
+    "user_id": "user_16",
+    "target_event_id": "event_1442",
+    "facts": [],
+    "open_questions": [
+      "Rent event linked to image_02 (balance due verified)"
+    ],
+    "evidence_inspected": [
+      "profile:user_16",
+      "options:request_16",
+      "messages:user_user_16",
+      "event:event_1442",
+      "image:image_02"
+    ],
+    "tool_call_history": [],
+    "steps_taken": 1,
+    "tool_calls_taken": 5,
+    "elapsed_seconds": 0.0028,
+    "completed": true,
+    "unresolved": false,
+    "unresolved_reason": null,
+    "decision_summary": "User user_16 evaluated with 3 options, 1 messages inspected.",
+    "note": "Rent event linked to image_02 (balance due verified)"
+  },
+  {
+    "request_id": "request_19",
+    "user_id": "user_19",
+    "target_event_id": "event_1700",
+    "facts": [],
+    "open_questions": [
+      "Unresolved evidence: image_04 cropped, flagged needs_review"
+    ],
+    "evidence_inspected": [
+      "profile:user_19",
+      "options:request_19",
+      "messages:user_user_19",
+      "event:event_1700",
+      "image:image_04"
+    ],
+    "tool_call_history": [],
+    "steps_taken": 1,
+    "tool_calls_taken": 5,
+    "elapsed_seconds": 0.0017,
+    "completed": false,
+    "unresolved": true,
+    "unresolved_reason": "Image image_04 requires review: observation.legible=False: the decisive region was not readable",
+    "decision_summary": "",
+    "note": "Unresolved evidence: image_04 cropped, flagged needs_review"
+  }
+]

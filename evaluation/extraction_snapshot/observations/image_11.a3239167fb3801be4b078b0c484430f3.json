@@ -1,0 +1,152 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 1650.0,
+        "label": "Room & Nursing Charges",
+        "region": "provisional bill summary"
+      },
+      {
+        "amount": 1000.0,
+        "label": "OT Charges",
+        "region": "provisional bill summary"
+      },
+      {
+        "amount": 1000.0,
+        "label": "Professional Fees",
+        "region": "provisional bill summary"
+      },
+      {
+        "amount": 3650.0,
+        "label": "Total Bill Amount",
+        "region": "middle-right totals block"
+      },
+      {
+        "amount": 3650.0,
+        "label": "Amount Payable",
+        "region": "middle-right totals block"
+      },
+      {
+        "amount": 0.0,
+        "label": "Amount Paid",
+        "region": "middle-right totals block; also written as Zero"
+      },
+      {
+        "amount": 3650.0,
+        "label": "Balance",
+        "region": "middle-right totals block"
+      },
+      {
+        "amount": 200.0,
+        "label": "Bed Charges - GENERAL: Rate",
+        "region": "detailed breakup, Room/Bed Charges row"
+      },
+      {
+        "amount": 250.0,
+        "label": "Bed Charges - GENERAL: Amount",
+        "region": "detailed breakup, Room/Bed Charges row"
+      },
+      {
+        "amount": 250.0,
+        "label": "Room/Bed Charges: Subtotal",
+        "region": "detailed breakup, below Room/Bed Charges"
+      },
+      {
+        "amount": 200.0,
+        "label": "Nursing Fees - GENERAL: Rate",
+        "region": "detailed breakup, Nursing Charges section"
+      },
+      {
+        "amount": 250.0,
+        "label": "Nursing Fees - GENERAL: Amount",
+        "region": "detailed breakup, Nursing Charges section"
+      },
+      {
+        "amount": 100.0,
+        "label": "Nebulization - GENERAL: Rate",
+        "region": "detailed breakup, Nursing Charges section"
+      },
+      {
+        "amount": 100.0,
+        "label": "Nebulization - GENERAL: Amount",
+        "region": "detailed breakup, Nursing Charges section"
+      },
+      {
+        "amount": 50.0,
+        "label": "Injection Charges - GENERAL: Rate",
+        "region": "detailed breakup, Nursing Charges section"
+      },
+      {
+        "amount": 50.0,
+        "label": "Injection Charges - GENERAL: Amount",
+        "region": "detailed breakup, Nursing Charges section"
+      },
+      {
+        "amount": 1000.0,
+        "label": "Blood Transfusion Charges - GENERAL: Rate",
+        "region": "detailed breakup, Nursing Charges section"
+      },
+      {
+        "amount": 1000.0,
+        "label": "Blood Transfusion Charges - GENERAL: Amount",
+        "region": "detailed breakup, Nursing Charges section"
+      },
+      {
+        "amount": 1400.0,
+        "label": "Nursing Charges: Subtotal",
+        "region": "detailed breakup, below Nursing Charges"
+      },
+      {
+        "amount": 1000.0,
+        "label": "Major OT Charge - GENERAL: Rate",
+        "region": "detailed breakup, OT Charges section"
+      },
+      {
+        "amount": 1000.0,
+        "label": "Major OT Charge - GENERAL: Amount",
+        "region": "detailed breakup, OT Charges section"
+      },
+      {
+        "amount": 1000.0,
+        "label": "OT Charges: Subtotal",
+        "region": "detailed breakup, below OT Charges"
+      },
+      {
+        "amount": 500.0,
+        "label": "Dr. Akshara Raje: Rate",
+        "region": "bottom Professional Fees row"
+      },
+      {
+        "amount": 500.0,
+        "label": "Dr. Akshara Raje: Amount",
+        "region": "bottom Professional Fees row"
+      }
+    ],
+    "balance_due": 3650.0,
+    "cash_tendered": null,
+    "change": null,
+    "currency": null,
+    "document_type": "hospital provisional bill",
+    "due_date_candidates": [
+      "2023-01-19"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "The date candidate is the document date; no explicit due date is printed. Admission and service dates are not treated as due dates. No currency is printed. The Professional Fees summary shows 1000.00, while the visible detailed professional-fee row shows 500.00.",
+    "paid_amount": 0.0,
+    "payment_status": "unpaid",
+    "source_regions": [
+      "upper-right document date",
+      "provisional bill summary",
+      "middle-right totals and payment block",
+      "lower detailed breakup",
+      "bottom Professional Fees row"
+    ],
+    "tax": null,
+    "total": 3650.0
+  },
+  "provider_response_id": "resp_0bdea867ed1309f9006aa56ba50ccc87d19ad2d5e464dd57c8",
+  "reasoning_effort": "high"
+}

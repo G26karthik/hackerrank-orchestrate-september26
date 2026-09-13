@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_reimbursement_not_recurring",
+        "raw_excerpt": "The latest employer credit is the reimbursement for your earlier work expense. The claim is now closed and no additional reimbursement is scheduled. This payment is linked to an earlier work expense, not your regular salary."
+      }
+    ]
+  },
+  "provider_response_id": "resp_09e01a6fe1cb3c4e006aa56cc27ea087d1956434a405ccf8e7",
+  "reasoning_effort": "high"
+}

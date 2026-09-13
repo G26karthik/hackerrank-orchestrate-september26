@@ -1,0 +1,53 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 699,
+        "label": "DailyObjects Mumbai City Tote Bag",
+        "region": "top-right first item row"
+      },
+      {
+        "amount": 1599,
+        "label": "Ivory - Navy All Time Tote Bag",
+        "region": "upper-right second item row"
+      },
+      {
+        "amount": 2298,
+        "label": "Item Total (2 items)",
+        "region": "order summary item total row"
+      },
+      {
+        "amount": null,
+        "label": "Delivery \u2014 Free",
+        "region": "order summary delivery row"
+      },
+      {
+        "amount": 2298,
+        "label": "Total paid",
+        "region": "bottom-right total paid row"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "order summary",
+    "due_date_candidates": [],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "Total paid is explicitly stated to include taxes and delivery. No separate tax amount is shown. Delivery is marked 'Free' without a numeric amount. No dates are visible.",
+    "paid_amount": 2298,
+    "payment_status": "paid",
+    "source_regions": [
+      "top-right item prices",
+      "order summary item total and delivery rows",
+      "bottom total paid row and inclusion note"
+    ],
+    "tax": null,
+    "total": 2298
+  },
+  "provider_response_id": "resp_01c6cef197c43601006aa56bd6f61887d1a6c2ae3e7db349ea",
+  "reasoning_effort": "high"
+}

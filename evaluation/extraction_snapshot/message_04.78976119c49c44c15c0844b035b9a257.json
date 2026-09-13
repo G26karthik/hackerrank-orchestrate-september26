@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": 1037.52,
+        "currency": "EUR",
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_amount_change",
+        "raw_excerpt": "Your temporary monthly pay is EUR 1037.52. The reduced amount continues for the next payroll. This is the amount currently scheduled for the affected pay cycle."
+      }
+    ]
+  },
+  "provider_response_id": "resp_01cd63f99b0a1308006aa56c3d60cc87d1bbdfa4f33559a014",
+  "reasoning_effort": "high"
+}

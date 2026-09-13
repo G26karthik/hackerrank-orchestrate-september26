@@ -1,0 +1,148 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 310.0,
+        "label": "MRP",
+        "region": "MRP column, items 1\u20135"
+      },
+      {
+        "amount": 27.5,
+        "label": "Discount",
+        "region": "item 1, Discount column"
+      },
+      {
+        "amount": 538.1,
+        "label": "Taxable Value",
+        "region": "item 1, Taxable Value column"
+      },
+      {
+        "amount": 13.45,
+        "label": "CGST (INR) and SGST (INR), each",
+        "region": "item 1, CGST and SGST columns"
+      },
+      {
+        "amount": 0.0,
+        "label": "Additional Cess Val",
+        "region": "Additional Cess Val column, all item and delivery rows"
+      },
+      {
+        "amount": 565.0,
+        "label": "Total",
+        "region": "item 1, Total column"
+      },
+      {
+        "amount": 2.98,
+        "label": "Delivery and other charges \u2014 Taxable Value",
+        "region": "delivery row beneath item 1"
+      },
+      {
+        "amount": 0.07,
+        "label": "Delivery and other charges \u2014 CGST (INR) and SGST (INR), each",
+        "region": "delivery rows beneath items 1 and 2"
+      },
+      {
+        "amount": 3.13,
+        "label": "Delivery and other charges \u2014 Total",
+        "region": "delivery row beneath item 1, Total column"
+      },
+      {
+        "amount": 34.0,
+        "label": "Discount",
+        "region": "item 2, Discount column"
+      },
+      {
+        "amount": 525.71,
+        "label": "Taxable Value",
+        "region": "item 2, Taxable Value column"
+      },
+      {
+        "amount": 13.14,
+        "label": "CGST (INR) and SGST (INR), each",
+        "region": "item 2, CGST and SGST columns"
+      },
+      {
+        "amount": 552.0,
+        "label": "Total",
+        "region": "item 2, Total column"
+      },
+      {
+        "amount": 2.91,
+        "label": "Delivery and other charges \u2014 Taxable Value",
+        "region": "delivery row beneath item 2"
+      },
+      {
+        "amount": 3.06,
+        "label": "Delivery and other charges \u2014 Total",
+        "region": "delivery row beneath item 2, Total column"
+      },
+      {
+        "amount": 21.0,
+        "label": "Discount",
+        "region": "items 3\u20135, Discount column"
+      },
+      {
+        "amount": 275.24,
+        "label": "Taxable Value",
+        "region": "items 3\u20135, Taxable Value column"
+      },
+      {
+        "amount": 6.88,
+        "label": "CGST (INR) and SGST (INR), each",
+        "region": "items 3\u20135, CGST and SGST columns"
+      },
+      {
+        "amount": 289.0,
+        "label": "Total",
+        "region": "items 3\u20135, Total column"
+      },
+      {
+        "amount": 1.53,
+        "label": "Delivery and other charges \u2014 Taxable Value",
+        "region": "delivery rows beneath items 3\u20135"
+      },
+      {
+        "amount": 0.04,
+        "label": "Delivery and other charges \u2014 CGST (INR) and SGST (INR), each",
+        "region": "delivery rows beneath items 3\u20135"
+      },
+      {
+        "amount": 1.6,
+        "label": "Delivery and other charges \u2014 Total",
+        "region": "delivery rows beneath items 3\u20135, Total column"
+      },
+      {
+        "amount": 47.49,
+        "label": "Total CGST (INR) and total SGST (INR), each",
+        "region": "bottom Total row, CGST and SGST columns"
+      },
+      {
+        "amount": 1995.0,
+        "label": "Total / Amount in Words",
+        "region": "bottom-right Total cell and Amount in Words line"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "tax invoice",
+    "due_date_candidates": [],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "CGST and SGST totals are separately printed as INR 47.49 each; no combined tax amount is printed, so tax is null. CGST and SGST rates are 2.50% each, and Cess is 0%. No dates or payment status are visible. The image begins at the item-table header.",
+    "paid_amount": null,
+    "payment_status": null,
+    "source_regions": [
+      "item and delivery charge rows",
+      "bottom Total row",
+      "Amount in Words line"
+    ],
+    "tax": null,
+    "total": 1995.0
+  },
+  "provider_response_id": "resp_0097b4d96a0841cd006aa56a5393bc87d18bd5a5d4c10a30a1",
+  "reasoning_effort": "high"
+}

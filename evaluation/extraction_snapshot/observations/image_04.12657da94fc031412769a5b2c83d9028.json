@@ -1,0 +1,98 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 95.0,
+        "label": "1 x [Combo] Nissin Cup Noodles Mazedaar Masala",
+        "region": "item list, row 1, right"
+      },
+      {
+        "amount": 531.0,
+        "label": "1 x The Whole Truth 20G Protein Bars No Added\u2026",
+        "region": "item list, row 2, right"
+      },
+      {
+        "amount": 0,
+        "label": "1 x Flyer - Nubu",
+        "region": "item list, row 3, right"
+      },
+      {
+        "amount": 186.0,
+        "label": "1 x [Combo] The Whole Truth 13G Protein Millet Bar\u2026",
+        "region": "item list, row 4, right"
+      },
+      {
+        "amount": 122.0,
+        "label": "1 x [Combo] O'Cean Fruit Water Mango & Passion\u2026",
+        "region": "item list, row 5, right"
+      },
+      {
+        "amount": 464.0,
+        "label": "2 x [Combo] The Whole Truth Double Cocoa Prote\u2026",
+        "region": "item list, row 6, right"
+      },
+      {
+        "amount": 184.0,
+        "label": "1 x [Combo] The Whole Truth Almond Choco Fudg\u2026",
+        "region": "item list, row 7, right"
+      },
+      {
+        "amount": 144.0,
+        "label": "3 x Nissin Cup Noodles Mazedaar Masala",
+        "region": "item list, row 8, right"
+      },
+      {
+        "amount": 75.0,
+        "label": "3 x Wickedgud Instant Masala Cup Noodles",
+        "region": "item list, row 9, right"
+      },
+      {
+        "amount": 366.0,
+        "label": "3 x [Combo] O'Cean Peach & Passion Fruit Juice\u2026",
+        "region": "item list, row 10, right"
+      },
+      {
+        "amount": 190.0,
+        "label": "1 x [Combo] The Whole Truth Protein Bar Orange\u2026",
+        "region": "item list, row 11, right"
+      },
+      {
+        "amount": 121.0,
+        "label": "1 x The Whole Truth Protein Bar Hazelnut Cocoa No\u2026",
+        "region": "item list, row 12, right"
+      },
+      {
+        "amount": 376.0,
+        "label": "2 x [Combo] Nissin Cup Noodles Spiced Chicken",
+        "region": "item list, row 13, right"
+      },
+      {
+        "amount": 2854.0,
+        "label": "Item Bill",
+        "region": "bottom, beneath TOTAL ORDER BILL DETAILS"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "Delivery order details and partial bill",
+    "due_date_candidates": [],
+    "gross_pay": null,
+    "legible": false,
+    "net_pay": null,
+    "notes": "The bill section is cropped below the Item Bill row. The visible \u20b92854.00 is labeled Item Bill, not a final order total. Any subsequent charges, taxes, or final total are unreadable or outside the image. Delivery status is Delivered; payment status is not shown. No dates are visible.",
+    "paid_amount": null,
+    "payment_status": null,
+    "source_regions": [
+      "right-hand amounts in the 13-row item list",
+      "bottom Item Bill row",
+      "cropped lower order-bill section"
+    ],
+    "tax": null,
+    "total": null
+  },
+  "provider_response_id": "resp_009deeaef9c0771d006aa56a2f8e7887d188fc0a7d9116c45b",
+  "reasoning_effort": "high"
+}

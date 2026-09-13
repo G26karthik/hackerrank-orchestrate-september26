@@ -1,0 +1,81 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 200000,
+        "label": "Acknowledgment of receipt \u2014 Rupees",
+        "region": "upper acknowledgment paragraph"
+      },
+      {
+        "amount": 180000,
+        "label": "Rent & Maintanance",
+        "region": "middle-right charges table"
+      },
+      {
+        "amount": 5000,
+        "label": "Water Charges",
+        "region": "middle-right charges table"
+      },
+      {
+        "amount": 5000,
+        "label": "Rental Tax",
+        "region": "middle-right charges table"
+      },
+      {
+        "amount": 10000,
+        "label": "Electrical Charges",
+        "region": "middle-right charges table"
+      },
+      {
+        "amount": 200000,
+        "label": "Total Amount to be Received",
+        "region": "middle-right total row"
+      },
+      {
+        "amount": 100000,
+        "label": "Amount Received",
+        "region": "middle-right payment row"
+      },
+      {
+        "amount": 100000,
+        "label": "Balance Due",
+        "region": "middle-right balance row"
+      },
+      {
+        "amount": 100000,
+        "label": "Annual rent payment threshold \u2014 1 Lakh",
+        "region": "bottom note 1"
+      },
+      {
+        "amount": 5000,
+        "label": "Revenue stamp transaction threshold \u2014 Rs.5000",
+        "region": "bottom note 2"
+      }
+    ],
+    "balance_due": 100000,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "rent receipt",
+    "due_date_candidates": [
+      "2023-08-11"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "The acknowledgment paragraph states receipt of Rs 2,00,000, but the explicit Amount Received row shows Rs 1,00,000 and Balance Due shows Rs 1,00,000. Named fields follow those explicit rows. Receipt date is printed as 11/08/23, read in day/month/year format; no explicit due date is shown. Portions of the narrative and footer are clipped at the right edge, but the decisive financial table is readable.",
+    "paid_amount": 100000,
+    "payment_status": "partially paid",
+    "source_regions": [
+      "top-right receipt date",
+      "upper acknowledgment paragraph",
+      "middle-right charges and payment table",
+      "bottom notes"
+    ],
+    "tax": 5000,
+    "total": 200000
+  },
+  "provider_response_id": "resp_04c0587d8c67c75d006aa569fa1e8887d191a2bb48bbe6b255",
+  "reasoning_effort": "high"
+}

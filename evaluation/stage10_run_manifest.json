@@ -1,0 +1,56 @@
+{
+  "run_id": "stage10_final_run",
+  "timestamp_iso": "2026-09-12T18:54:43.373624+00:00",
+  "frozen_configuration": "exp2_terminate",
+  "agent": "Antigravity (Google DeepMind)",
+  "commit": "963ad7eb3d058ace2bf2e8bf4324472c981f0840",
+  "model": "gpt-6-astra",
+  "n_requests": 250,
+  "elapsed_seconds": 11.757,
+  "throughput_rps": 21.26,
+  "output_csv": "C:\\Users\\saita\\OneDrive\\Desktop\\AI Everyday\\HROS\\hackerrank-orchestrate-september26\\output.csv",
+  "output_csv_sha256": "7B0A3120B6DC18883D7442ADCF7025A8CE04A861173ED1E8BA30115DEE0293A0",
+  "output_csv_bytes": 48566,
+  "dataset_sha256_reference": "E6E6F4AAE1EED6D1C178FD3DACA7B5AD82CC9C1461650969C373B4DEDAB43BAF",
+  "dataset_hashes": {
+    "requests.csv": "13663D50B7098B28A8C087A02EB085041260999707ADADE5230D29F1C2E6595D",
+    "messages.csv": "7B9DB27A4546A850A76D3475EBF65DE80FB9FE374E26D469586F62F537EAC9A6",
+    "output.csv": "E6E6F4AAE1EED6D1C178FD3DACA7B5AD82CC9C1461650969C373B4DEDAB43BAF"
+  },
+  "schema_validation_pass": true,
+  "n_schema_errors": 0,
+  "financial_audit_pass": true,
+  "n_audit_ok": 250,
+  "n_audit_fail": 0,
+  "status_distribution": {
+    "affordable_now": 66,
+    "affordable_later": 64,
+    "not_affordable": 64,
+    "affordable_with_plan": 56
+  },
+  "method_distribution": {
+    "full_payment": 68,
+    "wait": 48,
+    "not_recommended": 80,
+    "installments": 45,
+    "partial_payment": 9
+  },
+  "deterministic_replay_pass": true,
+  "live_api_probe": {
+    "test": "json_schema + reasoning=low on gpt-6-astra",
+    "result": "PASS",
+    "response_id": "resp_0ea149aa9347bb7e006aa59f71e8ec87d1898ab00444b52ed0",
+    "status": "completed",
+    "error_attribution": "The 'model output must contain either output text or tool calls' error originated in Antigravity IDE session runtime after checkpoint injection, NOT in this application. Non-reproducible against application live API path."
+  },
+  "fresh_llm_calls_this_run": 0,
+  "n_evidence_facts": 232,
+  "n_messages": 215,
+  "n_images": 16,
+  "artifacts": {
+    "output_csv": "C:\\Users\\saita\\OneDrive\\Desktop\\AI Everyday\\HROS\\hackerrank-orchestrate-september26\\output.csv",
+    "usage_report": "C:\\Users\\saita\\OneDrive\\Desktop\\AI Everyday\\HROS\\hackerrank-orchestrate-september26\\evaluation\\usage_report.md",
+    "audit_json": "C:\\Users\\saita\\OneDrive\\Desktop\\AI Everyday\\HROS\\hackerrank-orchestrate-september26\\evaluation\\stage10_audit.json"
+  },
+  "remaining_blockers": "None."
+}

@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "pending_debit_unresolved",
+        "raw_excerpt": "The previous debit attempt failed. The bill is still outstanding and another debit will be attempted. The bill is still open and another debit may be attempted. Txn ref BAN-0069."
+      }
+    ]
+  },
+  "provider_response_id": "resp_01aac688a0996f8f006aa56c9e55e487d1800ad5b049138d7b",
+  "reasoning_effort": "high"
+}

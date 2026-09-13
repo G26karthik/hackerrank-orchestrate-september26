@@ -1,0 +1,74 @@
+{
+  "real_dataset": {
+    "dataset_name": "real_dataset_250",
+    "request_count": 250,
+    "total_time_seconds": 76.336,
+    "throughput_req_per_sec": 3.27,
+    "peak_memory_mib": 3.47,
+    "latency_ms_p50": 304.442,
+    "latency_ms_p90": 553.984,
+    "latency_ms_p95": 616.902,
+    "latency_ms_p99": 854.935,
+    "latency_ms_mean": 305.338
+  },
+  "synthetic_scale_5x": {
+    "dataset_name": "synthetic_scale_750",
+    "request_count": 750,
+    "total_time_seconds": 236.7616,
+    "throughput_req_per_sec": 3.17,
+    "peak_memory_mib": 3.49,
+    "latency_ms_p50": 308.663,
+    "latency_ms_p90": 601.455,
+    "latency_ms_p95": 681.843,
+    "latency_ms_p99": 854.15,
+    "latency_ms_mean": 315.676
+  },
+  "candidate_growth": [
+    {
+      "flexible_streams_available": 1,
+      "total_candidates_generated": 131,
+      "candidates_with_spending_changes": 129,
+      "max_changes_per_plan": 3,
+      "enumeration_latency_ms": 25.444,
+      "strictly_capped_at_three": true
+    },
+    {
+      "flexible_streams_available": 2,
+      "total_candidates_generated": 131,
+      "candidates_with_spending_changes": 129,
+      "max_changes_per_plan": 3,
+      "enumeration_latency_ms": 27.643,
+      "strictly_capped_at_three": true
+    },
+    {
+      "flexible_streams_available": 3,
+      "total_candidates_generated": 131,
+      "candidates_with_spending_changes": 129,
+      "max_changes_per_plan": 3,
+      "enumeration_latency_ms": 27.463,
+      "strictly_capped_at_three": true
+    },
+    {
+      "flexible_streams_available": 4,
+      "total_candidates_generated": 131,
+      "candidates_with_spending_changes": 129,
+      "max_changes_per_plan": 3,
+      "enumeration_latency_ms": 27.33,
+      "strictly_capped_at_three": true
+    },
+    {
+      "flexible_streams_available": 5,
+      "total_candidates_generated": 131,
+      "candidates_with_spending_changes": 129,
+      "max_changes_per_plan": 3,
+      "enumeration_latency_ms": 25.123,
+      "strictly_capped_at_three": true
+    }
+  ],
+  "model_time_contribution": {
+    "runtime_model_calls_per_request": 0,
+    "runtime_model_time_ms": 0.0,
+    "offline_cached_extractions": 231,
+    "deterministic_processing_pct": 100.0
+  }
+}

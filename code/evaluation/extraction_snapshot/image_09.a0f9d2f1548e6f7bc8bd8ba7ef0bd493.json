@@ -1,0 +1,52 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 723.0,
+        "label": "Charged Amount (\u20b9)",
+        "region": "upper table, charged amount column"
+      },
+      {
+        "amount": 723.0,
+        "label": "Amount (\u20b9)",
+        "region": "upper table, rightmost column"
+      },
+      {
+        "amount": 723.0,
+        "label": "Total Amount Received",
+        "region": "middle total received bar"
+      },
+      {
+        "amount": 0.0,
+        "label": "Convenience Fee",
+        "region": "lower payment details"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "water bill payment receipt",
+    "due_date_candidates": [
+      "2026-06-07",
+      "2026-07-02"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "Invoice 6320 covers the water bill for January\u2013March 2026. Dates are read as DD-MM-YYYY: 07-06-2026 is labeled Charge Date and is included as a possible payment date; 02-07-2026 is explicitly labeled Due Date. No separate payment date is printed. The amount in words also states 723 rupees. Payment gateway: paytm.",
+    "paid_amount": 723.0,
+    "payment_status": "paid",
+    "source_regions": [
+      "upper table, charge date and due date columns",
+      "upper table, charged amount and amount columns",
+      "middle Total Amount Received bar",
+      "lower convenience fee row"
+    ],
+    "tax": null,
+    "total": 723.0
+  },
+  "provider_response_id": "resp_0997da5fcfc7291c006aa56aa3083887d19f86ceb38b96e3e3",
+  "reasoning_effort": "high"
+}

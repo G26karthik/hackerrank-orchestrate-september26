@@ -1,0 +1,29 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": "INR",
+        "effective_from": "2026-09-03",
+        "effective_until": null,
+        "fact_kind": "receipt_confirms_amount",
+        "raw_excerpt": "Your wallet was charged for the session at Charge Point 1110 in Krishnagiri on 3 September 2026 at 12:35 a.m. The receipt contains the final INR amount."
+      },
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": 1296,
+        "currency": "USD",
+        "effective_from": "2026-09-15",
+        "effective_until": null,
+        "fact_kind": "income_confirmed_one_off",
+        "raw_excerpt": "Your employer has confirmed a USD 1296 salary credit for 15 September 2026. The salary will use the exchange rate when it settles."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0a6909588651f023006aa56ca9307887d18d4d8a712a9ca30b",
+  "reasoning_effort": "high"
+}

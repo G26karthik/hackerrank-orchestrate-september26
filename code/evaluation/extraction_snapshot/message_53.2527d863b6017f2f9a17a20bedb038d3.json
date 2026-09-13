@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "Pembayaran gaji USD 696 dikonfirmasi untuk tanggal tersebut. Jumlah akhir dalam mata uang utama belum diketahui karena bergantung pada kurs saat penyelesaian; mata uang utama dan kursnya tidak disebutkan.",
+        "ambiguous": true,
+        "amount": 696,
+        "currency": "USD",
+        "effective_from": "2025-05-15",
+        "effective_until": null,
+        "fact_kind": "income_confirmed_one_off",
+        "raw_excerpt": "Gaji sebesar USD 696 dikonfirmasi untuk 2025-05-15. Bank penerima akan mengonversinya dengan kurs pada tanggal penyelesaian. Jumlah yang diterima dalam mata uang utama bergantung pada kurs tanggal penyelesaian."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0db8e8c0602b0a75006aa56c85410087d19b7910f72d66b8f7",
+  "reasoning_effort": "high"
+}

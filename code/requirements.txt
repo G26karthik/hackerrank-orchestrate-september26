@@ -1,0 +1,12 @@
+# Buy or Wait? Decision Engine -- Pinned Dependencies
+#
+# Deterministic Core:
+# The core pipeline (data loading, CRLF validation, recurrence detection,
+# cash-flow simulation, forecast headroom, candidate enumeration, S-14 ranking,
+# independent verification, reference calculation, and CSV output) runs entirely
+# on the Python 3.11+ standard library with ZERO external dependencies.
+#
+# Optional Multimodal / LLM Inference:
+# When online image extraction or live investigation is enabled:
+openai==1.58.1
+tiktoken==0.12.0

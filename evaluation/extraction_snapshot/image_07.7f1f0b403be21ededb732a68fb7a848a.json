@@ -1,0 +1,137 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 580.0,
+        "label": "Carrier Meals \u2014 rate",
+        "region": "item table"
+      },
+      {
+        "amount": 2900.0,
+        "label": "Carrier Meals \u2014 amount",
+        "region": "item table"
+      },
+      {
+        "amount": 90.0,
+        "label": "Parcel Charges \u2014 rate",
+        "region": "item table"
+      },
+      {
+        "amount": 450.0,
+        "label": "Parcel Charges \u2014 amount",
+        "region": "item table"
+      },
+      {
+        "amount": 415.0,
+        "label": "Chicken Nagarjuna \u2014 rate",
+        "region": "item table"
+      },
+      {
+        "amount": 2490.0,
+        "label": "Chicken Nagarjuna \u2014 amount",
+        "region": "item table"
+      },
+      {
+        "amount": 60.0,
+        "label": "Chapathi \u2014 rate",
+        "region": "item table"
+      },
+      {
+        "amount": 1800.0,
+        "label": "Chapathi \u2014 amount",
+        "region": "item table"
+      },
+      {
+        "amount": 155.0,
+        "label": "Dal \u2014 rate",
+        "region": "item table"
+      },
+      {
+        "amount": 310.0,
+        "label": "Dal \u2014 amount",
+        "region": "item table"
+      },
+      {
+        "amount": 15.0,
+        "label": "Big Container \u2014 rate",
+        "region": "item table"
+      },
+      {
+        "amount": 30.0,
+        "label": "Big Container \u2014 amount",
+        "region": "item table"
+      },
+      {
+        "amount": 12.0,
+        "label": "Container Small \u2014 rate",
+        "region": "item table"
+      },
+      {
+        "amount": 96.0,
+        "label": "Container Small \u2014 amount",
+        "region": "item table"
+      },
+      {
+        "amount": 23.0,
+        "label": "Packing (Large) \u2014 rate",
+        "region": "item table"
+      },
+      {
+        "amount": 46.0,
+        "label": "Packing (Large) \u2014 amount",
+        "region": "item table"
+      },
+      {
+        "amount": 8122.0,
+        "label": "SubTotal",
+        "region": "lower-right summary"
+      },
+      {
+        "amount": 203.05,
+        "label": "SGST 2.50%",
+        "region": "lower-right tax rows"
+      },
+      {
+        "amount": 203.05,
+        "label": "CGST 2.50%",
+        "region": "lower-right tax rows"
+      },
+      {
+        "amount": 8528.1,
+        "label": "Total",
+        "region": "lower-right summary"
+      },
+      {
+        "amount": 8528.0,
+        "label": "Grand Total (RS)",
+        "region": "bold bottom total row"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "restaurant tax invoice",
+    "due_date_candidates": [
+      "2025-10-29"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "SGST and CGST are each printed as 203.05; no combined tax amount is printed, so tax is null. The named total uses the printed Grand Total of 8528, rather than the preceding Total of 8528.10. A PAID stamp is present, but no separate paid amount is printed. The date candidate is the bill date, 29-10-2025 at 12:12 PM; no explicit due date or separate payment date is printed.",
+    "paid_amount": null,
+    "payment_status": "paid",
+    "source_regions": [
+      "top PAID stamp",
+      "bill date line above item table",
+      "central item table",
+      "lower-right subtotal, tax and total rows",
+      "bold bottom Grand Total row"
+    ],
+    "tax": null,
+    "total": 8528.0
+  },
+  "provider_response_id": "resp_02eb46af611bf1fc006aa56a6e0c3c87d1a0cb3e4152a5b5c9",
+  "reasoning_effort": "high"
+}

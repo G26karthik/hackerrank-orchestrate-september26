@@ -1,0 +1,29 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "The regular salary amount is confirmed for the next payroll, but the message does not state whether it differs from prior pay or applies beyond that payroll.",
+        "ambiguous": true,
+        "amount": 1452,
+        "currency": "EUR",
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_amount_change",
+        "raw_excerpt": "Your regular salary for the next payroll is EUR 1452."
+      },
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": 653.4,
+        "currency": "EUR",
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_confirmed_one_off",
+        "raw_excerpt": "The same payroll includes a one-time arrears adjustment of EUR 653.40."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0ddd1318839de357006aa56c72db9887d19826ded814586ce9",
+  "reasoning_effort": "high"
+}

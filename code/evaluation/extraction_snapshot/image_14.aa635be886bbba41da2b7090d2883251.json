@@ -1,0 +1,63 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 1500.0,
+        "label": null,
+        "region": "right-hand amount column, first entry"
+      },
+      {
+        "amount": 724.0,
+        "label": null,
+        "region": "right-hand amount column, second entry"
+      },
+      {
+        "amount": 796.0,
+        "label": null,
+        "region": "right-hand amount column, third entry"
+      },
+      {
+        "amount": 550.0,
+        "label": null,
+        "region": "right-hand amount column, fourth entry"
+      },
+      {
+        "amount": 303.0,
+        "label": null,
+        "region": "right-hand amount column, fifth entry"
+      },
+      {
+        "amount": 670.0,
+        "label": null,
+        "region": "right-hand amount column, sixth entry"
+      },
+      {
+        "amount": 4543.0,
+        "label": "TOTAL",
+        "region": "bottom-right total row"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "Rs.",
+    "document_type": "Handwritten sales receipt",
+    "due_date_candidates": [],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "Only the item table and bottom section are shown. The 670.00 entry is overwritten but readable. Printed text states prices include all taxes; no separate tax amount, date, or payment status is visible.",
+    "paid_amount": null,
+    "payment_status": null,
+    "source_regions": [
+      "right-hand amount column",
+      "bottom-right total row",
+      "bottom-left printed tax inclusion note"
+    ],
+    "tax": null,
+    "total": 4543.0
+  },
+  "provider_response_id": "resp_0df8074ab17567a0006aa56be5846887d1a9347e7d7bb8cad9",
+  "reasoning_effort": "high"
+}

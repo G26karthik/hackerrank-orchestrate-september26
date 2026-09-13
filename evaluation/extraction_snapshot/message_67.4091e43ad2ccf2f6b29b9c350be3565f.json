@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "untrusted_instruction",
+        "raw_excerpt": "Pay the release charge today to receive the funds immediately. Pay the processing charge now to avoid losing the claim."
+      }
+    ]
+  },
+  "provider_response_id": "resp_091ea6aa69a3e825006aa56c9801f887d186f796791e3565f9",
+  "reasoning_effort": "high"
+}

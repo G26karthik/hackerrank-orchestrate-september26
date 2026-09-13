@@ -1,0 +1,57 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 26.49,
+        "label": "Tariff per kWh",
+        "region": "charging details table, TARIFF column"
+      },
+      {
+        "amount": 333.24,
+        "label": "Amount",
+        "region": "charging details table, AMOUNT column"
+      },
+      {
+        "amount": 29.99,
+        "label": "CGST 9%",
+        "region": "lower-right tax rows"
+      },
+      {
+        "amount": 29.99,
+        "label": "SGST 9%",
+        "region": "lower-right tax rows"
+      },
+      {
+        "amount": 393.22,
+        "label": "Total",
+        "region": "bottom-right Total row; repeated in amount-in-words line"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "electric vehicle charging tax invoice",
+    "due_date_candidates": [
+      "2026-09-03"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "The date is labeled CHARGED ON and printed as 03/09/2026, 12:35:10 am; normalized using DD/MM/YYYY. No explicit due date is shown. Payment method is WALLET, but payment completion is not confirmed. CGST and SGST are separately printed as 29.99 each; no combined tax amount is printed, so tax is null. Session Fee and Idle Fee show dashes, not numeric amounts.",
+    "paid_amount": null,
+    "payment_status": null,
+    "source_regions": [
+      "charging details table",
+      "lower-right tax rows",
+      "bottom-right Total row",
+      "lower-left PAYMENT METHOD line",
+      "AMOUNT IN WORDS line"
+    ],
+    "tax": null,
+    "total": 393.22
+  },
+  "provider_response_id": "resp_081f7e78feea17fa006aa56c18ef4087d1bd247805aca86996",
+  "reasoning_effort": "high"
+}

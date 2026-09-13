@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": "INR",
+        "effective_from": "2026-07-24",
+        "effective_until": null,
+        "fact_kind": "receipt_confirms_amount",
+        "raw_excerpt": "Your property maintenance payment was received on 24 July 2026. The receipt has the final INR amount and the original due date. Payment ref SER-0035."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0afa49f971c7c9a8006aa56c7ece1c87d183928e06bbcb85f3",
+  "reasoning_effort": "high"
+}

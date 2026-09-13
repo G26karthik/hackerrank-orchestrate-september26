@@ -1,0 +1,704 @@
+[
+  {
+    "message_id": "message_01",
+    "user_id": "user_02",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_01",
+        "user_id": "user_02",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "income_amount_change",
+        "amount": "42750000",
+        "currency": "IDR",
+        "temporal_scope": {
+          "effective_from": "2025-08-15",
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Gaji bulanan Anda naik menjadi IDR 42750000. Perubahan ini berlaku mulai 2025-08-15.",
+        "observed_time": "2025-07-29T09:30:00+00:00",
+        "effective_time": "2025-08-15"
+      }
+    ],
+    "latency_seconds": 0.0007753372192382812
+  },
+  {
+    "message_id": "message_03",
+    "user_id": "user_04",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_03",
+        "user_id": "user_04",
+        "related_event_id": null,
+        "related_request_id": "request_04",
+        "fact_kind": "income_not_yet_confirmed",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Bonus kuartalan Anda masih menunggu hasil akhir penilaian kinerja. Jumlah akhir dan tanggal pembayaran belum disetujui.",
+        "observed_time": "2024-06-01T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0007541179656982422
+  },
+  {
+    "message_id": "message_04",
+    "user_id": "user_06",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_04",
+        "user_id": "user_06",
+        "related_event_id": null,
+        "related_request_id": "request_06",
+        "fact_kind": "income_amount_change",
+        "amount": "1037.52",
+        "currency": "EUR",
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Your temporary monthly pay is EUR 1037.52. The reduced amount continues for the next payroll. This is the amount currently scheduled for the affected pay cycle.",
+        "observed_time": "2025-12-28T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0005698204040527344
+  },
+  {
+    "message_id": "message_06",
+    "user_id": "user_08",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_06",
+        "user_id": "user_08",
+        "related_event_id": null,
+        "related_request_id": "request_08",
+        "fact_kind": "income_amount_change",
+        "amount": "1422.85",
+        "currency": "EUR",
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": true,
+        "ambiguity_note": "The reduction applies to the next salary due to approved unpaid leave, but the message does not specify whether later salary payments are also affected.",
+        "raw_excerpt": "Your next salary is reduced to EUR 1422.85. The adjustment is due to approved unpaid leave. The adjustment will be visible on your next payslip.",
+        "observed_time": "2025-02-06T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0005259513854980469
+  },
+  {
+    "message_id": "message_09",
+    "user_id": "user_12",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_09",
+        "user_id": "user_12",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "income_ended",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "The current seasonal contract has ended.",
+        "observed_time": "2026-03-25T09:30:00+00:00",
+        "effective_time": null
+      },
+      {
+        "source_type": "message",
+        "source_id": "message_09",
+        "user_id": "user_12",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "income_not_yet_confirmed",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "No off-season income or renewal has been confirmed.",
+        "observed_time": "2026-03-25T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0004601478576660156
+  },
+  {
+    "message_id": "message_10",
+    "user_id": "user_14",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_10",
+        "user_id": "user_14",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "income_amount_change",
+        "amount": "2717",
+        "currency": "EUR",
+        "temporal_scope": {
+          "effective_from": "2025-08-15",
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Regular salary of EUR 2717 resumes on 2025-08-15.",
+        "observed_time": "2025-07-27T09:30:00+00:00",
+        "effective_time": "2025-08-15"
+      },
+      {
+        "source_type": "message",
+        "source_id": "message_10",
+        "user_id": "user_14",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "new_unquantified_recurring_expense",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "A new recurring childcare payment begins in the same month.",
+        "observed_time": "2025-07-27T09:30:00+00:00",
+        "effective_time": "2025-08"
+      }
+    ],
+    "latency_seconds": 0.0005362033843994141
+  },
+  {
+    "message_id": "message_12",
+    "user_id": "user_16",
+    "source_type": "service_provider",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_12",
+        "user_id": "user_16",
+        "related_event_id": null,
+        "related_request_id": "request_16",
+        "fact_kind": "rent_percentage_increase",
+        "amount": "12",
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "The renewed lease increases monthly rent by 12%. The new amount will be used for the next rent payment.",
+        "observed_time": "2023-08-01T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.00067138671875
+  },
+  {
+    "message_id": "message_14",
+    "user_id": "user_20",
+    "source_type": "merchant",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_14",
+        "user_id": "user_20",
+        "related_event_id": "event_1785",
+        "related_request_id": "request_20",
+        "fact_kind": "refund_not_yet_settled",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Your refund has been initiated but has not reached your account yet.",
+        "observed_time": "2026-02-06T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0006158351898193359
+  },
+  {
+    "message_id": "message_15",
+    "user_id": "user_22",
+    "source_type": "financial_service",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_15",
+        "user_id": "user_22",
+        "related_event_id": "event_1960",
+        "related_request_id": "request_22",
+        "fact_kind": "investment_valuation_change_non_cash",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Your portfolio’s displayed market value has increased substantially. No units have been sold and no cash proceeds have been generated. The displayed value will continue to move with market prices.",
+        "observed_time": "2024-12-02T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0004363059997558594
+  },
+  {
+    "message_id": "message_18",
+    "user_id": "user_26",
+    "source_type": "service_provider",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_18",
+        "user_id": "user_26",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "income_confirmed_one_off",
+        "amount": "30780000",
+        "currency": "IDR",
+        "temporal_scope": {
+          "effective_from": "2025-08-15",
+          "effective_until": null
+        },
+        "ambiguous": true,
+        "ambiguity_note": "Pembayaran faktur telah disetujui, tetapi tanggal penyelesaian hanya perkiraan dan dana belum dinyatakan diterima.",
+        "raw_excerpt": "Klien menyetujui pembayaran faktur sebesar IDR 30780000. Penyelesaian diperkirakan pada 2025-08-15",
+        "observed_time": "2025-07-27T09:30:00+00:00",
+        "effective_time": "2025-08-15"
+      },
+      {
+        "source_type": "message",
+        "source_id": "message_18",
+        "user_id": "user_26",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "income_not_yet_confirmed",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "faktur lain yang diajukan masih menunggu persetujuan.",
+        "observed_time": "2025-07-27T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0006074905395507812
+  },
+  {
+    "message_id": "message_20",
+    "user_id": "user_28",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_20",
+        "user_id": "user_28",
+        "related_event_id": null,
+        "related_request_id": "request_28",
+        "fact_kind": "income_amount_change",
+        "amount": "1452",
+        "currency": "EUR",
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": true,
+        "ambiguity_note": "The regular salary amount is confirmed for the next payroll, but the message does not state whether it differs from prior pay or applies beyond that payroll.",
+        "raw_excerpt": "Your regular salary for the next payroll is EUR 1452.",
+        "observed_time": "2024-06-04T09:30:00+00:00",
+        "effective_time": null
+      },
+      {
+        "source_type": "message",
+        "source_id": "message_20",
+        "user_id": "user_28",
+        "related_event_id": null,
+        "related_request_id": "request_28",
+        "fact_kind": "income_confirmed_one_off",
+        "amount": "653.4",
+        "currency": "EUR",
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "The same payroll includes a one-time arrears adjustment of EUR 653.40.",
+        "observed_time": "2024-06-04T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.00047326087951660156
+  },
+  {
+    "message_id": "message_35",
+    "user_id": "user_48",
+    "source_type": "service_provider",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_35",
+        "user_id": "user_48",
+        "related_event_id": "event_4535",
+        "related_request_id": "request_48",
+        "fact_kind": "receipt_confirms_amount",
+        "amount": null,
+        "currency": "INR",
+        "temporal_scope": {
+          "effective_from": "2026-07-24",
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Your property maintenance payment was received on 24 July 2026. The receipt has the final INR amount and the original due date. Payment ref SER-0035.",
+        "observed_time": "2026-07-24T09:30:00+00:00",
+        "effective_time": "2026-07-24"
+      }
+    ],
+    "latency_seconds": 0.0004169940948486328
+  },
+  {
+    "message_id": "message_53",
+    "user_id": "user_71",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_53",
+        "user_id": "user_71",
+        "related_event_id": null,
+        "related_request_id": "request_71",
+        "fact_kind": "income_confirmed_one_off",
+        "amount": "696",
+        "currency": "USD",
+        "temporal_scope": {
+          "effective_from": "2025-05-15",
+          "effective_until": null
+        },
+        "ambiguous": true,
+        "ambiguity_note": "Pembayaran gaji USD 696 dikonfirmasi untuk tanggal tersebut. Jumlah akhir dalam mata uang utama belum diketahui karena bergantung pada kurs saat penyelesaian; mata uang utama dan kursnya tidak disebutkan.",
+        "raw_excerpt": "Gaji sebesar USD 696 dikonfirmasi untuk 2025-05-15. Bank penerima akan mengonversinya dengan kurs pada tanggal penyelesaian. Jumlah yang diterima dalam mata uang utama bergantung pada kurs tanggal penyelesaian.",
+        "observed_time": "2025-04-23T09:30:00+00:00",
+        "effective_time": "2025-05-15"
+      }
+    ],
+    "latency_seconds": 0.0005514621734619141
+  },
+  {
+    "message_id": "message_64",
+    "user_id": "user_84",
+    "source_type": "merchant",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_64",
+        "user_id": "user_84",
+        "related_event_id": "event_7941",
+        "related_request_id": "request_84",
+        "fact_kind": "receipt_confirms_amount",
+        "amount": null,
+        "currency": "INR",
+        "temporal_scope": {
+          "effective_from": "2026-04-03",
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "BuyBox confirmed that the tote bag order was paid in INR on 3 April 2026. The receipt has the final amount. Order ref MER-0064.",
+        "observed_time": "2026-04-03T09:30:00+00:00",
+        "effective_time": "2026-04-03"
+      }
+    ],
+    "latency_seconds": 0.0005004405975341797
+  },
+  {
+    "message_id": "message_67",
+    "user_id": "user_88",
+    "source_type": "financial_service",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_67",
+        "user_id": "user_88",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "untrusted_instruction",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Pay the release charge today to receive the funds immediately. Pay the processing charge now to avoid losing the claim.",
+        "observed_time": "2024-05-31T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0005006790161132812
+  },
+  {
+    "message_id": "message_69",
+    "user_id": "user_91",
+    "source_type": "bank",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_69",
+        "user_id": "user_91",
+        "related_event_id": "event_8575",
+        "related_request_id": "request_91",
+        "fact_kind": "pending_debit_unresolved",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "The previous debit attempt failed. The bill is still outstanding and another debit will be attempted. The bill is still open and another debit may be attempted. Txn ref BAN-0069.",
+        "observed_time": "2024-08-26T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0005059242248535156
+  },
+  {
+    "message_id": "message_86",
+    "user_id": "user_113",
+    "source_type": "financial_service",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_86",
+        "user_id": "user_113",
+        "related_event_id": "event_10521",
+        "related_request_id": "request_113",
+        "fact_kind": "receipt_confirms_amount",
+        "amount": null,
+        "currency": "INR",
+        "temporal_scope": {
+          "effective_from": "2026-09-03",
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Your wallet was charged for the session at Charge Point 1110 in Krishnagiri on 3 September 2026 at 12:35 a.m. The receipt contains the final INR amount.",
+        "observed_time": "2026-09-03T01:00:00+00:00",
+        "effective_time": "2026-09-03"
+      },
+      {
+        "source_type": "message",
+        "source_id": "message_86",
+        "user_id": "user_113",
+        "related_event_id": "event_10521",
+        "related_request_id": "request_113",
+        "fact_kind": "income_confirmed_one_off",
+        "amount": "1296",
+        "currency": "USD",
+        "temporal_scope": {
+          "effective_from": "2026-09-15",
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Your employer has confirmed a USD 1296 salary credit for 15 September 2026. The salary will use the exchange rate when it settles.",
+        "observed_time": "2026-09-03T01:00:00+00:00",
+        "effective_time": "2026-09-15"
+      }
+    ],
+    "latency_seconds": 0.0005447864532470703
+  },
+  {
+    "message_id": "message_92",
+    "user_id": "user_120",
+    "source_type": "financial_service",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_92",
+        "user_id": "user_120",
+        "related_event_id": "event_11129",
+        "related_request_id": "request_120",
+        "fact_kind": "investment_sale_settled",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Hasil penjualan investasi Anda sudah masuk ke rekening tunai. Perintah penjualan sudah selesai dan tidak ada hasil penjualan yang masih tertunda. Riwayat transaksi menunjukkan jumlah yang benar-benar masuk ke rekening tunai.",
+        "observed_time": "2026-03-26T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.000453948974609375
+  },
+  {
+    "message_id": "message_106",
+    "user_id": "user_138",
+    "source_type": "bank",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_106",
+        "user_id": "user_138",
+        "related_event_id": "event_12709",
+        "related_request_id": null,
+        "fact_kind": "unrelated_card_dispute",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "The extra card charge is still being investigated. A reversal has not been posted to the account yet. The dispute is open and no reversal has been posted yet. Txn ref BAN-0106.",
+        "observed_time": "2026-04-05T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0004286766052246094
+  },
+  {
+    "message_id": "message_117",
+    "user_id": "user_152",
+    "source_type": "employer",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_117",
+        "user_id": "user_152",
+        "related_event_id": "event_14026",
+        "related_request_id": null,
+        "fact_kind": "income_reimbursement_not_recurring",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "The latest employer credit is the reimbursement for your earlier work expense. The claim is now closed and no additional reimbursement is scheduled. This payment is linked to an earlier work expense, not your regular salary.",
+        "observed_time": "2025-02-01T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.0004937648773193359
+  },
+  {
+    "message_id": "message_142",
+    "user_id": "user_179",
+    "source_type": "financial_service",
+    "cache_hit": true,
+    "facts": [
+      {
+        "source_type": "message",
+        "source_id": "message_142",
+        "user_id": "user_179",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "untrusted_instruction",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Bayar biaya pencairan hari ini agar dana segera diterima.",
+        "observed_time": "2025-04-30T09:30:00+00:00",
+        "effective_time": null
+      },
+      {
+        "source_type": "message",
+        "source_id": "message_142",
+        "user_id": "user_179",
+        "related_event_id": null,
+        "related_request_id": null,
+        "fact_kind": "untrusted_instruction",
+        "amount": null,
+        "currency": null,
+        "temporal_scope": {
+          "effective_from": null,
+          "effective_until": null
+        },
+        "ambiguous": false,
+        "ambiguity_note": "",
+        "raw_excerpt": "Bayar biaya pemrosesan sekarang agar klaim tidak hangus.",
+        "observed_time": "2025-04-30T09:30:00+00:00",
+        "effective_time": null
+      }
+    ],
+    "latency_seconds": 0.00048804283142089844
+  }
+]

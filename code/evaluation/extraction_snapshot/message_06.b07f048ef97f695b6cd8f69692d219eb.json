@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "The reduction applies to the next salary due to approved unpaid leave, but the message does not specify whether later salary payments are also affected.",
+        "ambiguous": true,
+        "amount": 1422.85,
+        "currency": "EUR",
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_amount_change",
+        "raw_excerpt": "Your next salary is reduced to EUR 1422.85. The adjustment is due to approved unpaid leave. The adjustment will be visible on your next payslip."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0ad28a677ebb7542006aa56c44f15087d187b3aaa1cf175650",
+  "reasoning_effort": "high"
+}

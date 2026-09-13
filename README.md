@@ -1,193 +1,193 @@
-# HackerRank Orchestrate
+# Buy or Wait? — Production Financial Decision Engine
 
-Starter repository for the **HackerRank Orchestrate** 24-hour hackathon (September 2026).
-
-## Buy or Wait?
-
-Build an AI-powered financial agent that decides whether a user can safely afford a requested expense.
-
-A user may ask: **"Can I afford this laptop?"**
-
-Answering well takes more than the current balance. The agent must account for recurring expenses, pending payments, essential spending, confirmed income, available payment options, and relevant details buried in messages and images.
-
-For every request, the agent decides whether the user should pay in full, pay partially, use installments, wait, or not proceed. The recommendation must be personalized: two users with the same balance can deserve different answers based on their commitments, priorities, payment preferences, and willingness to adjust flexible expenses.
-
-A recommendation is safe only if the user can complete the full payment plan, cover essential expenses, and stay above their preferred minimum balance throughout the forecast period.
-
-Read [`problem_statement.md`](./problem_statement.md) for the full task spec, input/output schema, allowed values, conflict-resolution rules, and submission format.
+An AI-powered financial decision engine built for the HackerRank Orchestrate challenge (September 2026). The system evaluates purchase requests against a user's multi-month financial reality to deliver personalized, provably safe recommendations: pay in full, wait, pay in installments, split into partial payments, or decline.
 
 ---
 
-## Quick Start
+## 1. The Affordability Problem
 
-Clone the repository and move into the project directory:
+Assessing whether an expense is affordable cannot be answered by checking the current account balance alone. A user with $5,000 today may have an upcoming rent payment of $3,500, a quarterly insurance bill, and pending card debits that make an immediate $2,000 purchase disastrous. Conversely, a user with $500 today may have confirmed payroll settling in three days and minimal fixed expenses.
 
+### Safety Invariants
+Under our financial model, a purchase recommendation is **safe** if and only if:
+1. **Balance Floor**: The forecasted balance remains at or above the user's preferred `minimum_balance` at the end of every calendar day across the entire 90-day forecast horizon.
+2. **Daily Event Ordering**: Within each day, events settle in strict conservative sequence:
+   $$\text{Opening Balance} + \text{Confirmed Credits} \to \text{Committed Debits} \to \text{Proposed Payment} \ge \text{Minimum Balance}$$
+3. **Pending Debit Reservation**: All pending debits are treated as committed and reserved against available funds; pending credits are excluded until settled.
+4. **Input-Derived Obligations**: Payment plans must complete the entire requested amount (or the exact scheduled option total for installments) without silent haircutting or debt inflation.
+
+---
+
+## 2. Architecture: Separation of Evidence from Financial Calculations
+
+A core design principle of this solution is the strict separation between **multimodal evidence perception** and **deterministic financial reasoning**:
+
+```
+                 UNSTRUCTURED EVIDENCE LAYER
+  [Payslips / Bills / Receipts]        [Chat Messages / Emails]
+              │                                   │
+              ▼                                   ▼
+      gpt-6-astra Vision                  Fact Extraction Archetypes
+   (Amount Candidates, Dates)           (Income Changes, One-offs)
+              │                                   │
+              └─────────────────┬─────────────────┘
+                                ▼
+               Content-Addressed Observation Cache
+              (.llm_cache/ & extraction_snapshot/)
+ ───────────────────────────────┼───────────────────────────────
+                  DETERMINISTIC FINANCIAL CORE
+                                ▼
+                     Event & Flow Resolver
+               (fx.py, recurrence.py, resolver.py)
+                                ▼
+                   Conservative Cash Simulator
+                    (simulator.py, forecast.py)
+                                ▼
+                       Candidate Planner
+                 (S-14 6-Level Hierarchy Ranking)
+                                │
+                    ┌───────────┴───────────┐
+                    ▼                       ▼
+           Independent Verifier    Reference Evaluator
+           (Obligation Auditing)  (Differential Testing)
+                    │                       │
+                    └───────────┬───────────┘
+                                ▼
+                     RFC 4180 / CRLF Output
+                         (output.csv)
+```
+
+1. **LLM Perception**: `gpt-6-astra` is utilized exclusively for document perception (OCR, table reading, extracting candidate numbers and payment statuses from messy receipts and payslips) and message fact extraction. Every LLM response is cached by content hash (`source_sha256`, model, prompt version, decoding config).
+2. **Pure Deterministic Reasoning**: Once observations are captured, all subsequent calculations—currency conversion, recurrence interval fitting, phase anchoring, day-by-day cash simulation, candidate plan generation, spending change pruning, candidate ranking, and post-decision verification—are executed in pure Python standard library code using exact `Decimal` arithmetic. No financial decisions or arithmetic calculations are delegated to an LLM.
+
+---
+
+## 3. Evolution: What Early Implementations Missed
+
+During early prototype development (Stages 1–11), multiple edge cases were uncovered that compromised decision safety:
+
+1. **Naive Capacity Calculations**: Initial logic derived available capacity simply by subtracting the minimum balance from the current balance, ignoring pending debits and upcoming essential commitments.
+2. **Semantic Role Confusion in Images**: Simple OCR or basic regex parsing picked arbitrary numbers from receipts (e.g., tax amounts or cash tendered by the customer) rather than distinguishing between `total`, `paid_amount`, `balance_due`, and `net_pay`.
+3. **Unanchored Recurrence**: Early recurrence detection simply estimated monthly cadence without anchoring to the true historical phase, causing future salary credits to drift away from actual payroll dates.
+4. **Spending Change Side Effects**: Naive spending-change filters matched substrings, accidentally stopping unrelated debits (e.g., canceling a pending "gym insurance" transaction when attempting to pause an optional "gym" subscription).
+
+---
+
+## 4. The Independent Audit & Defensible Repairs (Stage 14)
+
+A rigorous audit was conducted using counterexample stress testing, uncovering subtle edge cases that required architectural hardening:
+
+* **Counterexample 1 (Under-obligation acceptance)**: The initial verifier accepted a plan paying only $1 for a $50 request.
+  * *Repair*: Replaced plan-derived expectations with input-derived obligations. The expected total is computed directly from `request.amount` (for full/wait/partial) or `option.total_payable_amount` (for installments).
+* **Counterexample 2 (Unjustified Rejection)**: Approved `not_recommended` when an immediate full payment was demonstrably safe.
+  * *Repair*: Added an explicit audit pass in `independent_verifier.py` that recalculates capacity and asserts that no negative recommendation is made if immediate payment or a deadline-compliant option is completely safe.
+* **Counterexample 3 (Zero-Capacity Truncation)**: Reported `amount_safe_to_pay = 0` despite $50 of safe headroom.
+  * *Repair*: Re-implemented capacity calculation to search for the maximal safe amount $C \in [0, \text{requested\_amount}]$ that preserves the minimum balance across all 90 days.
+* **Counterexample 4 (Spending Change Leakage)**: Stopping an expense stream removed unrelated pending debits.
+  * *Repair*: Hardened `planner.py` to match exact stream IDs and descriptions, restricting changes strictly to flexible recurring streams and preserving all committed pending debits.
+* **Counterexample 5 (Ranker Inversion)**: Selected a plan costing 110 with 1 change over a plan costing 100 with 2 changes.
+  * *Repair*: Enforced the exact S-14 6-level ranking hierarchy: completion by deadline $\to$ binary no-changes preference $\to$ total cost $\to$ earliest payment date $\to$ payment count $\to$ option ID.
+* **Counterexample 6 (Output Validation Gaps)**: The output validator previously tolerated missing rows or amounts above requested amounts.
+  * *Repair*: Hardened `validate_output_csv` to verify exactly 250 evaluation IDs, strict 8-column schema, CRLF line endings, and cross-column semantic consistency.
+
+To guarantee correctness, an independent reference calculator (`buyorwait/reference_evaluator.py`) was introduced. It implements first-principles simulation and evaluation completely separately from the production planner, providing continuous differential verification.
+
+---
+
+## 5. Measured Evaluation & Benchmark Results
+
+### Public Sample Evaluation (25 Solved Requests)
+Evaluating against `dataset/sample_requests.csv` via `code/evaluation/main.py`:
+
+| Metric | Result | Target / Standard |
+| :--- | :--- | :--- |
+| **False Positives (Unsafe Plans)** | **0 / 25 (0.0%)** | 0 allowed |
+| **Recommended Payment Method** | **20 / 25 (80.0%)** | Strict contract compliance |
+| **Payment Plan Exact Match** | **19 / 25 (76.0%)** | Date-set match: 20/25; Sum match: 21/25 |
+| **Spending Changes Set Match** | **22 / 25 (88.0%)** | 25/25 rule well-formed |
+| **Affordability Status** | **17 / 25 (68.0%)** | Conservative safety alignment |
+| **Decision Explanation Grounding** | **25 / 25 (100.0%)** | 0 empty, 0 hallucinated claims |
+| **Amount Safe to Pay (Mean Relative Error)** | **EUR 7.97%, IDR 6.80%, INR 4.07%, USD 1.97%, ZAR 5.24%** |
+
+*Root-Cause of Sample Divergence*: The few sample divergences stem from deliberate safety conservatism: where public samples optimistically counted unconfirmed future income or simulated truncated horizons (e.g., request_13, request_17), our engine strictly enforces conservative settlement and full 90-day safety.
+
+### Clean-Room Test Suite & Differential Verification
+* **Automated Unit & Regression Tests**: 308 tests across 18 test suites run in **~5.0 seconds** with 100% pass rate.
+* **Differential Verification**: 0 discrepancies across all 250 evaluation requests between the production planner and the independent reference evaluator.
+
+---
+
+## 6. Quickstart & Execution Guide
+
+The engine requires Python 3.11+ and runs out-of-the-box using the standard library.
+
+### A. Environment Setup
 ```bash
-git clone https://github.com/interviewstreet/hackerrank-orchestrate-september26.git
+# Clone repository
+git clone https://github.com/G26karthik/hackerrank-orchestrate-september26.git
 cd hackerrank-orchestrate-september26
+
+# (Optional) Install pinned packages for live LLM evidence re-extraction
+pip install -r code/requirements.txt
 ```
 
-Build your solution in `code/main.py`, or use another language and document its entry point clearly.
-
-Your solution must:
-
-- Read the input files from `dataset/`
-- Generate one prediction for every request
-- Write the final predictions to `output.csv` in the repository root
-
-Run the starter Python entry point with:
-
+### B. Run Full Predictions (250 Requests)
+Generate the competition `output.csv` for all 250 evaluation requests:
 ```bash
-python3 code/main.py
+python code/main.py --mode full --output output.csv --dataset dataset
+```
+*Evaluates all 250 requests in ~6.2 seconds and validates schema compliance.*
+
+### C. Run Sample Evaluation
+Generate predictions for the 25 sample requests and score them:
+```bash
+# 1. Generate predictions for sample requests
+python code/main.py --mode sample --output sample_preds.csv --dataset dataset
+
+# 2. Score against sample labels
+python code/evaluation/main.py sample_preds.csv --dataset dataset
 ```
 
-After running your solution, confirm that `output.csv` exists in the repository root and contains the required columns and one row for every request.
-
-## Important File Locations
-
-```text
-dataset/        Input data and the blank output template. Do not modify the input data.
-code/           Your solution code.
-output.csv      Final generated predictions in the repository root.
-code.zip        ZIP file containing your complete solution for submission.
+### D. Validate Output CSV Compliance
+Verify that any generated CSV satisfies all competition constraints:
+```bash
+python code/main.py --validate-csv output.csv --dataset dataset
 ```
 
-The blank template at `dataset/output.csv` is provided as a reference. Your final generated file must be the root-level `output.csv`.
-
----
-
-## Repository Layout
-
-```text
-.
-├── AGENTS.md                         # Rules for AI coding tools + transcript logging
-├── problem_statement.md              # Full challenge statement
-├── README.md                         # You are here
-├── code/                             # Your solution code
-├── output.csv                        # Final generated predictions
-└── dataset/
-    ├── requests.csv                  # 250 requests to evaluate — predict these
-    ├── output.csv                    # Blank submission template
-    ├── sample_requests.csv           # 25 solved examples
-    ├── financial_profiles.csv        # Balances, minimum balance, priorities, preferences
-    ├── financial_events.csv          # Historical, pending, and confirmed transactions
-    ├── request_payment_options.csv   # Payment options available per request
-    ├── exchange_rates.csv            # Fixed, dated conversion rates
-    ├── messages.csv                  # Messages tied to users, requests, or events
-    ├── images.csv                    # Payroll letters, statements, bills, receipts
-    └── media/
-        └── images/
+### E. Run Automated Test Suite
+```bash
+python -m unittest discover -s code/tests
 ```
 
-Only `dataset/requests.csv` requires predictions. Everything else is context. Join user records with `user_id`, request records with `request_id`, supporting evidence with `related_event_id`, and exchange rates with the rate date and currency pair.
-
-Amounts are in the user's `home_currency` — the dataset uses INR, ZAR, IDR, USD, and EUR, and every conversion rate you need is in `exchange_rates.csv`. All dates are `YYYY-MM-DD`. Live exchange rates, market data, and banking access are not required.
-
----
-
-## What You Need to Build
-
-For every row in `dataset/requests.csv`, produce one row in `output.csv` with:
-
-| Column | Meaning |
-|---|---|
-| `request_id` | The request being answered |
-| `amount_safe_to_pay` | Largest amount safe to pay on `request_date` before optional spending changes, after protecting essentials and the minimum balance |
-| `affordability_status` | `affordable_now`, `affordable_with_plan`, `affordable_later`, or `not_affordable` |
-| `recommended_payment_method` | `full_payment`, `partial_payment`, `installments`, `wait`, or `not_recommended` |
-| `payment_plan` | Chronological `<YYYY-MM-DD>:<amount>` entries joined by `\|`, or `none` |
-| `earliest_date_for_full_payment` | Earliest date the full amount is forecast safe as one payment; empty if never within the forecast |
-| `spending_changes_needed` | Up to three `stop:<event_id>` / `reduce_to:<event_id>:<amount>` changes joined by `\|`, or `none` |
-| `decision_explanation` | Short explanation and the financial facts behind it |
-
-`0 <= amount_safe_to_pay <= requested_amount` must always hold. Installment plans must exactly match a supplied payment option, and only recurring expenses marked flexible may be changed.
-
-`affordable_with_plan` means the full request is completed through a partial-payment schedule, installments, or permitted spending changes. Recommend `partial_payment` only when the request allows it, the user accepts it, `0 < amount_safe_to_pay < requested_amount`, and `earliest_date_for_full_payment` is on or before `desired_completion_date`. Use exactly two payments: pay `amount_safe_to_pay` on `request_date`, then pay the remaining amount on `earliest_date_for_full_payment`. The two payments must add up to `requested_amount`. Unlike installments, partial payment does not need to match a supplied payment option.
-
----
-
-## Suggested Workflow
-
-1. Inspect `dataset/sample_requests.csv` — 25 requests with completed output columns — to understand the expected format and decision style.
-2. Reconstruct each user's financial state from `financial_profiles.csv` and `financial_events.csv`: separate recurring expenses from one-time events, reserve pending transactions, count confirmed salary only on its settlement date, and de-duplicate repeated representations of the same event.
-3. When an event has a blank `amount`, find its `event_id` as `related_event_id` in `images.csv` and extract the amount from the linked image. Never treat a blank amount as zero. Pull in any other relevant messages, images, and payment options for the request.
-4. Forecast forward and generate a plan that keeps the balance above the minimum at every step.
-5. Verify deterministically — bounds, plan feasibility, schedule match, flexible-only spending changes — before writing `output.csv`.
-6. Score yourself on the solved samples, then run the full dataset.
-
-You may use any language or runtime. Python, JavaScript, and TypeScript are all reasonable choices.
-
----
-
-## Requirements
-
-Your solution must:
-
-- be runnable from the terminal
-- read the provided files from `dataset/`
-- produce a valid `output.csv` with the exact required columns in the exact required order
-- include one prediction for every `request_id` in `dataset/requests.csv`
-- not use organizer-only files or hardcoded labels
-- keep behavior deterministic where possible
-
-If you use API keys or secrets, read them from environment variables. Never hardcode secrets in the repo.
-
----
-
-## Evaluation
-
-Your `output.csv` will be compared against hidden ground-truth values.
-
-The scoring will consider:
-
-- accuracy of `amount_safe_to_pay`
-- correctness of `affordability_status`
-- correctness of `recommended_payment_method` and `payment_plan`
-- accuracy of `earliest_date_for_full_payment`
-- validity of `spending_changes_needed`
-- usefulness and consistency of `decision_explanation`
-
-### Token Usage And Cost Analysis
-
-Your `code.zip` must include one token-usage file:
-
-```text
-evaluation/usage_report.md
+### F. Rebuild Deterministic Submission Package
+Build `code.zip` and run clean-room verification in an isolated sandbox:
+```bash
+python code/main.py --package
 ```
 
-The report must cover model providers and names, model calls, input and output tokens, total and average tokens per request, estimated total and per-request cost. The reported values must correspond to the final full-dataset run that produced your `output.csv`.
+---
+
+## 7. Submission Artifacts & Verification Manifest
+
+The three required submission artifacts:
+
+1. **`code.zip`** (266,079 bytes)
+   - SHA-256: `C57249B51811246DE9EFCBD816297339F6FA9DA997B41150B64B9C84900FF114`
+   - Contains self-contained `code/` directory, pinned dependencies, tests, documentation, and `usage_report.md`. Strictly zero dataset files.
+2. **`output.csv`** (50,405 bytes)
+   - SHA-256: `0EB1D2E7163DCEC8D1AE9D90F605D28A74CD056AFB7C4417C6BD0B1A03F46F43`
+   - Exactly 250 evaluation requests, valid CRLF, 100% compliant with schema and contract.
+3. **`log.txt`** (112,749 characters)
+   - Authentic, unedited development log tracking all conversational stages. Uploaded separately to HackerRank.
 
 ---
 
-## Chat Transcript Logging
+## 8. AI Assistance & Known Limitations
 
-This repo includes an [`AGENTS.md`](./AGENTS.md) file for AI coding tools. It asks compatible tools to append conversation summaries to a `log.txt` in the repository root — the same directory as `AGENTS.md`:
+### AI Assistance Disclosure
+Development was conducted with pair-programming assistance from Claude (Anthropic) during early exploratory stages (Stages 1–12) and Antigravity (Google DeepMind) for audit hardening, Ponytail simplification, clean-room verification, and release preparation (Stages 13–16). All code, tests, and calculations were independently verified through automated regression suites and differential reference modeling.
 
-| Platform | Path |
-|---|---|
-| macOS / Linux | `<repo root>/log.txt` |
-| Windows | `<repo root>\log.txt` |
-
-The path resolves relative to `AGENTS.md`, so it stays correct across clones, renames, and checkouts. `log.txt` is gitignored — upload it as your chat transcript at submission time. Do not paste secrets into the chat.
-
-In case, the harness you are using is not in the repo root, you can explicitly ask the agent to look for the AGENTS.md in this folder & then continue.
-
----
-
-## Submission
-
-Submit the following files as instructed by HackerRank:
-
-| File | Description |
-|---|---|
-| `code.zip` | Full runnable solution, prompts/configuration, README, and the required `evaluation/` folder |
-| `output.csv` | Predictions for every row in `dataset/requests.csv` |
-| `chat_transcript` | The `log.txt` described above, showing how you developed or used the system |
-
-Before submitting, confirm:
-
-- `output.csv` has one row per row in `dataset/requests.csv` (250 rows plus the header).
-- `output.csv` has the exact required columns in the exact required order.
-- Every `amount_safe_to_pay` satisfies `0 <= amount_safe_to_pay <= requested_amount`.
-- Every installment plan matches a supplied payment option, and every spending change targets a flexible recurring expense.
-- Your runnable code, setup instructions, and `evaluation/` folder are included in `code.zip`.
+### Material Limitations
+1. **Offline Replay Dependency**: Zero-call offline execution relies on the 38 pre-extracted content-addressed observation files in `evaluation/extraction_snapshot/`. Full regeneration from scratch requires an OpenAI API key (`gpt-6-astra`).
+2. **Illegible Documents**: One image in the dataset (`image_04`) is cropped/illegible. The system explicitly tags it as non-legible rather than guessing an arbitrary number.
+3. **Conservative Policy Boundary**: The engine rejects unconfirmed future income and restricts spending changes strictly to streams with verified user permission. In real-world deployments, users would be prompted interactively to confirm pending changes.

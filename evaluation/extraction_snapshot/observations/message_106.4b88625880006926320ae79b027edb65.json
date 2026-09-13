@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "unrelated_card_dispute",
+        "raw_excerpt": "The extra card charge is still being investigated. A reversal has not been posted to the account yet. The dispute is open and no reversal has been posted yet. Txn ref BAN-0106."
+      }
+    ]
+  },
+  "provider_response_id": "resp_083b1005f94241f2006aa56cbd7af487d1be929636a7170d6f",
+  "reasoning_effort": "high"
+}

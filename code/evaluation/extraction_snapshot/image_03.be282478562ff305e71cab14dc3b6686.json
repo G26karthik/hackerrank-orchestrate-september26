@@ -1,0 +1,126 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 1160,
+        "label": "MRP / SP",
+        "region": "Item table, row 1"
+      },
+      {
+        "amount": 5800,
+        "label": "Amt",
+        "region": "Item table, row 1"
+      },
+      {
+        "amount": 750,
+        "label": "MRP / SP / Amt",
+        "region": "Item table, row 2 MRP, SP and Amt; row 7 Amt"
+      },
+      {
+        "amount": 480,
+        "label": "MRP / SP",
+        "region": "Item table, rows 3 and 4"
+      },
+      {
+        "amount": 13920,
+        "label": "Amt",
+        "region": "Item table, row 3"
+      },
+      {
+        "amount": 4800,
+        "label": "Amt",
+        "region": "Item table, row 4"
+      },
+      {
+        "amount": 2500,
+        "label": "MRP / SP / Amt",
+        "region": "Item table, row 5"
+      },
+      {
+        "amount": 269,
+        "label": "MRP / SP",
+        "region": "Item table, row 6"
+      },
+      {
+        "amount": 2152,
+        "label": "Amt",
+        "region": "Item table, row 6"
+      },
+      {
+        "amount": 250,
+        "label": "MRP / SP",
+        "region": "Item table, row 7"
+      },
+      {
+        "amount": 270,
+        "label": "MRP / SP",
+        "region": "Item table, row 8"
+      },
+      {
+        "amount": 540,
+        "label": "Amt",
+        "region": "Item table, row 8"
+      },
+      {
+        "amount": 338,
+        "label": "MRP / SP",
+        "region": "Item table, row 9"
+      },
+      {
+        "amount": 1690,
+        "label": "Amt",
+        "region": "Item table, row 9"
+      },
+      {
+        "amount": 810,
+        "label": "MRP / SP",
+        "region": "Item table, row 10"
+      },
+      {
+        "amount": 7290,
+        "label": "Amt",
+        "region": "Item table, row 10"
+      },
+      {
+        "amount": 360,
+        "label": "MRP / SP",
+        "region": "Item table, row 11"
+      },
+      {
+        "amount": 1080,
+        "label": "Amt",
+        "region": "Item table, row 11"
+      },
+      {
+        "amount": 41272,
+        "label": "Net Amount / Cash Paid",
+        "region": "Bottom-right Net Amount and Cash Paid rows"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": null,
+    "document_type": "Retail receipt / Bill of Supply",
+    "due_date_candidates": [
+      "2026-02-27"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "Receipt date is printed as 27/02/2026; no separate due date is shown. Net Amount is printed as 41272.0 and Cash Paid as 41272.00. No currency symbol or code is visible. Repeated monetary values are consolidated in amount_candidates.",
+    "paid_amount": 41272,
+    "payment_status": "paid",
+    "source_regions": [
+      "Upper-left receipt date below Bill of Supply heading",
+      "Central item table, MRP, SP and Amt columns",
+      "Bottom-right Net Amount row",
+      "Bottom-right Cash Paid row"
+    ],
+    "tax": null,
+    "total": 41272
+  },
+  "provider_response_id": "resp_0592d251ff86d1a5006aa56a15611c87d1950591ee5b440b83",
+  "reasoning_effort": "high"
+}

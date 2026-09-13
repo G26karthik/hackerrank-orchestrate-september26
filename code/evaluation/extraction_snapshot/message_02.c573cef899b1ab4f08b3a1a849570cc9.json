@@ -1,0 +1,29 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "other",
+        "raw_excerpt": "Gaji rutin untuk penggajian berikutnya sudah dikonfirmasi."
+      },
+      {
+        "ambiguity_note": "Penyesuaian satu kali akan dicantumkan terpisah, tetapi tidak dijelaskan apakah berupa tambahan pendapatan atau pengurangan.",
+        "ambiguous": true,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "other",
+        "raw_excerpt": "Slip gaji berikutnya akan menampilkan gaji rutin dan penyesuaian satu kali secara terpisah."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0143aab0ff82d36b006aa588e99a2087d1b7d6de94259e8653",
+  "reasoning_effort": "high"
+}

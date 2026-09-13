@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "investment_sale_settled",
+        "raw_excerpt": "Hasil penjualan investasi Anda sudah masuk ke rekening tunai. Perintah penjualan sudah selesai dan tidak ada hasil penjualan yang masih tertunda. Riwayat transaksi menunjukkan jumlah yang benar-benar masuk ke rekening tunai."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0b3e330f3d8a1668006aa56cb8baa887d180b5852eec74ae47",
+  "reasoning_effort": "high"
+}

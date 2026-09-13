@@ -1,0 +1,1954 @@
+[
+  {
+    "image_id": "image_01",
+    "event_id": "event_253",
+    "event_category": "salary",
+    "event_description": "August 2019 net salary",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_01",
+      "source_sha256": "f37b40e6af42c664846057252cac89ad41b7d029dfe8dacff2db8cceb79fa5ba",
+      "document_type": "payslip",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Salary",
+          "amount": "4500000",
+          "region": "earnings column"
+        },
+        {
+          "label": "Allowance BPJS Pen 2% Company",
+          "amount": "90000",
+          "region": "earnings column"
+        },
+        {
+          "label": "Allowance JHT 3.7%",
+          "amount": "166500",
+          "region": "earnings column"
+        },
+        {
+          "label": "Allowance JKK 0.24%",
+          "amount": "10800",
+          "region": "earnings column"
+        },
+        {
+          "label": "Allowance JKM 0.3%",
+          "amount": "13500",
+          "region": "earnings column"
+        },
+        {
+          "label": "Deduction BPJS Pen 2% Company",
+          "amount": "90000",
+          "region": "deductions column"
+        },
+        {
+          "label": "Deduction BPJS Pen 1% Employee",
+          "amount": "45000",
+          "region": "deductions column"
+        },
+        {
+          "label": "Deduction JHT 3.7%",
+          "amount": "166500",
+          "region": "deductions column"
+        },
+        {
+          "label": "Deduction JHT 2% Employee",
+          "amount": "90000",
+          "region": "deductions column"
+        },
+        {
+          "label": "Deduction JKK 0.24%",
+          "amount": "10800",
+          "region": "deductions column"
+        },
+        {
+          "label": "Deduction JKM 0.3%",
+          "amount": "13500",
+          "region": "deductions column"
+        },
+        {
+          "label": "Subtotal Earnings",
+          "amount": "4780800",
+          "region": "lower-left subtotal row"
+        },
+        {
+          "label": "Subtotal Deductions",
+          "amount": "415800",
+          "region": "lower-right subtotal row"
+        },
+        {
+          "label": "Tax Allowance",
+          "amount": "0",
+          "region": "lower-left tax section"
+        },
+        {
+          "label": "Tax Borne by Company",
+          "amount": "0",
+          "region": "lower-left tax section"
+        },
+        {
+          "label": "Tax Penalty Borne By Company",
+          "amount": "0",
+          "region": "lower-left tax section"
+        },
+        {
+          "label": "Tax",
+          "amount": "0",
+          "region": "lower-right tax section"
+        },
+        {
+          "label": "Tax Penalty",
+          "amount": "0",
+          "region": "lower-right tax section"
+        },
+        {
+          "label": "Total Earnings",
+          "amount": "4780800",
+          "region": "bottom-left total row"
+        },
+        {
+          "label": "Total Deductions",
+          "amount": "415800",
+          "region": "bottom-right total deductions row"
+        },
+        {
+          "label": "Net Pay",
+          "amount": "4365000",
+          "region": "bottom-right net pay row and amount written in words beneath"
+        },
+        {
+          "label": "Transferred to",
+          "amount": "4365000",
+          "region": "bank transfer statement below table"
+        }
+      ],
+      "currency": "IDR",
+      "net_pay": "4365000",
+      "gross_pay": "4780800",
+      "tax": "0",
+      "total": null,
+      "paid_amount": "4365000",
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [],
+      "payment_status": "paid",
+      "source_regions": [
+        "bottom-left Total Earnings row",
+        "lower-right Tax row",
+        "bottom-right Net Pay row",
+        "bank transfer statement below table",
+        "bottom-left print timestamp"
+      ],
+      "notes": "Pay period is Aug-2019. Printed on 2019-09-02 at 09:35 PM; this is explicitly a print timestamp, not a due or payment date. No due date or transfer date is stated. The transfer statement identifies Bank Central Asia and explicitly shows IDR 4,365,000 transferred.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_0889e902ee0a827b006aa569df151887d18bb4a039c8134c65"
+    },
+    "selection": {
+      "event_id": "event_253",
+      "selected_amount": "4365000",
+      "selected_field": "net_pay",
+      "rationale": "salary event: selected net_pay per the event's semantic purpose",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": "net_pay",
+    "reread_value": "4365000",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.002755403518676758
+  },
+  {
+    "image_id": "image_02",
+    "event_id": "event_1442",
+    "event_category": "rent",
+    "event_description": "Outstanding rent balance",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_02",
+      "source_sha256": "ccd779e5382b1bcfacfb47d4ccf346ffd667a34c8b94d0cfd48aa4a609bd117d",
+      "document_type": "rent receipt",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Acknowledgment of receipt — Rupees",
+          "amount": "200000",
+          "region": "upper acknowledgment paragraph"
+        },
+        {
+          "label": "Rent & Maintanance",
+          "amount": "180000",
+          "region": "middle-right charges table"
+        },
+        {
+          "label": "Water Charges",
+          "amount": "5000",
+          "region": "middle-right charges table"
+        },
+        {
+          "label": "Rental Tax",
+          "amount": "5000",
+          "region": "middle-right charges table"
+        },
+        {
+          "label": "Electrical Charges",
+          "amount": "10000",
+          "region": "middle-right charges table"
+        },
+        {
+          "label": "Total Amount to be Received",
+          "amount": "200000",
+          "region": "middle-right total row"
+        },
+        {
+          "label": "Amount Received",
+          "amount": "100000",
+          "region": "middle-right payment row"
+        },
+        {
+          "label": "Balance Due",
+          "amount": "100000",
+          "region": "middle-right balance row"
+        },
+        {
+          "label": "Annual rent payment threshold — 1 Lakh",
+          "amount": "100000",
+          "region": "bottom note 1"
+        },
+        {
+          "label": "Revenue stamp transaction threshold — Rs.5000",
+          "amount": "5000",
+          "region": "bottom note 2"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": "5000",
+      "total": "200000",
+      "paid_amount": "100000",
+      "balance_due": "100000",
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2023-08-11"
+      ],
+      "payment_status": "partially paid",
+      "source_regions": [
+        "top-right receipt date",
+        "upper acknowledgment paragraph",
+        "middle-right charges and payment table",
+        "bottom notes"
+      ],
+      "notes": "The acknowledgment paragraph states receipt of Rs 2,00,000, but the explicit Amount Received row shows Rs 1,00,000 and Balance Due shows Rs 1,00,000. Named fields follow those explicit rows. Receipt date is printed as 11/08/23, read in day/month/year format; no explicit due date is shown. Portions of the narrative and footer are clipped at the right edge, but the decisive financial table is readable.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_04c0587d8c67c75d006aa569fa1e8887d191a2bb48bbe6b255"
+    },
+    "selection": {
+      "event_id": "event_1442",
+      "selected_amount": "100000",
+      "selected_field": "balance_due",
+      "rationale": "description indicates an outstanding/due amount: selected balance_due",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": "balance_due",
+    "reread_value": "100000.0",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.0018460750579833984
+  },
+  {
+    "image_id": "image_03",
+    "event_id": "event_1545",
+    "event_category": "groceries",
+    "event_description": "Bulk groceries and pantry purchase",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_03",
+      "source_sha256": "e5fb0bbcda6cc06f8ea95e32e45d4c76acd8c594f4b02ff0d78e6006e103ee4d",
+      "document_type": "Retail receipt / Bill of Supply",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "MRP / SP",
+          "amount": "1160",
+          "region": "Item table, row 1"
+        },
+        {
+          "label": "Amt",
+          "amount": "5800",
+          "region": "Item table, row 1"
+        },
+        {
+          "label": "MRP / SP / Amt",
+          "amount": "750",
+          "region": "Item table, row 2 MRP, SP and Amt; row 7 Amt"
+        },
+        {
+          "label": "MRP / SP",
+          "amount": "480",
+          "region": "Item table, rows 3 and 4"
+        },
+        {
+          "label": "Amt",
+          "amount": "13920",
+          "region": "Item table, row 3"
+        },
+        {
+          "label": "Amt",
+          "amount": "4800",
+          "region": "Item table, row 4"
+        },
+        {
+          "label": "MRP / SP / Amt",
+          "amount": "2500",
+          "region": "Item table, row 5"
+        },
+        {
+          "label": "MRP / SP",
+          "amount": "269",
+          "region": "Item table, row 6"
+        },
+        {
+          "label": "Amt",
+          "amount": "2152",
+          "region": "Item table, row 6"
+        },
+        {
+          "label": "MRP / SP",
+          "amount": "250",
+          "region": "Item table, row 7"
+        },
+        {
+          "label": "MRP / SP",
+          "amount": "270",
+          "region": "Item table, row 8"
+        },
+        {
+          "label": "Amt",
+          "amount": "540",
+          "region": "Item table, row 8"
+        },
+        {
+          "label": "MRP / SP",
+          "amount": "338",
+          "region": "Item table, row 9"
+        },
+        {
+          "label": "Amt",
+          "amount": "1690",
+          "region": "Item table, row 9"
+        },
+        {
+          "label": "MRP / SP",
+          "amount": "810",
+          "region": "Item table, row 10"
+        },
+        {
+          "label": "Amt",
+          "amount": "7290",
+          "region": "Item table, row 10"
+        },
+        {
+          "label": "MRP / SP",
+          "amount": "360",
+          "region": "Item table, row 11"
+        },
+        {
+          "label": "Amt",
+          "amount": "1080",
+          "region": "Item table, row 11"
+        },
+        {
+          "label": "Net Amount / Cash Paid",
+          "amount": "41272",
+          "region": "Bottom-right Net Amount and Cash Paid rows"
+        }
+      ],
+      "currency": null,
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "41272",
+      "paid_amount": "41272",
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2026-02-27"
+      ],
+      "payment_status": "paid",
+      "source_regions": [
+        "Upper-left receipt date below Bill of Supply heading",
+        "Central item table, MRP, SP and Amt columns",
+        "Bottom-right Net Amount row",
+        "Bottom-right Cash Paid row"
+      ],
+      "notes": "Receipt date is printed as 27/02/2026; no separate due date is shown. Net Amount is printed as 41272.0 and Cash Paid as 41272.00. No currency symbol or code is visible. Repeated monetary values are consolidated in amount_candidates.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_0592d251ff86d1a5006aa56a15611c87d1950591ee5b440b83"
+    },
+    "selection": {
+      "event_id": "event_1545",
+      "selected_amount": "41272",
+      "selected_field": "paid_amount",
+      "rationale": "receipt confirms a payment was made: selected paid_amount",
+      "alternatives": [
+        "41272"
+      ],
+      "needs_review": true
+    },
+    "reread_field": null,
+    "reread_value": null,
+    "agrees_with_reread": null,
+    "latency_seconds": 0.0038709640502929688
+  },
+  {
+    "image_id": "image_04",
+    "event_id": "event_1700",
+    "event_category": "groceries",
+    "event_description": "Delivered grocery order",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_04",
+      "source_sha256": "281e7f1e7bd1f98fbd53cde1381977373e610e6634b11c98098000001ff10f0c",
+      "document_type": "Delivery order details and partial bill",
+      "legible": false,
+      "amount_candidates": [
+        {
+          "label": "1 x [Combo] Nissin Cup Noodles Mazedaar Masala",
+          "amount": "95.0",
+          "region": "item list, row 1, right"
+        },
+        {
+          "label": "1 x The Whole Truth 20G Protein Bars No Added…",
+          "amount": "531.0",
+          "region": "item list, row 2, right"
+        },
+        {
+          "label": "1 x Flyer - Nubu",
+          "amount": "0",
+          "region": "item list, row 3, right"
+        },
+        {
+          "label": "1 x [Combo] The Whole Truth 13G Protein Millet Bar…",
+          "amount": "186.0",
+          "region": "item list, row 4, right"
+        },
+        {
+          "label": "1 x [Combo] O'Cean Fruit Water Mango & Passion…",
+          "amount": "122.0",
+          "region": "item list, row 5, right"
+        },
+        {
+          "label": "2 x [Combo] The Whole Truth Double Cocoa Prote…",
+          "amount": "464.0",
+          "region": "item list, row 6, right"
+        },
+        {
+          "label": "1 x [Combo] The Whole Truth Almond Choco Fudg…",
+          "amount": "184.0",
+          "region": "item list, row 7, right"
+        },
+        {
+          "label": "3 x Nissin Cup Noodles Mazedaar Masala",
+          "amount": "144.0",
+          "region": "item list, row 8, right"
+        },
+        {
+          "label": "3 x Wickedgud Instant Masala Cup Noodles",
+          "amount": "75.0",
+          "region": "item list, row 9, right"
+        },
+        {
+          "label": "3 x [Combo] O'Cean Peach & Passion Fruit Juice…",
+          "amount": "366.0",
+          "region": "item list, row 10, right"
+        },
+        {
+          "label": "1 x [Combo] The Whole Truth Protein Bar Orange…",
+          "amount": "190.0",
+          "region": "item list, row 11, right"
+        },
+        {
+          "label": "1 x The Whole Truth Protein Bar Hazelnut Cocoa No…",
+          "amount": "121.0",
+          "region": "item list, row 12, right"
+        },
+        {
+          "label": "2 x [Combo] Nissin Cup Noodles Spiced Chicken",
+          "amount": "376.0",
+          "region": "item list, row 13, right"
+        },
+        {
+          "label": "Item Bill",
+          "amount": "2854.0",
+          "region": "bottom, beneath TOTAL ORDER BILL DETAILS"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": null,
+      "paid_amount": null,
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [],
+      "payment_status": null,
+      "source_regions": [
+        "right-hand amounts in the 13-row item list",
+        "bottom Item Bill row",
+        "cropped lower order-bill section"
+      ],
+      "notes": "The bill section is cropped below the Item Bill row. The visible ₹2854.00 is labeled Item Bill, not a final order total. Any subsequent charges, taxes, or final total are unreadable or outside the image. Delivery status is Delivered; payment status is not shown. No dates are visible.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_009deeaef9c0771d006aa56a2f8e7887d188fc0a7d9116c45b"
+    },
+    "selection": {
+      "event_id": "event_1700",
+      "selected_amount": null,
+      "selected_field": null,
+      "rationale": "observation.legible=False: the decisive region was not readable",
+      "alternatives": [],
+      "needs_review": true
+    },
+    "reread_field": null,
+    "reread_value": null,
+    "agrees_with_reread": null,
+    "latency_seconds": 0.0021331310272216797
+  },
+  {
+    "image_id": "image_05",
+    "event_id": "event_1786",
+    "event_category": "utilities",
+    "event_description": "Outstanding telecom bill",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_05",
+      "source_sha256": "9abcda5647afb3dcdf91613253ac0160bd722333af33a4b952dfc96fea6ff97b",
+      "document_type": "telecommunications bill",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Previous balance",
+          "amount": "3543.54",
+          "region": "top-left account summary"
+        },
+        {
+          "label": "Payments",
+          "amount": "3543.54",
+          "region": "top-left account summary"
+        },
+        {
+          "label": "This month's charges",
+          "amount": "704.05",
+          "region": "top-left account summary"
+        },
+        {
+          "label": "Amount due till 06-Feb-2026",
+          "amount": "704.05",
+          "region": "middle-left account summary"
+        },
+        {
+          "label": "Amount due after 06-Feb-2026",
+          "amount": "822.05",
+          "region": "lower-left account summary"
+        },
+        {
+          "label": "Rentals",
+          "amount": "580.65",
+          "region": "top-right monthly charges"
+        },
+        {
+          "label": "Usage charges",
+          "amount": "16.0",
+          "region": "top-right monthly charges"
+        },
+        {
+          "label": "Taxes",
+          "amount": "107.4",
+          "region": "top-right monthly charges"
+        },
+        {
+          "label": "Total (₹)",
+          "amount": "704.05",
+          "region": "bottom-right monthly charges total, also written in words below"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": "107.4",
+      "total": "704.05",
+      "paid_amount": "3543.54",
+      "balance_due": "704.05",
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2026-02-06"
+      ],
+      "payment_status": "Current charges unpaid; payment recorded against previous balance.",
+      "source_regions": [
+        "top-left previous balance and payments rows",
+        "middle-left amount due till date",
+        "lower-left amount due after date",
+        "top-right taxes row",
+        "bottom-right monthly charges total"
+      ],
+      "notes": "The recorded payment of ₹3,543.54 corresponds to the previous balance, not this month's charges. The amount due is ₹704.05 till 2026-02-06 and ₹822.05 after that same date.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_01c4f6891ebf7241006aa56a4249bc87d1add45a632af9b956"
+    },
+    "selection": {
+      "event_id": "event_1786",
+      "selected_amount": "704.05",
+      "selected_field": "balance_due",
+      "rationale": "description indicates an outstanding/due amount: selected balance_due",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": "balance_due",
+    "reread_value": "704.05",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.0019142627716064453
+  },
+  {
+    "image_id": "image_06",
+    "event_id": "event_3051",
+    "event_category": "groceries",
+    "event_description": "Grocery tax invoice",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_06",
+      "source_sha256": "9055551fbe5940feb01b947e1f18ccfed093192d103b1e930a56df0ea7cd3cb4",
+      "document_type": "tax invoice",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "MRP",
+          "amount": "310.0",
+          "region": "MRP column, items 1–5"
+        },
+        {
+          "label": "Discount",
+          "amount": "27.5",
+          "region": "item 1, Discount column"
+        },
+        {
+          "label": "Taxable Value",
+          "amount": "538.1",
+          "region": "item 1, Taxable Value column"
+        },
+        {
+          "label": "CGST (INR) and SGST (INR), each",
+          "amount": "13.45",
+          "region": "item 1, CGST and SGST columns"
+        },
+        {
+          "label": "Additional Cess Val",
+          "amount": "0.0",
+          "region": "Additional Cess Val column, all item and delivery rows"
+        },
+        {
+          "label": "Total",
+          "amount": "565.0",
+          "region": "item 1, Total column"
+        },
+        {
+          "label": "Delivery and other charges — Taxable Value",
+          "amount": "2.98",
+          "region": "delivery row beneath item 1"
+        },
+        {
+          "label": "Delivery and other charges — CGST (INR) and SGST (INR), each",
+          "amount": "0.07",
+          "region": "delivery rows beneath items 1 and 2"
+        },
+        {
+          "label": "Delivery and other charges — Total",
+          "amount": "3.13",
+          "region": "delivery row beneath item 1, Total column"
+        },
+        {
+          "label": "Discount",
+          "amount": "34.0",
+          "region": "item 2, Discount column"
+        },
+        {
+          "label": "Taxable Value",
+          "amount": "525.71",
+          "region": "item 2, Taxable Value column"
+        },
+        {
+          "label": "CGST (INR) and SGST (INR), each",
+          "amount": "13.14",
+          "region": "item 2, CGST and SGST columns"
+        },
+        {
+          "label": "Total",
+          "amount": "552.0",
+          "region": "item 2, Total column"
+        },
+        {
+          "label": "Delivery and other charges — Taxable Value",
+          "amount": "2.91",
+          "region": "delivery row beneath item 2"
+        },
+        {
+          "label": "Delivery and other charges — Total",
+          "amount": "3.06",
+          "region": "delivery row beneath item 2, Total column"
+        },
+        {
+          "label": "Discount",
+          "amount": "21.0",
+          "region": "items 3–5, Discount column"
+        },
+        {
+          "label": "Taxable Value",
+          "amount": "275.24",
+          "region": "items 3–5, Taxable Value column"
+        },
+        {
+          "label": "CGST (INR) and SGST (INR), each",
+          "amount": "6.88",
+          "region": "items 3–5, CGST and SGST columns"
+        },
+        {
+          "label": "Total",
+          "amount": "289.0",
+          "region": "items 3–5, Total column"
+        },
+        {
+          "label": "Delivery and other charges — Taxable Value",
+          "amount": "1.53",
+          "region": "delivery rows beneath items 3–5"
+        },
+        {
+          "label": "Delivery and other charges — CGST (INR) and SGST (INR), each",
+          "amount": "0.04",
+          "region": "delivery rows beneath items 3–5"
+        },
+        {
+          "label": "Delivery and other charges — Total",
+          "amount": "1.6",
+          "region": "delivery rows beneath items 3–5, Total column"
+        },
+        {
+          "label": "Total CGST (INR) and total SGST (INR), each",
+          "amount": "47.49",
+          "region": "bottom Total row, CGST and SGST columns"
+        },
+        {
+          "label": "Total / Amount in Words",
+          "amount": "1995.0",
+          "region": "bottom-right Total cell and Amount in Words line"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "1995.0",
+      "paid_amount": null,
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [],
+      "payment_status": null,
+      "source_regions": [
+        "item and delivery charge rows",
+        "bottom Total row",
+        "Amount in Words line"
+      ],
+      "notes": "CGST and SGST totals are separately printed as INR 47.49 each; no combined tax amount is printed, so tax is null. CGST and SGST rates are 2.50% each, and Cess is 0%. No dates or payment status are visible. The image begins at the item-table header.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_0097b4d96a0841cd006aa56a5393bc87d18bd5a5d4c10a30a1"
+    },
+    "selection": {
+      "event_id": "event_3051",
+      "selected_amount": "1995.0",
+      "selected_field": "total",
+      "rationale": "default: selected the document's total",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": null,
+    "reread_value": null,
+    "agrees_with_reread": null,
+    "latency_seconds": 0.0026552677154541016
+  },
+  {
+    "image_id": "image_07",
+    "event_id": "event_3231",
+    "event_category": "dining",
+    "event_description": "Restaurant tax invoice",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_07",
+      "source_sha256": "f6d30a74355224c0b5cda2d7f96399a7b1a0afe4f9fe59ea048bbecb1a21311e",
+      "document_type": "restaurant tax invoice",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Carrier Meals — rate",
+          "amount": "580.0",
+          "region": "item table"
+        },
+        {
+          "label": "Carrier Meals — amount",
+          "amount": "2900.0",
+          "region": "item table"
+        },
+        {
+          "label": "Parcel Charges — rate",
+          "amount": "90.0",
+          "region": "item table"
+        },
+        {
+          "label": "Parcel Charges — amount",
+          "amount": "450.0",
+          "region": "item table"
+        },
+        {
+          "label": "Chicken Nagarjuna — rate",
+          "amount": "415.0",
+          "region": "item table"
+        },
+        {
+          "label": "Chicken Nagarjuna — amount",
+          "amount": "2490.0",
+          "region": "item table"
+        },
+        {
+          "label": "Chapathi — rate",
+          "amount": "60.0",
+          "region": "item table"
+        },
+        {
+          "label": "Chapathi — amount",
+          "amount": "1800.0",
+          "region": "item table"
+        },
+        {
+          "label": "Dal — rate",
+          "amount": "155.0",
+          "region": "item table"
+        },
+        {
+          "label": "Dal — amount",
+          "amount": "310.0",
+          "region": "item table"
+        },
+        {
+          "label": "Big Container — rate",
+          "amount": "15.0",
+          "region": "item table"
+        },
+        {
+          "label": "Big Container — amount",
+          "amount": "30.0",
+          "region": "item table"
+        },
+        {
+          "label": "Container Small — rate",
+          "amount": "12.0",
+          "region": "item table"
+        },
+        {
+          "label": "Container Small — amount",
+          "amount": "96.0",
+          "region": "item table"
+        },
+        {
+          "label": "Packing (Large) — rate",
+          "amount": "23.0",
+          "region": "item table"
+        },
+        {
+          "label": "Packing (Large) — amount",
+          "amount": "46.0",
+          "region": "item table"
+        },
+        {
+          "label": "SubTotal",
+          "amount": "8122.0",
+          "region": "lower-right summary"
+        },
+        {
+          "label": "SGST 2.50%",
+          "amount": "203.05",
+          "region": "lower-right tax rows"
+        },
+        {
+          "label": "CGST 2.50%",
+          "amount": "203.05",
+          "region": "lower-right tax rows"
+        },
+        {
+          "label": "Total",
+          "amount": "8528.1",
+          "region": "lower-right summary"
+        },
+        {
+          "label": "Grand Total (RS)",
+          "amount": "8528.0",
+          "region": "bold bottom total row"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "8528.0",
+      "paid_amount": null,
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2025-10-29"
+      ],
+      "payment_status": "paid",
+      "source_regions": [
+        "top PAID stamp",
+        "bill date line above item table",
+        "central item table",
+        "lower-right subtotal, tax and total rows",
+        "bold bottom Grand Total row"
+      ],
+      "notes": "SGST and CGST are each printed as 203.05; no combined tax amount is printed, so tax is null. The named total uses the printed Grand Total of 8528, rather than the preceding Total of 8528.10. A PAID stamp is present, but no separate paid amount is printed. The date candidate is the bill date, 29-10-2025 at 12:12 PM; no explicit due date or separate payment date is printed.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_02eb46af611bf1fc006aa56a6e0c3c87d1a0cb3e4152a5b5c9"
+    },
+    "selection": {
+      "event_id": "event_3231",
+      "selected_amount": "8528.0",
+      "selected_field": "total",
+      "rationale": "default: selected the document's total",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": "total",
+    "reread_value": "8528",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.0021789073944091797
+  },
+  {
+    "image_id": "image_08",
+    "event_id": "event_4535",
+    "event_category": "housing",
+    "event_description": "Property maintenance invoice",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_08",
+      "source_sha256": "e28592ad8b4dacd03055e0b1ebc46670c83fbfa1162af07bdef33bb226bf63c8",
+      "document_type": "Maintenance payment receipt",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Maintenance calculation rate: per SQFT for 3 Month(s)",
+          "amount": "8.07",
+          "region": "First row, description column"
+        },
+        {
+          "label": "Maintenance — Charged Amount / Amount",
+          "amount": "13880.0",
+          "region": "First row, both amount columns"
+        },
+        {
+          "label": "Club House Charges — Charged Amount / Amount",
+          "amount": "1050.0",
+          "region": "Second row, both amount columns"
+        },
+        {
+          "label": "Infrastructure Expenses — Charged Amount / Amount",
+          "amount": "409.0",
+          "region": "Third row, both amount columns"
+        },
+        {
+          "label": "Total Amount Received",
+          "amount": "15339.0",
+          "region": "Total bar below table, also repeated in words"
+        },
+        {
+          "label": "Convenience Fee",
+          "amount": "0.0",
+          "region": "Lower payment details section"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "15339.0",
+      "paid_amount": "15339.0",
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2026-08-30"
+      ],
+      "payment_status": "paid",
+      "source_regions": [
+        "Table description and amount columns",
+        "Table Due Date column",
+        "Total Amount Received bar",
+        "Lower payment details section"
+      ],
+      "notes": "Invoice No. 6455. Each line shows a charge date of 2026-07-24, explicitly labeled Charge Date rather than a payment or due date. Payment details state online payment against the maintenance bill through paytm, with ICICI Bank listed as the account. The 1720.0 SQFT figure is an area, not a monetary amount.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_02e9f3a3abd34a16006aa56a928a9c87d1b834aa2ea41831f8"
+    },
+    "selection": {
+      "event_id": "event_4535",
+      "selected_amount": "15339.0",
+      "selected_field": "paid_amount",
+      "rationale": "receipt confirms a payment was made: selected paid_amount",
+      "alternatives": [
+        "15339.0"
+      ],
+      "needs_review": true
+    },
+    "reread_field": "paid_amount",
+    "reread_value": "15339.0",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.0018117427825927734
+  },
+  {
+    "image_id": "image_09",
+    "event_id": "event_5170",
+    "event_category": "utilities",
+    "event_description": "Water bill due",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_09",
+      "source_sha256": "e0e74e14425d923ff8a5c6db26ec6f4f26ee4697bfd257e414ba05c947a75ba8",
+      "document_type": "water bill payment receipt",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Charged Amount (₹)",
+          "amount": "723.0",
+          "region": "upper table, charged amount column"
+        },
+        {
+          "label": "Amount (₹)",
+          "amount": "723.0",
+          "region": "upper table, rightmost column"
+        },
+        {
+          "label": "Total Amount Received",
+          "amount": "723.0",
+          "region": "middle total received bar"
+        },
+        {
+          "label": "Convenience Fee",
+          "amount": "0.0",
+          "region": "lower payment details"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "723.0",
+      "paid_amount": "723.0",
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2026-06-07",
+        "2026-07-02"
+      ],
+      "payment_status": "paid",
+      "source_regions": [
+        "upper table, charge date and due date columns",
+        "upper table, charged amount and amount columns",
+        "middle Total Amount Received bar",
+        "lower convenience fee row"
+      ],
+      "notes": "Invoice 6320 covers the water bill for January–March 2026. Dates are read as DD-MM-YYYY: 07-06-2026 is labeled Charge Date and is included as a possible payment date; 02-07-2026 is explicitly labeled Due Date. No separate payment date is printed. The amount in words also states 723 rupees. Payment gateway: paytm.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_0997da5fcfc7291c006aa56aa3083887d19f86ceb38b96e3e3"
+    },
+    "selection": {
+      "event_id": "event_5170",
+      "selected_amount": "723.0",
+      "selected_field": "total",
+      "rationale": "outstanding amount indicated but balance_due not observed; falling back to total",
+      "alternatives": [],
+      "needs_review": true
+    },
+    "reread_field": "paid_amount",
+    "reread_value": "723.0",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.0014810562133789062
+  },
+  {
+    "image_id": "image_10",
+    "event_id": "event_6033",
+    "event_category": "groceries",
+    "event_description": "Large grocery tax invoice",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_10",
+      "source_sha256": "c90f98caf0877083e471fd47dace772f83d4782037cf112e97c63f79a10ea8cf",
+      "document_type": "tax invoice",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Rate",
+          "amount": "95.0",
+          "region": "Row 1"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "35.63",
+          "region": "Row 1, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "1425.0",
+          "region": "Row 1, rightmost column"
+        },
+        {
+          "label": "Rate",
+          "amount": "100.0",
+          "region": "Row 2"
+        },
+        {
+          "label": "CGST Amt; SGST Amt; Rate",
+          "amount": "25.0",
+          "region": "Row 2 tax amount columns; rows 6 and 12 Rate"
+        },
+        {
+          "label": "Amount",
+          "amount": "1000.0",
+          "region": "Row 2, rightmost column"
+        },
+        {
+          "label": "Rate",
+          "amount": "27.0",
+          "region": "Rows 3 and 4"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "162.0",
+          "region": "Rows 3 and 4, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "6480.0",
+          "region": "Rows 3 and 4, rightmost column"
+        },
+        {
+          "label": "Rate; CGST Amt; SGST Amt",
+          "amount": "10.0",
+          "region": "Row 5 Rate; row 13 tax amount columns"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "12.0",
+          "region": "Rows 5 and 10, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "480.0",
+          "region": "Rows 5 and 10, rightmost column"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "56.25",
+          "region": "Rows 6 and 12, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "2250.0",
+          "region": "Rows 6 and 12, rightmost column"
+        },
+        {
+          "label": "Rate",
+          "amount": "40.0",
+          "region": "Rows 7, 8, 9, 10, 11 and 13"
+        },
+        {
+          "label": "CGST Amt; SGST Amt; Amount",
+          "amount": "1920.0",
+          "region": "Row 7 tax amount columns; row 8 rightmost Amount column"
+        },
+        {
+          "label": "Amount",
+          "amount": "9600.0",
+          "region": "Row 7, rightmost column"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "384.0",
+          "region": "Row 8, both tax amount columns"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "72.0",
+          "region": "Row 9, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "2880.0",
+          "region": "Row 9, rightmost column"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "60.0",
+          "region": "Row 11, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "2400.0",
+          "region": "Row 11, rightmost column"
+        },
+        {
+          "label": "Amount",
+          "amount": "400.0",
+          "region": "Row 13, rightmost column"
+        },
+        {
+          "label": "Rate",
+          "amount": "65.0",
+          "region": "Row 14"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "78.0",
+          "region": "Row 14, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "3120.0",
+          "region": "Row 14, rightmost column"
+        },
+        {
+          "label": "Rate; CGST Amt; SGST Amt",
+          "amount": "113.0",
+          "region": "Row 15, Rate and both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "4520.0",
+          "region": "Row 15, rightmost column"
+        },
+        {
+          "label": "Rate",
+          "amount": "160.0",
+          "region": "Row 16"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "108.0",
+          "region": "Row 16, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "4320.0",
+          "region": "Row 16, rightmost column"
+        },
+        {
+          "label": "Rate",
+          "amount": "80.0",
+          "region": "Rows 17, 18 and 19"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "120.0",
+          "region": "Rows 17, 18 and 19, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "4800.0",
+          "region": "Rows 17, 18 and 19, rightmost column"
+        },
+        {
+          "label": "Rate",
+          "amount": "310.0",
+          "region": "Rows 20 and 22"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "93.0",
+          "region": "Row 20, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "3720.0",
+          "region": "Row 20, rightmost column"
+        },
+        {
+          "label": "Rate",
+          "amount": "335.0",
+          "region": "Row 21"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "67.0",
+          "region": "Row 21, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "2680.0",
+          "region": "Row 21, rightmost column"
+        },
+        {
+          "label": "CGST Amt; SGST Amt",
+          "amount": "31.0",
+          "region": "Row 22, both tax amount columns"
+        },
+        {
+          "label": "Amount",
+          "amount": "1240.0",
+          "region": "Row 22, rightmost column"
+        },
+        {
+          "label": "Sub Total",
+          "amount": "72045.0",
+          "region": "Bottom-right summary"
+        },
+        {
+          "label": "CGST2.5 (2.5%); SGST2.5 (2.5%)",
+          "amount": "1513.13",
+          "region": "Bottom-right summary, separate CGST2.5 and SGST2.5 rows"
+        },
+        {
+          "label": "CGST20 (20%); SGST20 (20%)",
+          "amount": "2304.0",
+          "region": "Bottom-right summary, separate CGST20 and SGST20 rows"
+        },
+        {
+          "label": "Total; Balance Due; Total In Words",
+          "amount": "79679.26",
+          "region": "Bottom-right Total and Balance Due rows; bottom-left amount in words"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "79679.26",
+      "paid_amount": null,
+      "balance_due": "79679.26",
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [],
+      "payment_status": "unpaid",
+      "source_regions": [
+        "Main item table, rows 1–21",
+        "Lower continuation table, row 22",
+        "Bottom-right subtotal and tax summary",
+        "Bottom-right Total and Balance Due rows",
+        "Bottom-left Total In Words"
+      ],
+      "notes": "Repeated identical monetary values are consolidated into single candidates with their respective labels and regions. No combined tax total is printed, so tax is null. The full total is shown as Balance Due, implying unpaid status. No dates or invoice header are visible.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_07c74d8707214e08006aa56d5b76a487d1ab084991c40612d2"
+    },
+    "selection": {
+      "event_id": "event_6033",
+      "selected_amount": "79679.26",
+      "selected_field": "total",
+      "rationale": "default: selected the document's total",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": null,
+    "reread_value": null,
+    "agrees_with_reread": null,
+    "latency_seconds": 0.0025649070739746094
+  },
+  {
+    "image_id": "image_11",
+    "event_id": "event_6859",
+    "event_category": "healthcare",
+    "event_description": "Hospital bill payable",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_11",
+      "source_sha256": "795e000d48428c97748e8af370cb02b604bec88cc52ec8930f38dc744624e886",
+      "document_type": "hospital provisional bill",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Room & Nursing Charges",
+          "amount": "1650.0",
+          "region": "provisional bill summary"
+        },
+        {
+          "label": "OT Charges",
+          "amount": "1000.0",
+          "region": "provisional bill summary"
+        },
+        {
+          "label": "Professional Fees",
+          "amount": "1000.0",
+          "region": "provisional bill summary"
+        },
+        {
+          "label": "Total Bill Amount",
+          "amount": "3650.0",
+          "region": "middle-right totals block"
+        },
+        {
+          "label": "Amount Payable",
+          "amount": "3650.0",
+          "region": "middle-right totals block"
+        },
+        {
+          "label": "Amount Paid",
+          "amount": "0.0",
+          "region": "middle-right totals block; also written as Zero"
+        },
+        {
+          "label": "Balance",
+          "amount": "3650.0",
+          "region": "middle-right totals block"
+        },
+        {
+          "label": "Bed Charges - GENERAL: Rate",
+          "amount": "200.0",
+          "region": "detailed breakup, Room/Bed Charges row"
+        },
+        {
+          "label": "Bed Charges - GENERAL: Amount",
+          "amount": "250.0",
+          "region": "detailed breakup, Room/Bed Charges row"
+        },
+        {
+          "label": "Room/Bed Charges: Subtotal",
+          "amount": "250.0",
+          "region": "detailed breakup, below Room/Bed Charges"
+        },
+        {
+          "label": "Nursing Fees - GENERAL: Rate",
+          "amount": "200.0",
+          "region": "detailed breakup, Nursing Charges section"
+        },
+        {
+          "label": "Nursing Fees - GENERAL: Amount",
+          "amount": "250.0",
+          "region": "detailed breakup, Nursing Charges section"
+        },
+        {
+          "label": "Nebulization - GENERAL: Rate",
+          "amount": "100.0",
+          "region": "detailed breakup, Nursing Charges section"
+        },
+        {
+          "label": "Nebulization - GENERAL: Amount",
+          "amount": "100.0",
+          "region": "detailed breakup, Nursing Charges section"
+        },
+        {
+          "label": "Injection Charges - GENERAL: Rate",
+          "amount": "50.0",
+          "region": "detailed breakup, Nursing Charges section"
+        },
+        {
+          "label": "Injection Charges - GENERAL: Amount",
+          "amount": "50.0",
+          "region": "detailed breakup, Nursing Charges section"
+        },
+        {
+          "label": "Blood Transfusion Charges - GENERAL: Rate",
+          "amount": "1000.0",
+          "region": "detailed breakup, Nursing Charges section"
+        },
+        {
+          "label": "Blood Transfusion Charges - GENERAL: Amount",
+          "amount": "1000.0",
+          "region": "detailed breakup, Nursing Charges section"
+        },
+        {
+          "label": "Nursing Charges: Subtotal",
+          "amount": "1400.0",
+          "region": "detailed breakup, below Nursing Charges"
+        },
+        {
+          "label": "Major OT Charge - GENERAL: Rate",
+          "amount": "1000.0",
+          "region": "detailed breakup, OT Charges section"
+        },
+        {
+          "label": "Major OT Charge - GENERAL: Amount",
+          "amount": "1000.0",
+          "region": "detailed breakup, OT Charges section"
+        },
+        {
+          "label": "OT Charges: Subtotal",
+          "amount": "1000.0",
+          "region": "detailed breakup, below OT Charges"
+        },
+        {
+          "label": "Dr. Akshara Raje: Rate",
+          "amount": "500.0",
+          "region": "bottom Professional Fees row"
+        },
+        {
+          "label": "Dr. Akshara Raje: Amount",
+          "amount": "500.0",
+          "region": "bottom Professional Fees row"
+        }
+      ],
+      "currency": null,
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "3650.0",
+      "paid_amount": "0.0",
+      "balance_due": "3650.0",
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2023-01-19"
+      ],
+      "payment_status": "unpaid",
+      "source_regions": [
+        "upper-right document date",
+        "provisional bill summary",
+        "middle-right totals and payment block",
+        "lower detailed breakup",
+        "bottom Professional Fees row"
+      ],
+      "notes": "The date candidate is the document date; no explicit due date is printed. Admission and service dates are not treated as due dates. No currency is printed. The Professional Fees summary shows 1000.00, while the visible detailed professional-fee row shows 500.00.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_0bdea867ed1309f9006aa56ba50ccc87d19ad2d5e464dd57c8"
+    },
+    "selection": {
+      "event_id": "event_6859",
+      "selected_amount": "3650.0",
+      "selected_field": "balance_due",
+      "rationale": "description indicates an outstanding/due amount: selected balance_due",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": null,
+    "reread_value": null,
+    "agrees_with_reread": null,
+    "latency_seconds": 0.0023589134216308594
+  },
+  {
+    "image_id": "image_12",
+    "event_id": "event_7307",
+    "event_category": "transport",
+    "event_description": "Taxi fare",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_12",
+      "source_sha256": "e10b0123e66d512d82f6c431fb741053b336627b89b9d9a138071ac6980a14ff",
+      "document_type": "taxi receipt",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Ride Distance: 12.3 miles",
+          "amount": "28.5",
+          "region": "middle-right fare row"
+        },
+        {
+          "label": "Airport Surcharge",
+          "amount": "5",
+          "region": "middle-right surcharge row"
+        },
+        {
+          "label": "Subtotal",
+          "amount": "33.5",
+          "region": "lower-right subtotal row"
+        },
+        {
+          "label": "Tax",
+          "amount": "0",
+          "region": "lower-right tax row"
+        },
+        {
+          "label": "Total",
+          "amount": "33.5",
+          "region": "lower-right bold total row"
+        },
+        {
+          "label": "Cash Paid",
+          "amount": "40",
+          "region": "bottom-right cash payment row"
+        },
+        {
+          "label": "Change",
+          "amount": "6.5",
+          "region": "bottom-right change row"
+        }
+      ],
+      "currency": "$",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": "0",
+      "total": "33.5",
+      "paid_amount": null,
+      "balance_due": null,
+      "cash_tendered": "40",
+      "change": "6.5",
+      "due_date_candidates": [
+        "2025-01-10"
+      ],
+      "payment_status": "paid",
+      "source_regions": [
+        "upper-middle transaction timestamp",
+        "middle fare and surcharge rows",
+        "lower subtotal, tax, and total rows",
+        "bottom cash payment and change rows"
+      ],
+      "notes": "Cash Paid is recorded as cash tendered because change is separately shown. No separate net paid amount or balance due is printed. The transaction timestamp reads 01/10/2025 21:45; the listed date uses MM/DD/YYYY interpretation. No explicit due date is shown.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_0d026b885691bf82006aa56bc30ab887d191568541ec2fe264"
+    },
+    "selection": {
+      "event_id": "event_7307",
+      "selected_amount": "33.5",
+      "selected_field": "total",
+      "rationale": "transport/taxi expense: selected total fare, not cash_tendered/change",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": "total",
+    "reread_value": "33.5",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.0017924308776855469
+  },
+  {
+    "image_id": "image_13",
+    "event_id": "event_7941",
+    "event_category": "shopping",
+    "event_description": "Tote bag order",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_13",
+      "source_sha256": "1ae54b378a9556d94b753093ba80e7117caf86fab4d3fe11ec84e3dd2f6d6dd8",
+      "document_type": "order summary",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "DailyObjects Mumbai City Tote Bag",
+          "amount": "699",
+          "region": "top-right first item row"
+        },
+        {
+          "label": "Ivory - Navy All Time Tote Bag",
+          "amount": "1599",
+          "region": "upper-right second item row"
+        },
+        {
+          "label": "Item Total (2 items)",
+          "amount": "2298",
+          "region": "order summary item total row"
+        },
+        {
+          "label": "Delivery — Free",
+          "amount": null,
+          "region": "order summary delivery row"
+        },
+        {
+          "label": "Total paid",
+          "amount": "2298",
+          "region": "bottom-right total paid row"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "2298",
+      "paid_amount": "2298",
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [],
+      "payment_status": "paid",
+      "source_regions": [
+        "top-right item prices",
+        "order summary item total and delivery rows",
+        "bottom total paid row and inclusion note"
+      ],
+      "notes": "Total paid is explicitly stated to include taxes and delivery. No separate tax amount is shown. Delivery is marked 'Free' without a numeric amount. No dates are visible.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_01c6cef197c43601006aa56bd6f61887d1a6c2ae3e7db349ea"
+    },
+    "selection": {
+      "event_id": "event_7941",
+      "selected_amount": "2298",
+      "selected_field": "paid_amount",
+      "rationale": "receipt confirms a payment was made: selected paid_amount",
+      "alternatives": [
+        "2298"
+      ],
+      "needs_review": true
+    },
+    "reread_field": "total",
+    "reread_value": "2298",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.002099275588989258
+  },
+  {
+    "image_id": "image_14",
+    "event_id": "event_9421",
+    "event_category": "healthcare",
+    "event_description": "Pharmacy purchase",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_14",
+      "source_sha256": "bf88e4aa35e6f36304cbf76bf6f505f32b04466bfd5f7df693fcb3ebe8a3e2c1",
+      "document_type": "Handwritten sales receipt",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": null,
+          "amount": "1500.0",
+          "region": "right-hand amount column, first entry"
+        },
+        {
+          "label": null,
+          "amount": "724.0",
+          "region": "right-hand amount column, second entry"
+        },
+        {
+          "label": null,
+          "amount": "796.0",
+          "region": "right-hand amount column, third entry"
+        },
+        {
+          "label": null,
+          "amount": "550.0",
+          "region": "right-hand amount column, fourth entry"
+        },
+        {
+          "label": null,
+          "amount": "303.0",
+          "region": "right-hand amount column, fifth entry"
+        },
+        {
+          "label": null,
+          "amount": "670.0",
+          "region": "right-hand amount column, sixth entry"
+        },
+        {
+          "label": "TOTAL",
+          "amount": "4543.0",
+          "region": "bottom-right total row"
+        }
+      ],
+      "currency": "Rs.",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "4543.0",
+      "paid_amount": null,
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [],
+      "payment_status": null,
+      "source_regions": [
+        "right-hand amount column",
+        "bottom-right total row",
+        "bottom-left printed tax inclusion note"
+      ],
+      "notes": "Only the item table and bottom section are shown. The 670.00 entry is overwritten but readable. Printed text states prices include all taxes; no separate tax amount, date, or payment status is visible.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_0df8074ab17567a0006aa56be5846887d1a9347e7d7bb8cad9"
+    },
+    "selection": {
+      "event_id": "event_9421",
+      "selected_amount": "4543.0",
+      "selected_field": "total",
+      "rationale": "default: selected the document's total",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": null,
+    "reread_value": null,
+    "agrees_with_reread": null,
+    "latency_seconds": 0.0019598007202148438
+  },
+  {
+    "image_id": "image_15",
+    "event_id": "event_9806",
+    "event_category": "transport",
+    "event_description": "Airline ticket purchase",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_15",
+      "source_sha256": "0c0fe3d79e670f2b423bbb2aafc0b5601d3eb4e659ac64058cd189abf7792ee1",
+      "document_type": "air travel tax invoice",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Air Travel and related charges — Taxable Value and Total; Grand Total — Taxable Value",
+          "amount": "9124.0",
+          "region": "charges table, taxable value and total columns"
+        },
+        {
+          "label": "Zero-value entries: air travel non-taxable value, airport taxable value, IGST, CESS, and airport CGST and SGST/UGST",
+          "amount": "0.0",
+          "region": "charges table, value and tax amount columns"
+        },
+        {
+          "label": "CGST Amount",
+          "amount": "228.0",
+          "region": "CGST amount column, air travel and grand total rows"
+        },
+        {
+          "label": "SGST/UGST Amount",
+          "amount": "228.0",
+          "region": "SGST/UGST amount column, air travel and grand total rows"
+        },
+        {
+          "label": "Air Travel and related charges — Total (Incl Taxes)",
+          "amount": "9580.0",
+          "region": "rightmost column, air travel row"
+        },
+        {
+          "label": "Airport Charges — NonTaxable/Exempted Value, Total and Total (Incl Taxes); Grand Total — NonTaxable/Exempted Value",
+          "amount": "388.0",
+          "region": "airport charges row and grand total non-taxable column"
+        },
+        {
+          "label": "Grand Total — Total",
+          "amount": "9512.0",
+          "region": "grand total row, Total column"
+        },
+        {
+          "label": "Grand Total — Total (Incl Taxes)",
+          "amount": "9968.0",
+          "region": "bottom-right cell of charges table"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "9968.0",
+      "paid_amount": null,
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2026-06-07"
+      ],
+      "payment_status": null,
+      "source_regions": [
+        "top-left Date field",
+        "currency label above charges table",
+        "charges table",
+        "grand total row"
+      ],
+      "notes": "The date is labeled only 'Date'; no explicit due date or payment status is shown. CGST and SGST/UGST are each printed as 228.00, but no combined tax amount is printed, so tax is null. Bottom company contact information is cropped; the financially decisive table is readable.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_0771789f88264201006aa56bf8ed9c87d1b5ad95cabd982c67"
+    },
+    "selection": {
+      "event_id": "event_9806",
+      "selected_amount": "9968.0",
+      "selected_field": "total",
+      "rationale": "transport/taxi expense: selected total fare, not cash_tendered/change",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": "total",
+    "reread_value": "9968.0",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.002026796340942383
+  },
+  {
+    "image_id": "image_16",
+    "event_id": "event_10521",
+    "event_category": "transport",
+    "event_description": "EV charging wallet payment",
+    "cache_hit": true,
+    "observation": {
+      "image_id": "image_16",
+      "source_sha256": "2665cf731a861ddb217be5b8082fbd390850a7a98feec018519b6fda0b30b4f8",
+      "document_type": "electric vehicle charging tax invoice",
+      "legible": true,
+      "amount_candidates": [
+        {
+          "label": "Tariff per kWh",
+          "amount": "26.49",
+          "region": "charging details table, TARIFF column"
+        },
+        {
+          "label": "Amount",
+          "amount": "333.24",
+          "region": "charging details table, AMOUNT column"
+        },
+        {
+          "label": "CGST 9%",
+          "amount": "29.99",
+          "region": "lower-right tax rows"
+        },
+        {
+          "label": "SGST 9%",
+          "amount": "29.99",
+          "region": "lower-right tax rows"
+        },
+        {
+          "label": "Total",
+          "amount": "393.22",
+          "region": "bottom-right Total row; repeated in amount-in-words line"
+        }
+      ],
+      "currency": "INR",
+      "net_pay": null,
+      "gross_pay": null,
+      "tax": null,
+      "total": "393.22",
+      "paid_amount": null,
+      "balance_due": null,
+      "cash_tendered": null,
+      "change": null,
+      "due_date_candidates": [
+        "2026-09-03"
+      ],
+      "payment_status": null,
+      "source_regions": [
+        "charging details table",
+        "lower-right tax rows",
+        "bottom-right Total row",
+        "lower-left PAYMENT METHOD line",
+        "AMOUNT IN WORDS line"
+      ],
+      "notes": "The date is labeled CHARGED ON and printed as 03/09/2026, 12:35:10 am; normalized using DD/MM/YYYY. No explicit due date is shown. Payment method is WALLET, but payment completion is not confirmed. CGST and SGST are separately printed as 29.99 each; no combined tax amount is printed, so tax is null. Session Fee and Idle Fee show dashes, not numeric amounts.",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider_response_id": "resp_081f7e78feea17fa006aa56c18ef4087d1bd247805aca86996"
+    },
+    "selection": {
+      "event_id": "event_10521",
+      "selected_amount": "393.22",
+      "selected_field": "total",
+      "rationale": "transport/taxi expense: selected total fare, not cash_tendered/change",
+      "alternatives": [],
+      "needs_review": false
+    },
+    "reread_field": "total",
+    "reread_value": "393.22",
+    "agrees_with_reread": true,
+    "latency_seconds": 0.0015926361083984375
+  }
+]

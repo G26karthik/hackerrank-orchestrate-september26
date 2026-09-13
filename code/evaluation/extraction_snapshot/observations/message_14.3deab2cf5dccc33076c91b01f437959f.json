@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "refund_not_yet_settled",
+        "raw_excerpt": "Your refund has been initiated but has not reached your account yet."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0a5a8305a7f4d121006aa56c61abd487d196c84e923b04a18e",
+  "reasoning_effort": "high"
+}

@@ -1,0 +1,140 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 4500000,
+        "label": "Salary",
+        "region": "earnings column"
+      },
+      {
+        "amount": 90000,
+        "label": "Allowance BPJS Pen 2% Company",
+        "region": "earnings column"
+      },
+      {
+        "amount": 166500,
+        "label": "Allowance JHT 3.7%",
+        "region": "earnings column"
+      },
+      {
+        "amount": 10800,
+        "label": "Allowance JKK 0.24%",
+        "region": "earnings column"
+      },
+      {
+        "amount": 13500,
+        "label": "Allowance JKM 0.3%",
+        "region": "earnings column"
+      },
+      {
+        "amount": 90000,
+        "label": "Deduction BPJS Pen 2% Company",
+        "region": "deductions column"
+      },
+      {
+        "amount": 45000,
+        "label": "Deduction BPJS Pen 1% Employee",
+        "region": "deductions column"
+      },
+      {
+        "amount": 166500,
+        "label": "Deduction JHT 3.7%",
+        "region": "deductions column"
+      },
+      {
+        "amount": 90000,
+        "label": "Deduction JHT 2% Employee",
+        "region": "deductions column"
+      },
+      {
+        "amount": 10800,
+        "label": "Deduction JKK 0.24%",
+        "region": "deductions column"
+      },
+      {
+        "amount": 13500,
+        "label": "Deduction JKM 0.3%",
+        "region": "deductions column"
+      },
+      {
+        "amount": 4780800,
+        "label": "Subtotal Earnings",
+        "region": "lower-left subtotal row"
+      },
+      {
+        "amount": 415800,
+        "label": "Subtotal Deductions",
+        "region": "lower-right subtotal row"
+      },
+      {
+        "amount": 0,
+        "label": "Tax Allowance",
+        "region": "lower-left tax section"
+      },
+      {
+        "amount": 0,
+        "label": "Tax Borne by Company",
+        "region": "lower-left tax section"
+      },
+      {
+        "amount": 0,
+        "label": "Tax Penalty Borne By Company",
+        "region": "lower-left tax section"
+      },
+      {
+        "amount": 0,
+        "label": "Tax",
+        "region": "lower-right tax section"
+      },
+      {
+        "amount": 0,
+        "label": "Tax Penalty",
+        "region": "lower-right tax section"
+      },
+      {
+        "amount": 4780800,
+        "label": "Total Earnings",
+        "region": "bottom-left total row"
+      },
+      {
+        "amount": 415800,
+        "label": "Total Deductions",
+        "region": "bottom-right total deductions row"
+      },
+      {
+        "amount": 4365000,
+        "label": "Net Pay",
+        "region": "bottom-right net pay row and amount written in words beneath"
+      },
+      {
+        "amount": 4365000,
+        "label": "Transferred to",
+        "region": "bank transfer statement below table"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "IDR",
+    "document_type": "payslip",
+    "due_date_candidates": [],
+    "gross_pay": 4780800,
+    "legible": true,
+    "net_pay": 4365000,
+    "notes": "Pay period is Aug-2019. Printed on 2019-09-02 at 09:35 PM; this is explicitly a print timestamp, not a due or payment date. No due date or transfer date is stated. The transfer statement identifies Bank Central Asia and explicitly shows IDR 4,365,000 transferred.",
+    "paid_amount": 4365000,
+    "payment_status": "paid",
+    "source_regions": [
+      "bottom-left Total Earnings row",
+      "lower-right Tax row",
+      "bottom-right Net Pay row",
+      "bank transfer statement below table",
+      "bottom-left print timestamp"
+    ],
+    "tax": 0,
+    "total": null
+  },
+  "provider_response_id": "resp_0889e902ee0a827b006aa569df151887d18bb4a039c8134c65",
+  "reasoning_effort": "high"
+}

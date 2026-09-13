@@ -1,0 +1,71 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 9124.0,
+        "label": "Air Travel and related charges \u2014 Taxable Value and Total; Grand Total \u2014 Taxable Value",
+        "region": "charges table, taxable value and total columns"
+      },
+      {
+        "amount": 0.0,
+        "label": "Zero-value entries: air travel non-taxable value, airport taxable value, IGST, CESS, and airport CGST and SGST/UGST",
+        "region": "charges table, value and tax amount columns"
+      },
+      {
+        "amount": 228.0,
+        "label": "CGST Amount",
+        "region": "CGST amount column, air travel and grand total rows"
+      },
+      {
+        "amount": 228.0,
+        "label": "SGST/UGST Amount",
+        "region": "SGST/UGST amount column, air travel and grand total rows"
+      },
+      {
+        "amount": 9580.0,
+        "label": "Air Travel and related charges \u2014 Total (Incl Taxes)",
+        "region": "rightmost column, air travel row"
+      },
+      {
+        "amount": 388.0,
+        "label": "Airport Charges \u2014 NonTaxable/Exempted Value, Total and Total (Incl Taxes); Grand Total \u2014 NonTaxable/Exempted Value",
+        "region": "airport charges row and grand total non-taxable column"
+      },
+      {
+        "amount": 9512.0,
+        "label": "Grand Total \u2014 Total",
+        "region": "grand total row, Total column"
+      },
+      {
+        "amount": 9968.0,
+        "label": "Grand Total \u2014 Total (Incl Taxes)",
+        "region": "bottom-right cell of charges table"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "air travel tax invoice",
+    "due_date_candidates": [
+      "2026-06-07"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "The date is labeled only 'Date'; no explicit due date or payment status is shown. CGST and SGST/UGST are each printed as 228.00, but no combined tax amount is printed, so tax is null. Bottom company contact information is cropped; the financially decisive table is readable.",
+    "paid_amount": null,
+    "payment_status": null,
+    "source_regions": [
+      "top-left Date field",
+      "currency label above charges table",
+      "charges table",
+      "grand total row"
+    ],
+    "tax": null,
+    "total": 9968.0
+  },
+  "provider_response_id": "resp_0771789f88264201006aa56bf8ed9c87d1b5ad95cabd982c67",
+  "reasoning_effort": "high"
+}

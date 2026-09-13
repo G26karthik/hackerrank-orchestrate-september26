@@ -1,0 +1,61 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 8.07,
+        "label": "Maintenance calculation rate: per SQFT for 3 Month(s)",
+        "region": "First row, description column"
+      },
+      {
+        "amount": 13880.0,
+        "label": "Maintenance \u2014 Charged Amount / Amount",
+        "region": "First row, both amount columns"
+      },
+      {
+        "amount": 1050.0,
+        "label": "Club House Charges \u2014 Charged Amount / Amount",
+        "region": "Second row, both amount columns"
+      },
+      {
+        "amount": 409.0,
+        "label": "Infrastructure Expenses \u2014 Charged Amount / Amount",
+        "region": "Third row, both amount columns"
+      },
+      {
+        "amount": 15339.0,
+        "label": "Total Amount Received",
+        "region": "Total bar below table, also repeated in words"
+      },
+      {
+        "amount": 0.0,
+        "label": "Convenience Fee",
+        "region": "Lower payment details section"
+      }
+    ],
+    "balance_due": null,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "Maintenance payment receipt",
+    "due_date_candidates": [
+      "2026-08-30"
+    ],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "Invoice No. 6455. Each line shows a charge date of 2026-07-24, explicitly labeled Charge Date rather than a payment or due date. Payment details state online payment against the maintenance bill through paytm, with ICICI Bank listed as the account. The 1720.0 SQFT figure is an area, not a monetary amount.",
+    "paid_amount": 15339.0,
+    "payment_status": "paid",
+    "source_regions": [
+      "Table description and amount columns",
+      "Table Due Date column",
+      "Total Amount Received bar",
+      "Lower payment details section"
+    ],
+    "tax": null,
+    "total": 15339.0
+  },
+  "provider_response_id": "resp_02e9f3a3abd34a16006aa56a928a9c87d1b834aa2ea41831f8",
+  "reasoning_effort": "high"
+}

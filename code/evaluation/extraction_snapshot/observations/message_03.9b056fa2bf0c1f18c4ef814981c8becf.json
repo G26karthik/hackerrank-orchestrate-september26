@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_not_yet_confirmed",
+        "raw_excerpt": "Bonus kuartalan Anda masih menunggu hasil akhir penilaian kinerja. Jumlah akhir dan tanggal pembayaran belum disetujui."
+      }
+    ]
+  },
+  "provider_response_id": "resp_01b4af9e5230ca15006aa56c37d07887d1b12a163ed364cf33",
+  "reasoning_effort": "high"
+}

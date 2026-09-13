@@ -1,0 +1,199 @@
+{
+  "description": "Content-addressed extraction cache snapshot. These files were produced by gpt-6-astra during Stage 3-4 development (image vision extraction and message fact extraction). Each file is keyed on source SHA-256, model, prompt_version, schema_version, decoding_config, and tool_contract_version. Shipping them inside evaluation/extraction_snapshot/ allows offline replay of the full 250-request pipeline with zero fresh API calls. The .llm_cache/ directory at runtime will be populated from this snapshot by the setup script.",
+  "model": "gpt-6-astra",
+  "n_entries": 38,
+  "entries": [
+    {
+      "name": "message_02.c573cef899b1ab4f08b3a1a849570cc9.json",
+      "sha256": "4780DF4D5FB81C8F1C4E256C5786C95D71D290D9F1E7493D7E94597F0D382AAC",
+      "bytes": 976
+    },
+    {
+      "name": "image_01.9923534770ac24b1baa9704fbea8139c.json",
+      "sha256": "69FF8182CBA8F0375B4EAC9A9CC3EA9EEDA17A51027E9C40CAE0C33B42864EA5",
+      "bytes": 3868
+    },
+    {
+      "name": "image_02.f54634144a914246f04473bbbed005ea.json",
+      "sha256": "EAA2CE8430E88B30628849C50BB36357CA71E29F3727D2CBB93BD476BE4F2E59",
+      "bytes": 2544
+    },
+    {
+      "name": "image_03.be282478562ff305e71cab14dc3b6686.json",
+      "sha256": "2C5535ADAF4EBD79AB32FA1EF939A230ADE3B7477861CE526198D2DE0DE729DD",
+      "bytes": 3245
+    },
+    {
+      "name": "image_04.12657da94fc031412769a5b2c83d9028.json",
+      "sha256": "7488D63CAF5065251AC7A7DB37FD93E9C11897F70B9FEB5B8FC75DD3B6360B7A",
+      "bytes": 3227
+    },
+    {
+      "name": "image_05.47b347c7dd6cc9d4d239c4c58d801ae6.json",
+      "sha256": "B6578F0061A8B61F7C2217496906DCA33BF83C22B3A0C01EBE7C252D65B39EAC",
+      "bytes": 2305
+    },
+    {
+      "name": "image_06.2b7e2c33d9f37347fed0d0223a5313ab.json",
+      "sha256": "ED7917E4F75B30191178B3529BA06ED7294D45985725CBF77F11425D2A34064B",
+      "bytes": 4494
+    },
+    {
+      "name": "image_07.7f1f0b403be21ededb732a68fb7a848a.json",
+      "sha256": "4CEDD66D99FE373E95A924994EC16FB0058B3CDB3DFA4E58890D0B47A3812E09",
+      "bytes": 3764
+    },
+    {
+      "name": "image_08.6325e21129769640cdb8e976351fd637.json",
+      "sha256": "C5C571F2FFE7C3CDD7EE4AA44C7A05F30686317E08D05C4D15607095C26D2E24",
+      "bytes": 2058
+    },
+    {
+      "name": "image_09.a0f9d2f1548e6f7bc8bd8ba7ef0bd493.json",
+      "sha256": "9411F94EE6DEFEA17A72193C6A86B1B896E3B63CEB7CF88D284E630DA5EB20D7",
+      "bytes": 1697
+    },
+    {
+      "name": "image_10.63404eb51101f55a45f85e7ccf2077a6.json",
+      "sha256": "84B565C1445BBE0CBB815907A21A8950A707A3E44C2E25FAA60253AF655869CA",
+      "bytes": 7066
+    },
+    {
+      "name": "image_11.a3239167fb3801be4b078b0c484430f3.json",
+      "sha256": "2C84A0841DA07A256DDAE5394110621081106593745F4555A5EEFD3BABCB6F0F",
+      "bytes": 4668
+    },
+    {
+      "name": "image_12.e246bf5655370054f1755850511ee56d.json",
+      "sha256": "81A62DACDCD325EC0AD4BCC678F6BCE2CC9D7D81D642183BFEB9A1968278AC96",
+      "bytes": 1888
+    },
+    {
+      "name": "image_13.dc38cedde419914823085a0623bfef5c.json",
+      "sha256": "465A28A6451589EC0271C27EACB68EC8864B7C347B60B01FBC6D7A9384FF21E4",
+      "bytes": 1576
+    },
+    {
+      "name": "image_14.aa635be886bbba41da2b7090d2883251.json",
+      "sha256": "2F51DD694A4CE32DBDC949DF4701121F33330187A3F8D054B48A4DDFB4B1E7B9",
+      "bytes": 1805
+    },
+    {
+      "name": "image_15.a743872c30307443e40d3080991d118a.json",
+      "sha256": "E864DE9B97086E2A4CBFF3F9C934796204AE74E1D52205EEF1A90807A97D4617",
+      "bytes": 2558
+    },
+    {
+      "name": "image_16.bce1326fef424cee79dba81e36fa94e1.json",
+      "sha256": "865126B35CCD9AD41EDBD5B1559D742E50A2A5EA6F72FB64CC4CDE79458153DC",
+      "bytes": 1821
+    },
+    {
+      "name": "message_01.04eb608e2bfc2b267f0846fae3a06c49.json",
+      "sha256": "6ECD399DDBE3CBD06CCE056FE0CB0E3CD1674BBB7BCDF6F9D74F9F17B99858CA",
+      "bytes": 560
+    },
+    {
+      "name": "message_03.9b056fa2bf0c1f18c4ef814981c8becf.json",
+      "sha256": "E600FF14DD694E655AF750859A84BB98AE324A698922525E91BEA77B5B7185D8",
+      "bytes": 586
+    },
+    {
+      "name": "message_04.78976119c49c44c15c0844b035b9a257.json",
+      "sha256": "87465F46FD20835BFF4E880799DAC5EE13B6427AD12EF0647CCD7131D4F797B9",
+      "bytes": 627
+    },
+    {
+      "name": "message_06.b07f048ef97f695b6cd8f69692d219eb.json",
+      "sha256": "423F13C40459AD8FFF2BE5936AF7A971324BFA8A146EAEE563985A0E389FC67E",
+      "bytes": 762
+    },
+    {
+      "name": "message_09.f423057b996426bbb5362ed64e11b34c.json",
+      "sha256": "0D47D7D200B49A81505280C8C8105A0CA196F7DD03DECDE995F5C6CDB1B8AB5B",
+      "bytes": 821
+    },
+    {
+      "name": "message_10.66f6bb5360ee0f7408c39ee32116cf82.json",
+      "sha256": "D6636D606CDA0788D9EA3A76FF1244614C0EF3EB6DB9E031DBFAF728FC9EAB2B",
+      "bytes": 870
+    },
+    {
+      "name": "message_106.4b88625880006926320ae79b027edb65.json",
+      "sha256": "8D301A435758628CB26E85C3E3986DFAE51C1A8B5C8B7E22AE43159F4224016D",
+      "bytes": 641
+    },
+    {
+      "name": "message_117.2d506abeb2db62d6fd735f58c2b03596.json",
+      "sha256": "82256956010F03C2D449CC45B9B9C4B68E818D4AE36067DFB7F7CD8A39245F77",
+      "bytes": 701
+    },
+    {
+      "name": "message_12.2a7172e3edb891b7622c7cef87b48ac1.json",
+      "sha256": "A9C2440AEBB58871E2C9A392806A4A6557780C79CA343A04BD0B27632E721358",
+      "bytes": 568
+    },
+    {
+      "name": "message_14.3deab2cf5dccc33076c91b01f437959f.json",
+      "sha256": "529456B15B25793D043DA5A4A62AD5273B672CC548070F374D82D3E1EED54E11",
+      "bytes": 533
+    },
+    {
+      "name": "message_142.54bdf2274d88e454e26471c059571161.json",
+      "sha256": "5B3A14CD63A202E2E82B75E7CE749D8DA99DA4888DF67841359D66D4A44BB8AE",
+      "bytes": 849
+    },
+    {
+      "name": "message_15.c00a692a13b43e646a5d5042aae3c13e.json",
+      "sha256": "244EA51F35ADC1ED09F5C701220B881E33CDE64E86612CE2BAC5A00F39370FF7",
+      "bytes": 680
+    },
+    {
+      "name": "message_18.33222097bf2e096d68021067ce4ffe0b.json",
+      "sha256": "A4DBD4CE97D6BDD69F143F4713622130E34C2A60B764F1F0D38A4A47B3DE1EA5",
+      "bytes": 1019
+    },
+    {
+      "name": "message_20.90c7e7c0d223eac5597c3ccb2a625280.json",
+      "sha256": "4631A9C6B3C8E023718EEE27756B3DDAB59E4863EF44AE85EF279E6A37997AF1",
+      "bytes": 1020
+    },
+    {
+      "name": "message_35.92e5262ab86548f493ba0b240ab5588b.json",
+      "sha256": "E626B8E42782C1DE6EB3F619C59471EA66E95B8989A3C0FB1A22CD77D43DA339",
+      "bytes": 624
+    },
+    {
+      "name": "message_53.2527d863b6017f2f9a17a20bedb038d3.json",
+      "sha256": "B5E933CE8680C9A34693CD7A731616EB8D774455A94AC32D208047A05287F869",
+      "bytes": 888
+    },
+    {
+      "name": "message_64.8e890c75666e197307469c9080023889.json",
+      "sha256": "CE3B4991E3CDD9DE0ADAEA3E3F9F4482F9FB5FFD0EBA1E694795BD1C92EDCC38",
+      "bytes": 602
+    },
+    {
+      "name": "message_67.4091e43ad2ccf2f6b29b9c350be3565f.json",
+      "sha256": "98C01A517A91A35300DF75C99586084020C9182105D22B009BBD4167B446EDA6",
+      "bytes": 583
+    },
+    {
+      "name": "message_69.288bca850658ccbd27786fad13846ce1.json",
+      "sha256": "6EBBC6971AD1E0D34F117FF5DC301098DF2ABF54F4452B20277A87BE16624B90",
+      "bytes": 645
+    },
+    {
+      "name": "message_86.9bb4c518182a1f294c64b8181617f2ac.json",
+      "sha256": "5CD38E6D44F90921DF1FFC58AEBBCAEBC567580A5F46487A553FD1687848D982",
+      "bytes": 1041
+    },
+    {
+      "name": "message_92.319be01134b4ddf423a6ebc8731860bd.json",
+      "sha256": "4B6CE3BCC43FCDFCA223AE686D1EFD38952D2524F0FCA6E73659068C4CBCF9B9",
+      "bytes": 690
+    }
+  ],
+  "generated_by": "Antigravity (Google DeepMind) \u2014 Stage 11",
+  "timestamp_iso": "2026-09-13T06:53:43.645498+00:00"
+}

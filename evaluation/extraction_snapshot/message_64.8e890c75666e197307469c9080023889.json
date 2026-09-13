@@ -1,0 +1,19 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": "INR",
+        "effective_from": "2026-04-03",
+        "effective_until": null,
+        "fact_kind": "receipt_confirms_amount",
+        "raw_excerpt": "BuyBox confirmed that the tote bag order was paid in INR on 3 April 2026. The receipt has the final amount. Order ref MER-0064."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0249d3e178814f72006aa56c920c4087d1bb916bb020e43d08",
+  "reasoning_effort": "high"
+}

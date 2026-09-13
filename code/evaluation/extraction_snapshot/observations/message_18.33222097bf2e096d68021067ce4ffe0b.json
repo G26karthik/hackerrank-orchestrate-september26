@@ -1,0 +1,29 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "facts": [
+      {
+        "ambiguity_note": "Pembayaran faktur telah disetujui, tetapi tanggal penyelesaian hanya perkiraan dan dana belum dinyatakan diterima.",
+        "ambiguous": true,
+        "amount": 30780000,
+        "currency": "IDR",
+        "effective_from": "2025-08-15",
+        "effective_until": null,
+        "fact_kind": "income_confirmed_one_off",
+        "raw_excerpt": "Klien menyetujui pembayaran faktur sebesar IDR 30780000. Penyelesaian diperkirakan pada 2025-08-15"
+      },
+      {
+        "ambiguity_note": "",
+        "ambiguous": false,
+        "amount": null,
+        "currency": null,
+        "effective_from": null,
+        "effective_until": null,
+        "fact_kind": "income_not_yet_confirmed",
+        "raw_excerpt": "faktur lain yang diajukan masih menunggu persetujuan."
+      }
+    ]
+  },
+  "provider_response_id": "resp_0852431e81e0ffde006aa56c694ea487d1b5e46d7aeec6c1d3",
+  "reasoning_effort": "high"
+}

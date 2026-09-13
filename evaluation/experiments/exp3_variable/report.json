@@ -1,0 +1,181 @@
+{
+  "n_rows": 25,
+  "amount_safe_to_pay": {
+    "field_name": "amount_safe_to_pay",
+    "n": 25,
+    "exact_matches": 3,
+    "signed_errors_by_currency": {
+      "ZAR": [
+        "0",
+        "-737",
+        "-10165.88",
+        "227.05"
+      ],
+      "IDR": [
+        "1268004.2",
+        "158986.04",
+        "3011767.28",
+        "599355",
+        "25025.49"
+      ],
+      "EUR": [
+        "17.1",
+        "17.80",
+        "0.00",
+        "508.2",
+        "48.45",
+        "20.24",
+        "95.54",
+        "6.05"
+      ],
+      "INR": [
+        "-3445.58",
+        "-12700",
+        "0",
+        "15964.58",
+        "2556.19",
+        "3162.16",
+        "1684.19"
+      ],
+      "USD": [
+        "31.05"
+      ]
+    },
+    "relative_errors_by_currency": {
+      "ZAR": [
+        "0",
+        "-0.04758522727272727272727272727",
+        "-0.1560045423853661530906635566",
+        "0.005972485269360269360269360269"
+      ],
+      "IDR": [
+        "0.02755452648963449085140597158",
+        "0.02895393188854489164086687307",
+        "0.2372778129677775151658394391",
+        "0.04571739130434782608695652174",
+        "0.0004136718130124305739222427929"
+      ],
+      "EUR": [
+        "0.02756286266924564796905222437",
+        "0.01786072646999799317680112382",
+        "0",
+        "0.5397196261682242990654205607",
+        "0.008948690480588083188652063093",
+        "0.005492537313432835820895522388",
+        "0.02943224176704352915806660300",
+        "0.008270676691729323308270676692"
+      ],
+      "INR": [
+        "-0.01745481256332320162107396150",
+        "-0.04761904761904761904761904762",
+        "0",
+        "0.05813758193736343772760378733",
+        "0.06445259707513867876954109934",
+        "0.01041211722094171880144879816",
+        "0.01536669708029197080291970803"
+      ],
+      "USD": [
+        "0.01972179878048780487804878049"
+      ]
+    }
+  },
+  "affordability_status": {
+    "field_name": "affordability_status",
+    "n": 25,
+    "exact_matches": 18,
+    "confusion": {
+      "affordable_now->affordable_now": 3,
+      "affordable_with_plan->affordable_with_plan": 4,
+      "affordable_later->affordable_later": 4,
+      "not_affordable->not_affordable": 7,
+      "affordable_with_plan->affordable_now": 3,
+      "affordable_with_plan->affordable_later": 1,
+      "affordable_later->not_affordable": 1,
+      "affordable_with_plan->not_affordable": 1,
+      "affordable_later->affordable_now": 1
+    }
+  },
+  "recommended_payment_method": {
+    "field_name": "recommended_payment_method",
+    "n": 25,
+    "exact_matches": 21,
+    "confusion": {
+      "full_payment->full_payment": 6,
+      "installments->installments": 3,
+      "wait->wait": 4,
+      "not_recommended->not_recommended": 7,
+      "installments->not_recommended": 2,
+      "wait->not_recommended": 1,
+      "wait->full_payment": 1,
+      "partial_payment->partial_payment": 1
+    }
+  },
+  "payment_plan": {
+    "field_name": "payment_plan",
+    "n": 25,
+    "parse_failures": [],
+    "exact_matches": 20,
+    "date_set_matches": 21,
+    "sum_matches": 22
+  },
+  "earliest_date_for_full_payment": {
+    "n": 25,
+    "exact_matches": 17,
+    "both_empty": 7,
+    "mismatches": [
+      [
+        "request_06",
+        "2026-01-15",
+        "2026-01-03"
+      ],
+      [
+        "request_07",
+        "2024-10-23",
+        "2024-11-23"
+      ],
+      [
+        "request_08",
+        "2025-04-15",
+        ""
+      ],
+      [
+        "request_11",
+        "2025-07-15",
+        "2025-05-03"
+      ],
+      [
+        "request_12",
+        "2026-04-05",
+        ""
+      ],
+      [
+        "request_13",
+        "2024-05-15",
+        "2024-03-07"
+      ],
+      [
+        "request_17",
+        "2026-03-15",
+        "2026-04-15"
+      ],
+      [
+        "request_21",
+        "2026-04-15",
+        "2026-04-03"
+      ]
+    ]
+  },
+  "spending_changes_needed": {
+    "n": 25,
+    "parse_failures": [],
+    "exact_set_matches": 22,
+    "well_formed_count": 25,
+    "rule_violations": []
+  },
+  "decision_explanation": {
+    "n": 25,
+    "empty_count": 0,
+    "grounded_count": 25,
+    "ungrounded_request_ids": []
+  }
+}

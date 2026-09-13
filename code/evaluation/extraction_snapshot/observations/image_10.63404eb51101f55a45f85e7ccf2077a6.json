@@ -1,0 +1,260 @@
+{
+  "model": "gpt-6-astra",
+  "parsed": {
+    "amount_candidates": [
+      {
+        "amount": 95.0,
+        "label": "Rate",
+        "region": "Row 1"
+      },
+      {
+        "amount": 35.63,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 1, both tax amount columns"
+      },
+      {
+        "amount": 1425.0,
+        "label": "Amount",
+        "region": "Row 1, rightmost column"
+      },
+      {
+        "amount": 100.0,
+        "label": "Rate",
+        "region": "Row 2"
+      },
+      {
+        "amount": 25.0,
+        "label": "CGST Amt; SGST Amt; Rate",
+        "region": "Row 2 tax amount columns; rows 6 and 12 Rate"
+      },
+      {
+        "amount": 1000.0,
+        "label": "Amount",
+        "region": "Row 2, rightmost column"
+      },
+      {
+        "amount": 27.0,
+        "label": "Rate",
+        "region": "Rows 3 and 4"
+      },
+      {
+        "amount": 162.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Rows 3 and 4, both tax amount columns"
+      },
+      {
+        "amount": 6480.0,
+        "label": "Amount",
+        "region": "Rows 3 and 4, rightmost column"
+      },
+      {
+        "amount": 10.0,
+        "label": "Rate; CGST Amt; SGST Amt",
+        "region": "Row 5 Rate; row 13 tax amount columns"
+      },
+      {
+        "amount": 12.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Rows 5 and 10, both tax amount columns"
+      },
+      {
+        "amount": 480.0,
+        "label": "Amount",
+        "region": "Rows 5 and 10, rightmost column"
+      },
+      {
+        "amount": 56.25,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Rows 6 and 12, both tax amount columns"
+      },
+      {
+        "amount": 2250.0,
+        "label": "Amount",
+        "region": "Rows 6 and 12, rightmost column"
+      },
+      {
+        "amount": 40.0,
+        "label": "Rate",
+        "region": "Rows 7, 8, 9, 10, 11 and 13"
+      },
+      {
+        "amount": 1920.0,
+        "label": "CGST Amt; SGST Amt; Amount",
+        "region": "Row 7 tax amount columns; row 8 rightmost Amount column"
+      },
+      {
+        "amount": 9600.0,
+        "label": "Amount",
+        "region": "Row 7, rightmost column"
+      },
+      {
+        "amount": 384.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 8, both tax amount columns"
+      },
+      {
+        "amount": 72.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 9, both tax amount columns"
+      },
+      {
+        "amount": 2880.0,
+        "label": "Amount",
+        "region": "Row 9, rightmost column"
+      },
+      {
+        "amount": 60.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 11, both tax amount columns"
+      },
+      {
+        "amount": 2400.0,
+        "label": "Amount",
+        "region": "Row 11, rightmost column"
+      },
+      {
+        "amount": 400.0,
+        "label": "Amount",
+        "region": "Row 13, rightmost column"
+      },
+      {
+        "amount": 65.0,
+        "label": "Rate",
+        "region": "Row 14"
+      },
+      {
+        "amount": 78.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 14, both tax amount columns"
+      },
+      {
+        "amount": 3120.0,
+        "label": "Amount",
+        "region": "Row 14, rightmost column"
+      },
+      {
+        "amount": 113.0,
+        "label": "Rate; CGST Amt; SGST Amt",
+        "region": "Row 15, Rate and both tax amount columns"
+      },
+      {
+        "amount": 4520.0,
+        "label": "Amount",
+        "region": "Row 15, rightmost column"
+      },
+      {
+        "amount": 160.0,
+        "label": "Rate",
+        "region": "Row 16"
+      },
+      {
+        "amount": 108.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 16, both tax amount columns"
+      },
+      {
+        "amount": 4320.0,
+        "label": "Amount",
+        "region": "Row 16, rightmost column"
+      },
+      {
+        "amount": 80.0,
+        "label": "Rate",
+        "region": "Rows 17, 18 and 19"
+      },
+      {
+        "amount": 120.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Rows 17, 18 and 19, both tax amount columns"
+      },
+      {
+        "amount": 4800.0,
+        "label": "Amount",
+        "region": "Rows 17, 18 and 19, rightmost column"
+      },
+      {
+        "amount": 310.0,
+        "label": "Rate",
+        "region": "Rows 20 and 22"
+      },
+      {
+        "amount": 93.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 20, both tax amount columns"
+      },
+      {
+        "amount": 3720.0,
+        "label": "Amount",
+        "region": "Row 20, rightmost column"
+      },
+      {
+        "amount": 335.0,
+        "label": "Rate",
+        "region": "Row 21"
+      },
+      {
+        "amount": 67.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 21, both tax amount columns"
+      },
+      {
+        "amount": 2680.0,
+        "label": "Amount",
+        "region": "Row 21, rightmost column"
+      },
+      {
+        "amount": 31.0,
+        "label": "CGST Amt; SGST Amt",
+        "region": "Row 22, both tax amount columns"
+      },
+      {
+        "amount": 1240.0,
+        "label": "Amount",
+        "region": "Row 22, rightmost column"
+      },
+      {
+        "amount": 72045.0,
+        "label": "Sub Total",
+        "region": "Bottom-right summary"
+      },
+      {
+        "amount": 1513.13,
+        "label": "CGST2.5 (2.5%); SGST2.5 (2.5%)",
+        "region": "Bottom-right summary, separate CGST2.5 and SGST2.5 rows"
+      },
+      {
+        "amount": 2304.0,
+        "label": "CGST20 (20%); SGST20 (20%)",
+        "region": "Bottom-right summary, separate CGST20 and SGST20 rows"
+      },
+      {
+        "amount": 79679.26,
+        "label": "Total; Balance Due; Total In Words",
+        "region": "Bottom-right Total and Balance Due rows; bottom-left amount in words"
+      }
+    ],
+    "balance_due": 79679.26,
+    "cash_tendered": null,
+    "change": null,
+    "currency": "INR",
+    "document_type": "tax invoice",
+    "due_date_candidates": [],
+    "gross_pay": null,
+    "legible": true,
+    "net_pay": null,
+    "notes": "Repeated identical monetary values are consolidated into single candidates with their respective labels and regions. No combined tax total is printed, so tax is null. The full total is shown as Balance Due, implying unpaid status. No dates or invoice header are visible.",
+    "paid_amount": null,
+    "payment_status": "unpaid",
+    "source_regions": [
+      "Main item table, rows 1\u201321",
+      "Lower continuation table, row 22",
+      "Bottom-right subtotal and tax summary",
+      "Bottom-right Total and Balance Due rows",
+      "Bottom-left Total In Words"
+    ],
+    "tax": null,
+    "total": 79679.26
+  },
+  "provider_response_id": "resp_07c74d8707214e08006aa56d5b76a487d1ab084991c40612d2",
+  "reasoning_effort": "high"
+}

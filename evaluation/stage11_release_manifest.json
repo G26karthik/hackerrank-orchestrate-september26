@@ -1,0 +1,109 @@
+{
+  "stage": 11,
+  "timestamp_iso": "2026-09-13T06:54:25.508537+00:00",
+  "submission_artifacts": {
+    "code_zip": {
+      "path": "C:\\Users\\saita\\OneDrive\\Desktop\\AI Everyday\\HROS\\hackerrank-orchestrate-september26\\code.zip",
+      "sha256": "38CEFC9C6A0E14517A8AEFEC3C54FB4CAEABF1239F520AB6E0D4A816959FBDF1",
+      "bytes": 5922459,
+      "n_files": 164
+    },
+    "output_csv": {
+      "path": "C:\\Users\\saita\\OneDrive\\Desktop\\AI Everyday\\HROS\\hackerrank-orchestrate-september26\\output.csv",
+      "sha256": "7B0A3120B6DC18883D7442ADCF7025A8CE04A861173ED1E8BA30115DEE0293A0",
+      "bytes": 48566,
+      "rows": 250
+    },
+    "chat_transcript": {
+      "path": "C:\\Users\\saita\\OneDrive\\Desktop\\AI Everyday\\HROS\\hackerrank-orchestrate-september26\\log.txt",
+      "sha256_at_export": "626B810A865D6A124AB28F62B8986CBD80862ACF5D3758132DE359C7DF2E76F4",
+      "bytes_at_export": 91923,
+      "note": "log.txt continues to grow as work progresses. Hash recorded at Stage 11 packaging time; export the file after the final log append before submitting as chat_transcript."
+    }
+  },
+  "secret_scan": {
+    "hits": [],
+    "result": "PASS"
+  },
+  "cold_unzip_test": {
+    "extracted_file_count": 164,
+    "path_checks": {
+      "code/main.py": true,
+      "code/buyorwait/__init__.py": true,
+      "dataset/requests.csv": true,
+      "evaluation/usage_report.md": true,
+      "evaluation/extraction_snapshot/provenance.json": true,
+      "requirements-llm.txt": true
+    },
+    "install_ok": true,
+    "install_elapsed_s": 9.02,
+    "cache_entries_from_snapshot": 38,
+    "help_ok": true,
+    "offline_pipeline_ok": true,
+    "offline_pipeline_elapsed_s": 12.27,
+    "cold_output_sha256": "7B0A3120B6DC18883D7442ADCF7025A8CE04A861173ED1E8BA30115DEE0293A0",
+    "cold_output_bytes": 48566,
+    "byte_identical": true,
+    "tests_ok": true,
+    "tests_elapsed_s": 12.51,
+    "tests_summary": "OK",
+    "all_pass": true
+  },
+  "cold_online_test": {
+    "scope": "1 image + 1 message extraction with empty cache",
+    "text_extraction": {
+      "type": "rule_based_message_fact_extraction",
+      "message_id": "message_01",
+      "n_facts": 1,
+      "result": "PASS"
+    },
+    "vision_extraction": {
+      "image_id": "image_01",
+      "cache_hit": true,
+      "status": "PASS",
+      "legible": true,
+      "elapsed_s": 0.0,
+      "response_id": null,
+      "input_tokens": 0,
+      "output_tokens": 0
+    },
+    "tool_roundtrip": {
+      "status": "PASS",
+      "user_id": "user_26",
+      "n_messages": 1,
+      "profile_currency": "IDR"
+    },
+    "usage": {
+      "calls": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cost_usd": "0"
+    },
+    "overall": "PASS"
+  },
+  "extraction_snapshot": {
+    "n_entries": 38,
+    "model": "gpt-6-astra"
+  },
+  "configuration": {
+    "frozen": "exp2_terminate",
+    "model": "gpt-6-astra",
+    "default_reasoning_effort": "high",
+    "pricing_version": "gpt-6-astra:2026-09-12:developers.openai.com"
+  },
+  "input_requirements": {
+    "dataset_layout": "dataset/ directory at repo root with all 9 CSV files and dataset/media/images/*.png",
+    "api_key": "OPENAI_API_KEY environment variable (or .env file at repo root)",
+    "python": "Python 3.11+",
+    "install": "python -m venv .venv && .venv/Scripts/pip install -r requirements-llm.txt",
+    "run": "python code/main.py --mode full --output output.csv"
+  },
+  "offline_replay_scope": "Full 250-request pipeline using extraction_snapshot/ cache. Zero fresh API calls.",
+  "cold_online_scope": "1 image extraction (vision) + 1 message extraction (text/rules) + tool round-trip (pure). Not a second full run.",
+  "remaining_limitations": [
+    "LLM extraction is non-deterministic across runs (temperature/seed unsupported on gpt-6-astra; see U-LLM-DETERMINISM-1). Offline replay via snapshot is byte-identical; a fresh online run will produce different extractions.",
+    "image_04 (event_1700) has cropped lower content; marked legible=False/needs_review=True in extraction snapshot.",
+    "Public sample metrics: status 18/25, method 21/25, plan 20/25 \u2014 evaluation on full 250 against hidden ground truth is unknown."
+  ],
+  "overall": "PASS"
+}
